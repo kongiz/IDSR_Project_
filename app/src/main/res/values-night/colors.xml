@@ -1,0 +1,12 @@
+<resources>
+    <color name="idsr_primary">#4FA3FF</color>
+    <color name="idsr_secondary">#82CFFF</color>
+
+    <color name="idsr_background">#121212</color>
+    <color name="idsr_surface">#1E1E1E</color>
+
+    <color name="idsr_on_surface">#FFFFFF</color>
+    <color name="idsr_on_primary">#000000</color>
+
+    <color name="idsr_gray">#BBBBBB</color>
+</resources>

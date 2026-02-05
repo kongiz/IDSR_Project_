@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="diseaseName"
+            type="String" />
+    </data>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="6dp"
+            android:paddingHorizontal="4dp">
+
+
+            <TextView
+                android:id="@+id/tvDiseaseName"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="8dp"
+                android:text="@{diseaseName}"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:singleLine="true"
+                tools:text="Acute Flaccid Paralysis" />
+
+
+            <EditText style="@style/InputBox" android:hint="M U5"/>
+            <EditText style="@style/InputBox" android:hint="F U5"/>
+
+
+            <EditText style="@style/InputBox" android:hint="M A5"/>
+            <EditText style="@style/InputBox" android:hint="F A5"/>
+
+
+            <EditText style="@style/InputBox" android:layout_marginStart="12dp" android:hint="M U5 D"/>
+            <EditText style="@style/InputBox" android:hint="F U5 D"/>
+
+
+            <EditText style="@style/InputBox" android:hint="M A5 D"/>
+            <EditText style="@style/InputBox" android:hint="F A5 D"/>
+
+
+            <EditText style="@style/InputBox" android:layout_marginStart="12dp" android:hint="Samples"/>
+
+        </LinearLayout>
+    </HorizontalScrollView>
+</layout>

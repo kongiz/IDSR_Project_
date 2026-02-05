@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">IDSR_Project</string>
+    <string name="idsr_app">IDSR App</string>
+    <string-array name="user_roles">
+        <item>Admin</item>
+        <item>Regional Officer</item>
+        <item>District Officer</item>
+        <item>Health Officer</item>
+        <item>Lab Technician</item>
+        <item>Clinician</item>
+        <item>Community Health Worker</item>
+    </string-array>
+    <string name="title_activity_login_password">LoginPasswordActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="patient_information">Patient Information</string>
+    <string name="case_information">Case Information</string>
+    <string name="specimen_and_lab_information">Specimen and Lab Information</string>
+    <string name="back">Back</string>
+
+    <string-array name="Outcome">
+        <item>Alive</item>
+        <item>Dead</item>
+        <item>Transferred Out</item>
+        <item>Lost to follow-up</item>
+        <item>Unknown</item>
+    </string-array>
+
+    <string-array name="Classification">
+        <item>Confirmed</item>
+        <item>Probable</item>
+        <item>Compatible</item>
+        <item>Discarded</item>
+    </string-array>
+
+    <string-array name="SpecimenType">
+        <item>Blood</item>
+        <item>Plasma</item>
+        <item>Serum</item>
+        <item>Aspirate</item>
+        <item>CSF</item>
+        <item>Pus</item>
+        <item>Saliva</item>
+        <item>Biopsy</item>
+        <item>Stool</item>
+        <item>Urethra/Vaginal Discharge</item>
+        <item>Urine</item>
+        <item>Sputum</item>
+        <item>Food</item>
+        <item>Water</item>
+        <item>Other</item>
+    </string-array>
+
+</resources>

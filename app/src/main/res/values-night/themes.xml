@@ -1,0 +1,25 @@
+<resources>
+
+    <style name="Theme.IDSR" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="colorPrimary">#8AB4F8</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="colorPrimaryContainer">#1F3A5F</item>
+
+        <item name="android:colorBackground">#121212</item>
+
+        <item name="colorSurface">#1E1E1E</item>
+        <item name="colorSurfaceVariant">#2A2A2A</item>
+
+        <item name="colorOnSurface">#E8EAED</item>
+
+        <item name="textInputStyle">
+            @style/Widget.Material3.TextInputLayout.OutlinedBox
+        </item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+    </style>
+
+</resources>
