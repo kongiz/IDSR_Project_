@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface"
+    android:background="?attr/android:colorBackground"
     tools:context=".activities.SignUp1Activity">
 
 
@@ -16,16 +16,19 @@
         android:layout_height="0dp"
         android:layout_weight="0.22">
 
+
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnBackSignup1"
             android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_height="60dp"
             android:layout_margin="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/back_btn"
             android:contentDescription="Back"
+            app:tint="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/logoImage"
@@ -33,6 +36,7 @@
             android:layout_height="120dp"
             android:src="@drawable/splash11"
             android:scaleType="centerCrop"
+            android:contentDescription="IDSR App Logo"
             app:layout_constraintTop_toBottomOf="@id/btnBackSignup1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,19 +47,21 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="-12dp"
-        android:layout_marginBottom="25dp"
-        app:cardCornerRadius="24dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginTop="-10dp"
+        android:layout_marginBottom="80dp"
+        app:cardCornerRadius="15dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true"
-        app:cardBackgroundColor="?attr/colorSurface">
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:strokeWidth="1dp"
+        app:strokeColor="?attr/colorSurfaceVariant">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="30dp">
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -70,12 +76,25 @@
                 android:fontFamily="@font/font1" />
 
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Step 1 of 5"
+                android:textSize="13sp"
+                android:textColor="@color/idsr_gray"
+                android:gravity="center" />
+
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilFirstname"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
-                app:boxBackgroundMode="outline"
+                android:hint="     First name"
+                app:startIconDrawable="@drawable/baseline_person_outline_24"
+                app:startIconTint="?attr/colorPrimary"
                 app:boxCornerRadiusTopStart="12dp"
                 app:boxCornerRadiusTopEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
@@ -85,17 +104,20 @@
                     android:id="@+id/etFirstname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="First name"
-                    android:inputType="textPersonName" />
+                    android:inputType="textPersonName"
+                    android:textColor="?attr/colorOnSurface" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilLastname"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:boxBackgroundMode="outline"
+                android:hint="     Last name"
+                app:startIconDrawable="@drawable/baseline_person_outline_24"
+                app:startIconTint="?attr/colorPrimary"
                 app:boxCornerRadiusTopStart="12dp"
                 app:boxCornerRadiusTopEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
@@ -105,8 +127,8 @@
                     android:id="@+id/etLastname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Last name"
-                    android:inputType="textPersonName" />
+                    android:inputType="textPersonName"
+                    android:textColor="?attr/colorOnSurface" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -118,7 +140,10 @@
                 android:text="Next"
                 android:textAllCaps="false"
                 android:textSize="16sp"
-                app:cornerRadius="12dp" />
+                android:paddingVertical="14dp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/baseline_arrow_forward_24"
+                app:iconGravity="end" />
 
 
             <LinearLayout
@@ -132,7 +157,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Already have an account?"
+                    android:text="@string/already_have_an_account"
                     android:textSize="14sp"
                     android:textColor="?attr/colorOnSurface" />
 
@@ -143,7 +168,9 @@
                     android:text=" Login"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="?attr/colorPrimary" />
+                    android:textColor="?attr/colorPrimary"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp" />
             </LinearLayout>
 
         </LinearLayout>

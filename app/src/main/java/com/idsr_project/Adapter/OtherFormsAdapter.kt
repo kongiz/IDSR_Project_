@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.idsr_project.utils.DateUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.idsr_project.Model.OtherFormsData
 import com.idsr_project.R
@@ -49,7 +50,7 @@ class OtherFormsAdapter (
         val form = forms[position]
         holder.title.text = form.title
         holder.subtitle.text = form.subTitle
-        holder.date.text = form.date
+        holder.date.text = DateUtils.formatIsoDate(form.date)
         holder.type.text = form.type
     }
 

@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- Back -->
+
         <ImageButton
             android:id="@+id/btnBackDetail"
             android:layout_width="40dp"
@@ -27,7 +27,7 @@
             app:tint="@color/idsr_on_surface"
             android:contentDescription="Back" />
 
-        <!-- Logo -->
+
         <ImageView
             android:id="@+id/imgLogo"
             android:layout_width="150dp"
@@ -38,7 +38,7 @@
             android:contentDescription="App Logo"
             android:scaleType="fitCenter" />
 
-        <!-- ================= SUMMARY CARD ================= -->
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -156,7 +156,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ================= DISEASES ================= -->
+
         <TextView
             android:id="@+id/txtDiseasesHeader"
             android:layout_width="match_parent"
@@ -201,7 +201,7 @@
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ================= BACK BUTTON ================= -->
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBack"
             android:layout_width="match_parent"

@@ -9,11 +9,12 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.idsr_project.Model.ResponseApi
 import com.idsr_project.Model.userSignup
+import com.idsr_project.R
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivitySignUp4Binding
-import com.idsr_project.utils.ThemeManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,14 +30,15 @@ class SignUp4Activity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupPasswordWatchers()
+        setupClickListeners()
+    }
 
+    private fun setupClickListeners() {
         binding.btnBackSignup4.setOnClickListener { finish() }
         binding.btnRegister.setOnClickListener { submitSignup() }
     }
 
-
     private fun setupPasswordWatchers() {
-
         binding.etPassword.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 updatePasswordStrength(s.toString())
@@ -48,44 +50,81 @@ class SignUp4Activity : AppCompatActivity() {
 
         binding.etConfirmPassword.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                binding.tilConfirmPassword.error = null
+
+                if (!s.isNullOrEmpty()) {
+                    validatePasswordMatch(binding.etPassword.text.toString(), s.toString())
+                } else {
+                    binding.tilConfirmPassword.error = null
+                }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
     }
 
+    private fun validatePasswordMatch(password: String, confirmPassword: String) {
+        if (confirmPassword.isNotEmpty() && password != confirmPassword) {
+            binding.tilConfirmPassword.error = "Passwords do not match"
+        } else {
+            binding.tilConfirmPassword.error = null
+        }
+    }
+
     private fun updatePasswordStrength(password: String) {
         var score = 0
+
 
         if (password.length >= 8) score++
         if (password.any { it.isUpperCase() }) score++
         if (password.any { it.isDigit() }) score++
         if (password.any { !it.isLetterOrDigit() }) score++
 
+
         when (score) {
             0, 1 -> {
-                binding.passwordStrengthBar.progress = 25
-                binding.tvPasswordStrength.text = "Weak password"
+                binding.passwordStrengthBar.apply {
+                    progress = 25
+                    setIndicatorColor(ContextCompat.getColor(this@SignUp4Activity, R.color.idsr_error))
+                }
+                binding.tvPasswordStrength.apply {
+                    text = "Weak password"
+                    setTextColor(ContextCompat.getColor(this@SignUp4Activity, R.color.idsr_error))
+                }
             }
             2 -> {
-                binding.passwordStrengthBar.progress = 50
-                binding.tvPasswordStrength.text = "Medium strength"
+                binding.passwordStrengthBar.apply {
+                    progress = 50
+                    setIndicatorColor(ContextCompat.getColor(this@SignUp4Activity, android.R.color.holo_orange_dark))
+                }
+                binding.tvPasswordStrength.apply {
+                    text = "Medium strength"
+                    setTextColor(ContextCompat.getColor(this@SignUp4Activity, android.R.color.holo_orange_dark))
+                }
             }
             3 -> {
-                binding.passwordStrengthBar.progress = 75
-                binding.tvPasswordStrength.text = "Strong password"
+                binding.passwordStrengthBar.apply {
+                    progress = 75
+                    setIndicatorColor(ContextCompat.getColor(this@SignUp4Activity, android.R.color.holo_blue_dark))
+                }
+                binding.tvPasswordStrength.apply {
+                    text = "Strong password"
+                    setTextColor(ContextCompat.getColor(this@SignUp4Activity, android.R.color.holo_blue_dark))
+                }
             }
             4 -> {
-                binding.passwordStrengthBar.progress = 100
-                binding.tvPasswordStrength.text = "Very strong password"
+                binding.passwordStrengthBar.apply {
+                    progress = 100
+                    setIndicatorColor(ContextCompat.getColor(this@SignUp4Activity, android.R.color.holo_green_dark))
+                }
+                binding.tvPasswordStrength.apply {
+                    text = "Very strong password"
+                    setTextColor(ContextCompat.getColor(this@SignUp4Activity, android.R.color.holo_green_dark))
+                }
             }
         }
     }
 
-
     private fun submitSignup() {
-
         val password = binding.etPassword.text.toString().trim()
         val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
@@ -97,7 +136,6 @@ class SignUp4Activity : AppCompatActivity() {
         val registerMode = intent.getStringExtra("REGISTER_MODE") ?: "SELF"
 
         if (registerMode == "SELF") {
-
             val request = userSignup(
                 firstname = intent.getStringExtra("FIRSTNAME").orEmpty(),
                 lastname = intent.getStringExtra("LASTNAME").orEmpty(),
@@ -111,9 +149,7 @@ class SignUp4Activity : AppCompatActivity() {
             )
 
             api.registerUser(request).enqueue(handleResponse())
-
         } else {
-
             val data = hashMapOf(
                 "firstname" to intent.getStringExtra("FIRSTNAME").orEmpty(),
                 "lastname" to intent.getStringExtra("LASTNAME").orEmpty(),
@@ -135,60 +171,78 @@ class SignUp4Activity : AppCompatActivity() {
 
     private fun handleResponse(): Callback<ResponseApi> {
         return object : Callback<ResponseApi> {
-
             override fun onResponse(call: Call<ResponseApi>, response: Response<ResponseApi>) {
                 showLoading(false)
 
                 val res = response.body()
-                if (response.isSuccessful && res?.status == "success") {
-
+                if (response.isSuccessful && res?.success == true) {
                     Toast.makeText(this@SignUp4Activity, res.msg, Toast.LENGTH_SHORT).show()
 
 
                     startActivity(
                         Intent(this@SignUp4Activity, MainActivity::class.java)
                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    )
 
+                    )
+                    finish()
                 } else {
-                    binding.tilPassword.error = res?.msg ?: "Signup failed"
+                    val errorMessage = res?.msg ?: "Signup failed. Please try again."
+                    binding.tilPassword.error = errorMessage
+                    Toast.makeText(this@SignUp4Activity, errorMessage, Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onFailure(call: Call<ResponseApi>, t: Throwable) {
                 showLoading(false)
-                Toast.makeText(this@SignUp4Activity, t.message, Toast.LENGTH_SHORT).show()
+                val errorMessage = if (t is java.net.UnknownHostException) {
+                    "No internet connection"
+                } else {
+                    "Network error. Please check your connection and try again."
+                }
+                Toast.makeText(this@SignUp4Activity, errorMessage, Toast.LENGTH_LONG).show()
                 Log.e("SignUp4", "Signup error", t)
             }
         }
     }
 
-
-
     private fun validatePasswords(password: String, confirmPassword: String): Boolean {
-
         binding.tilPassword.error = null
         binding.tilConfirmPassword.error = null
 
         return when {
+            password.isEmpty() -> {
+                binding.tilPassword.error = "Password is required"
+                binding.etPassword.requestFocus()
+                false
+            }
             password.length < 8 -> {
                 binding.tilPassword.error = "Minimum 8 characters required"
+                binding.etPassword.requestFocus()
                 false
             }
             password.none { it.isUpperCase() } -> {
                 binding.tilPassword.error = "Must contain uppercase letter"
+                binding.etPassword.requestFocus()
                 false
             }
             password.none { it.isDigit() } -> {
                 binding.tilPassword.error = "Must contain a number"
+                binding.etPassword.requestFocus()
                 false
             }
             password.none { !it.isLetterOrDigit() } -> {
                 binding.tilPassword.error = "Must contain a symbol"
+                binding.etPassword.requestFocus()
+                false
+            }
+            confirmPassword.isEmpty() -> {
+                binding.tilConfirmPassword.error = "Please confirm your password"
+                binding.etConfirmPassword.requestFocus()
                 false
             }
             confirmPassword != password -> {
                 binding.tilConfirmPassword.error = "Passwords do not match"
+                binding.etConfirmPassword.requestFocus()
                 false
             }
             else -> true
@@ -198,5 +252,12 @@ class SignUp4Activity : AppCompatActivity() {
     private fun showLoading(loading: Boolean) {
         binding.progressSignup.visibility = if (loading) View.VISIBLE else View.GONE
         binding.btnRegister.isEnabled = !loading
+
+
+        if (loading) {
+            binding.btnRegister.text = "Creating account..."
+        } else {
+            binding.btnRegister.text = "Create account"
+        }
     }
 }

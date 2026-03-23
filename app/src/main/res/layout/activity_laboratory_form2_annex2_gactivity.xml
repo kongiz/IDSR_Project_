@@ -6,27 +6,32 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/android:colorBackground"
+    android:padding="12dp"
     android:layout_margin="10dp"
-    android:padding="10dp"
     tools:context=".activities.Laboratory_Form_2_Annex2G_Activity">
 
-    <ImageButton
+
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btnBackAnnex2G2"
         android:layout_width="40dp"
-        android:layout_height="80dp"
+        android:layout_height="60dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back"
         android:src="@drawable/back_btn"
+        app:tint="?attr/colorOnSurface"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
+
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgLogo"
         android:layout_width="150dp"
         android:layout_height="120dp"
-        android:layout_marginTop="10dp"
-        android:scaleType="centerCrop"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerInside"
         android:src="@drawable/splash11"
+        android:contentDescription="App logo"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -36,14 +41,16 @@
         android:id="@+id/titleTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
         android:gravity="center"
-        android:text="Annex 2G: IDSR case-based laboratory reporting form"
+        android:text="@string/annex_2g_idsr_case_based_laboratory_reporting_form"
         android:textSize="15sp"
         android:textStyle="bold"
+        android:textColor="?attr/colorOnSurface"
         app:layout_constraintTop_toBottomOf="@id/imgLogo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="6dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <ScrollView
         android:id="@+id/scrollForm1"
@@ -55,197 +62,217 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="16dp">
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/subTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Part II: Laboratory to complete this section and return the form to district and clinician"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilLabName"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Laboratory Name and location"
-            android:layout_marginTop="16dp">
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etLabName"
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/subTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/part_ii_laboratory_to_complete_this_section_and_return_the_form_to_district_and_clinician"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilDateLabReceived"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Date laboratory received specimen"
-            android:layout_marginTop="16dp"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/calendare"
-            app:endIconCheckable="false">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDateLabReceived"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilLabName"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="16dp"
+                android:hint="Laboratory Name and location">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvSpecimenCon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Specimen condition:"
-            android:textStyle="bold"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLabName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <RadioGroup
-            android:id="@+id/rgSpecimenCon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="start">
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rgAdequate"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDateLabReceived"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Date laboratory received specimen"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/calendare"
+                app:endIconTint="?attr/colorPrimary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDateLabReceived"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:focusable="false"
+                    android:clickable="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSpecimenCon"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Specimen condition"
+                android:layout_marginTop="16dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/spinnerSpecimenCon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:inputType="none"
+                    android:focusable="false" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilTestTypesPerformed"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Type of test(s) performed">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etTestTypesPerformed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minLines="3"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilFinalLabResult"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Final Laboratory Result(s)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFinalLAbResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minLines="3"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvFinalLabResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Final Laboratory Result image"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface" />
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorPrimary"
+                android:visibility="gone"
+                android:id="@+id/cardImagePreview">
+
+                <ImageView
+                    android:id="@+id/imgLabResultPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="?attr/colorSurfaceVariant"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Lab result preview" />
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUploadLabResult"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="130dp"
-                android:text="Adequate" />
+                android:layout_marginTop="10dp"
+                android:text="Upload Lab Result"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/upload" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rgInAdequate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Not Adequate" />
-        </RadioGroup>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilTestTypesPerformed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Type of test(s) performed"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etTestTypesPerformed"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDateLabSentDistrict"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="16dp"
+                android:hint="Date laboratory sent results to district"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/calendare"
+                app:endIconTint="?attr/colorPrimary">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilFinalLabResult"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Final Laboratory Result(s)"
-            android:layout_marginTop="16dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDateLabSentDistrict"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:focusable="false"
+                    android:clickable="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etFinalLAbResult"
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDateDistrictReceivedLabResult"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="16dp"
+                android:hint="Date district received laboratory results"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/calendare"
+                app:endIconTint="?attr/colorPrimary">
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDateDistrictReceivedLabResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:focusable="false"
+                    android:clickable="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvFinalLabResult"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Final Laboratory Result image"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            android:layout_marginTop="16dp" />
-
-        <ImageView
-            android:id="@+id/imgLabResultPreview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:background="@android:color/darker_gray"
-            android:contentDescription="Preview of lab result"
-            android:visibility="gone" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnUploadLabResult"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Upload Lab Result"
-            android:textAllCaps="false"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            app:cornerRadius="12dp"
-            app:icon="@drawable/upload"
-            app:iconGravity="start" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilDateLabSentDistrict"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Date laboratory sent results to district"
-            android:layout_marginTop="16dp"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/calendare"
-            app:endIconCheckable="false">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDateLabSentDistrict"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilDateDistrictReceivedLabResult"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Date district received laboratory results"
-            android:layout_marginTop="16dp"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/calendare"
-            app:endIconCheckable="false">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDateDistrictReceivedLabResult"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
+        </LinearLayout>
     </ScrollView>
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLabTech"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:text="Submit Form"
         android:textAllCaps="false"
-        android:layout_marginTop="6dp"
-        android:backgroundTint="@android:color/holo_blue_dark"
-        android:layout_marginBottom="25dp"
-        app:cornerRadius="12dp"
+        android:paddingVertical="14dp"
+        app:cornerRadius="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

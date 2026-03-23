@@ -203,7 +203,6 @@ class Annex2F_Immediate_2_Activity : AppCompatActivity() {
         val dateSeen = binding.etDateSeen.text.toString().trim()
         val patientName = binding.etPatientName.text.toString().trim()
         val dateOfBirth = binding.etDateOfBirth.text.toString().trim()
-        val age = binding.tvAge.text.toString().trim()
         val gender = binding.spinnerGender.text.toString().trim()
         val address = binding.etAddress.text.toString().trim()
         val district = binding.etDistrictAnnex2.text.toString().trim()
@@ -211,20 +210,24 @@ class Annex2F_Immediate_2_Activity : AppCompatActivity() {
         val phoneNumber = binding.etPhoneNumber.text.toString().trim()
         val occupation = binding.etOccupation.text.toString().trim()
 
+        val ageRaw = binding.tvAge.text.toString().trim()
+        val ageInt = ageRaw.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 0
+
+
         val receivedAnnex2FReport = intent.getParcelableExtra<immediateReportForm>("Annex2FReport")
 
         val annex2FReports = immediateReportForm(
             recordId = receivedAnnex2FReport?.recordId ?: "",
             country = receivedAnnex2FReport?.country ?: "",
             province = receivedAnnex2FReport?.province ?: "",
-            district = receivedAnnex2FReport?.district ?: "",
+            district = receivedAnnex2FReport?.district ?: 0,
             site = receivedAnnex2FReport?.site ?: "",
             disease = receivedAnnex2FReport?.disease ?: "",
             inpatientOutpatient = receivedAnnex2FReport?.inpatientOutpatient ?: "",
             dateSeen = dateSeen,
             patientName = patientName,
             dateOfBirth = dateOfBirth,
-            age = age,
+            age = ageInt,
             gender = gender,
             address = address,
             districtAnnex2 = district,
@@ -250,5 +253,6 @@ class Annex2F_Immediate_2_Activity : AppCompatActivity() {
             putExtra("Annex2FReport", annex2FReports)
         }
         startActivity(intent)
+        finish()
     }
 }

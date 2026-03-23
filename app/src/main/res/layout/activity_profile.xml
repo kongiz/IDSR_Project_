@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="?attr/colorSurface">
+    android:background="?attr/android:colorBackground">
 
 
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btnBackProfile"
         android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_height="80dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/back_btn"
         app:tint="?attr/colorOnSurface"
@@ -20,12 +20,13 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgLogo"
         android:layout_width="180dp"
         android:layout_height="140dp"
         android:src="@drawable/splash11"
         android:scaleType="fitCenter"
+        android:contentDescription="IDSR Logo"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/btnBackProfile"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,9 +38,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="6dp"
-        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:strokeWidth="1dp"
+        app:strokeColor="?attr/colorSurfaceVariant"
         app:layout_constraintTop_toBottomOf="@id/imgLogo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -48,18 +51,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp"
+            android:padding="24dp"
             android:gravity="center_horizontal">
 
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="3dp"
+                app:strokeColor="?attr/colorPrimary">
 
-            <ImageView
-                android:id="@+id/ivProfilePic"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:src="@drawable/ic_person"
-                android:scaleType="centerCrop"
-                android:contentDescription="Profile Picture"
-                android:background="@drawable/edittext_backgroud"/>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/colorPrimary">
+
+
+                    <TextView
+                        android:id="@+id/tvInitials"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="HK"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnPrimary"/>
+
+
+                    <ImageView
+                        android:id="@+id/ivProfilePic"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Profile Picture"
+                        android:visibility="gone"/>
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
             <TextView
@@ -67,10 +95,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Haruna Kongira"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginTop="16dp"/>
 
 
             <TextView
@@ -79,40 +107,68 @@
                 android:layout_height="wrap_content"
                 android:text="haruna@email.com"
                 android:textSize="14sp"
-                android:textColor="?attr/colorOnSurface"
-                android:alpha="0.7"
+                android:textColor="@color/idsr_gray"
                 android:layout_marginTop="4dp"/>
 
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginVertical="16dp"
-                android:background="?attr/colorOnSurface"
-                android:alpha="0.1"/>
+                android:layout_height="2dp"
+                android:layout_marginVertical="20dp"
+                android:background="?attr/colorSurfaceVariant"/>
 
 
-            <TextView
-                android:id="@+id/tvPhone"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Phone: +91 9876543210"
-                android:textSize="15sp"
-                android:textColor="?attr/colorOnSurface"
-                android:drawableStart="@drawable/phone"
-                android:drawablePadding="8dp"/>
+                android:orientation="horizontal"
+                android:gravity="start|center_vertical"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/phone"
+                    app:tint="?attr/colorPrimary"
+                    android:contentDescription="Phone icon"/>
+
+                <TextView
+                    android:id="@+id/tvPhone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:text="+91 9876543210"
+                    android:textSize="15sp"
+                    android:textColor="?attr/colorOnSurface"/>
+            </LinearLayout>
 
 
-            <TextView
-                android:id="@+id/tvRole"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Role: Health Worker"
-                android:textSize="15sp"
-                android:textColor="?attr/colorOnSurface"
-                android:drawableStart="@drawable/baseline_work_outline_24"
-                android:drawablePadding="8dp"
-                android:layout_marginTop="8dp"/>
+                android:orientation="horizontal"
+                android:gravity="start|center_vertical"
+                android:paddingVertical="8dp"
+                android:layout_marginTop="4dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/baseline_work_outline_24"
+                    app:tint="?attr/colorPrimary"
+                    android:contentDescription="Role icon"/>
+
+                <TextView
+                    android:id="@+id/tvRole"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:text="Health Worker"
+                    android:textSize="15sp"
+                    android:textColor="?attr/colorOnSurface"/>
+            </LinearLayout>
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -124,8 +180,11 @@
         android:layout_height="wrap_content"
         android:text="Add User"
         android:textAllCaps="false"
-        android:layout_marginTop="20dp"
-        app:cornerRadius="14dp"
+        android:paddingVertical="14dp"
+        android:layout_marginTop="24dp"
+        app:cornerRadius="12dp"
+        app:icon="@drawable/baseline_person_add_24"
+        app:iconGravity="textStart"
         app:layout_constraintTop_toBottomOf="@id/profileCard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -133,13 +192,19 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
+        style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Logout"
         android:textAllCaps="false"
+        android:paddingVertical="14dp"
         android:layout_marginTop="12dp"
-        app:cornerRadius="14dp"
-        app:backgroundTint="@android:color/holo_red_light"
+        app:cornerRadius="12dp"
+        app:icon="@drawable/logout"
+        app:iconGravity="textStart"
+        app:backgroundTint="@color/idsr_error"
+        android:textColor="@android:color/white"
+        app:iconTint="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/btnAddUser"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

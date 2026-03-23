@@ -9,4 +9,7 @@
     <color name="idsr_on_primary">#FFFFFF</color>
 
     <color name="idsr_gray">#555555</color>
+    <color name="idsr_error">#C62828</color>
+
+    <color name="dark_gray">#555555</color>
 </resources>

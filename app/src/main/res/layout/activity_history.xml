@@ -6,80 +6,79 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:background="?attr/android:colorBackground"
     tools:context=".activities.History_Activity">
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/headerBar"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_marginTop="35dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorSurface"
         android:elevation="4dp"
-        android:paddingHorizontal="12dp"
+        app:title="Reported Forms"
+        app:titleCentered="true"
+        app:titleTextColor="?attr/colorOnSurface"
+        app:navigationIcon="@drawable/back_btn"
+        app:navigationIconTint="?attr/colorOnSurface"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <ImageButton
-            android:id="@+id/btnBackHistory"
-            android:layout_width="40dp"
-            android:layout_height="60dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/back_btn"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
 
-        <TextView
-            android:id="@+id/headerTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Reported Forms"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/btnBackHistory"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- SEGMENT BUTTONS -->
-    <LinearLayout
-        android:id="@+id/segmentLayout"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/segmentCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        android:padding="4dp"
-        android:weightSum="2"
-        app:layout_constraintTop_toBottomOf="@id/headerBar"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+        app:strokeWidth="0dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSurveillance"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/segmentLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Surveillance"
-            android:textAllCaps="false"/>
+            android:orientation="horizontal"
+            android:padding="4dp"
+            android:weightSum="2">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnOtherForms"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Other Forms"
-            android:textAllCaps="false"/>
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSurveillance"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:text="Surveillance"
+                android:textAllCaps="false"
+                app:cornerRadius="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOtherForms"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="2dp"
+                android:text="Other Forms"
+                android:textAllCaps="false"
+                app:cornerRadius="8dp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/segmentLayout"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/segmentCard"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -88,33 +87,71 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvSurveillanceForms"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:padding="16dp"
+                android:clipToPadding="false"
                 tools:listitem="@layout/item_form_card"/>
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvOtherForms"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:padding="16dp"
+                android:clipToPadding="false"
                 android:visibility="gone"
                 tools:listitem="@layout/item_form_card"/>
 
-            <TextView
-                android:id="@+id/txtEmptyMessage"
+
+            <LinearLayout
+                android:id="@+id/emptyStateLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No reports found"
-                android:visibility="gone"
-                app:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
 
-            <ProgressBar
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:src="@drawable/baseline_description_24"
+                    android:alpha="0.3"
+                    app:tint="@color/idsr_gray"/>
+
+                <TextView
+                    android:id="@+id/txtEmptyMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="No reports found"
+                    android:textSize="16sp"
+                    android:textColor="@color/idsr_gray"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Pull down to refresh"
+                    android:textSize="13sp"
+                    android:textColor="@color/idsr_gray"/>
+            </LinearLayout>
+
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="gone"/>
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorSize="48dp"
+                app:trackThickness="4dp"/>
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

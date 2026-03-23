@@ -85,6 +85,7 @@ class SurveillanceActivity2 : AppCompatActivity() {
 
             }
             startActivity(intent)
+            finish()
         }
     }
 }

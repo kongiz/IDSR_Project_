@@ -1,10 +1,11 @@
 package com.idsr_project.Model
 
+import android.R
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 data class Annex2FResponse(
-    val status: String,
+    val success: Boolean,
     val data: List<Annex2FData>
 
 )

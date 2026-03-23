@@ -23,6 +23,11 @@
     <string name="case_information">Case Information</string>
     <string name="specimen_and_lab_information">Specimen and Lab Information</string>
     <string name="back">Back</string>
+    <string name="part_i_referring_health_worker_form_to_laboratory_with_specimen">Part I: Referring health worker form to laboratory with specimen</string>
+    <string name="part_ii_laboratory_to_complete_this_section_and_return_the_form_to_district_and_clinician">Part II: Laboratory to complete this section and return the form to district and clinician</string>
+    <string name="annex_2g_idsr_case_based_laboratory_reporting_form">Annex 2G: IDSR case-based laboratory reporting form</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="already_have_an_account">Already have an account?</string>
 
     <string-array name="Outcome">
         <item>Alive</item>

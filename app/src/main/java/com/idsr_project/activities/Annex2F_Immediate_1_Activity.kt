@@ -89,14 +89,14 @@ class Annex2F_Immediate_1_Activity : AppCompatActivity() {
                     binding.spinnerRegion.setAdapter(adapter)
 
                     binding.spinnerRegion.setOnItemClickListener { _, _, position, _ ->
-                        selectedRegionId = regions[position].regions_id
+                        selectedRegionId = regions[position].region_id
                         binding.titleRegion.error = null
 
-                        // Reset district
+
                         selectedDistrictId = null
                         binding.spinnerDistrict.setText("", false)
 
-                        // Load districts for selected region
+
                         loadDistricts(selectedRegionId!!)
                     }
                 }
@@ -224,45 +224,50 @@ class Annex2F_Immediate_1_Activity : AppCompatActivity() {
     }
 
     private fun passDataToNextScreen() {
-        val recordId = binding.etRecordId.text.toString().trim()
-        val country = "Gambia" // Fixed to Gambia
-        val province = binding.spinnerRegion.text.toString().trim()
-        val district = binding.spinnerDistrict.text.toString().trim()
-        val site = binding.etSite.text.toString().trim()
-        val disease = binding.etDisease.text.toString().trim()
+        val recordId           = binding.etRecordId.text.toString().trim()
+        val country            = "Gambia"
+        val province           = binding.spinnerRegion.text.toString().trim()
+        val site               = binding.etSite.text.toString().trim()
+        val disease            = binding.etDisease.text.toString().trim()
         val inpatientOutpatient = binding.spinnerInpatientOutpatient.text.toString().trim()
 
+        val districtId = selectedDistrictId
+        if (districtId == null) {
+            binding.titleDistrict.error = "Please select a district"
+            return
+        }
+
         val annex2FReports = immediateReportForm(
-            recordId = recordId,
-            country = country,
-            province = province,
-            district = district,
-            site = site,
-            disease = disease,
-            inpatientOutpatient = inpatientOutpatient,
-            dateSeen = "",
-            patientName = "",
-            dateOfBirth = "",
-            age = "",
-            gender = "",
-            address = "",
-            districtAnnex2 = "",
-            urbanRural = "",
-            phoneNumber = "",
-            occupation = "",
-            dateOfOnset = "",
-            travelHistory = "No",
-            destination = "",
-            vaccineDoses = "0",
-            dateLastVaccine = "",
-            dateSpecimen = "",
-            dateLab = "",
-            labResults = "",
-            outcome = "",
-            classification = "",
+            recordId             = recordId,
+            country              = country,
+            province             = province,
+            district             = districtId,
+            site                 = site,
+            disease              = disease,
+            inpatientOutpatient  = inpatientOutpatient,
+            dateSeen             = "",
+            patientName          = "",
+            dateOfBirth          = "",
+            age                  = 0,
+            gender               = "",
+            address              = "",
+            districtAnnex2       = "",
+            urbanRural           = "",
+            phoneNumber          = "",
+            occupation           = "",
+            dateOfOnset          = "",
+            travelHistory        = "No",
+            destination          = "",
+            vaccineDoses         = "0",
+            dateLastVaccine      = "",
+            dateSpecimen         = "",
+            dateLab              = "",
+            labResults           = "",
+            outcome              = "",
+            classification       = "",
             dateFacilityNotified = "",
-            dateSentDistrict = "",
-            reporterName = ""
+            dateSentDistrict     = "",
+            reporterName         = ""
         )
 
         val intent = Intent(this, Annex2F_Immediate_2_Activity::class.java).apply {

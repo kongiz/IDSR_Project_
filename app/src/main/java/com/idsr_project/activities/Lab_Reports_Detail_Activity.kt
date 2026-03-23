@@ -3,58 +3,134 @@ package com.idsr_project.activities
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.idsr_project.Model.LabReportData
 import com.idsr_project.R
 import com.idsr_project.databinding.ActivityLabReportsDetailBinding
+import com.idsr_project.utils.DateUtils
 
 class Lab_Reports_Detail_Activity : AppCompatActivity() {
+
     private lateinit var binding: ActivityLabReportsDetailBinding
+    private var labReport: LabReportData? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityLabReportsDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupClickListeners()
+        loadLabReportData()
+    }
+
+    private fun setupClickListeners() {
         binding.btnBackLabReportDetail.setOnClickListener { finish() }
         binding.btnBackLabReportReport.setOnClickListener { finish() }
 
-        val labReport = intent.getParcelableExtra<LabReportData>("data")
-        if (labReport != null) {
-            binding.txtLabName.text = labReport.lab_name
-            binding.txtDateLabReceived.text = labReport.date_lab_received
-            binding.txtSpecimenCondition.text = labReport.specimen_condition
-            binding.txtTestTypes.text = labReport.test_types_performed
-
-            binding.txtFinalResult.text = labReport.final_lab_result
-
-            binding.txtDateSentDistrict.text = labReport.date_lab_sent_district
-            binding.txtDateDistrictReceived.text = labReport.date_district_received_lab_result
-            binding.txtRegion.text = labReport.region_name
-            binding.txtDistrict.text = labReport.district_name
-            binding.txtCreatedAt.text = labReport.created_at
-
-            Glide.with(this)
-                .load(labReport.lab_result_image)
-                .placeholder(R.drawable.placeholder_image)
-                .error(R.drawable.placeholder_image)
-                .into(binding.imgLabResult)
-            Log.e("LAB_IMG_URL", labReport.lab_result_image ?: "NULL URL")
-
-        }
         binding.imgLabResult.setOnClickListener {
-            val imageUri = labReport?.lab_result_image
-            if (imageUri != null) {
-                val intent = Intent(this, Img_Preview_Activity::class.java)
-                intent.putExtra("imageUri", imageUri)
-                startActivity(intent)
-            }
+            openImagePreview()
+        }
+    }
 
+    private fun loadLabReportData() {
+        labReport = intent.getParcelableExtra<LabReportData>("data")
+
+        if (labReport == null) {
+            Toast.makeText(this, "Error loading lab report data", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
 
+        displayLabInformation()
+        displayFinalResult()
+        displayAdministrativeInfo()
+        loadLabResultImage()
+    }
+
+    private fun displayLabInformation() {
+        labReport?.let { report ->
+            binding.txtLabName.text = report.lab_name.orEmpty().ifEmpty { "N/A" }
+            binding.txtDateLabReceived.text = DateUtils.formatIsoDate(report.date_lab_received)
+            binding.txtSpecimenCondition.text = report.specimen_condition.orEmpty().ifEmpty { "N/A" }
+            binding.txtTestTypes.text = report.test_types_performed.orEmpty().ifEmpty { "N/A" }
+        }
+    }
+
+    private fun displayFinalResult() {
+        labReport?.let { report ->
+            val finalResult = report.final_lab_result.orEmpty().ifEmpty { "Pending" }
+            binding.txtFinalResult.text = finalResult
+
+
+            when (finalResult.lowercase()) {
+                "positive" -> binding.txtFinalResult.setTextColor(getColor(R.color.idsr_error))
+                "negative" -> binding.txtFinalResult.setTextColor(getColor(android.R.color.holo_green_dark))
+                else -> binding.txtFinalResult.setTextColor(getColor(R.color.idsr_gray))
+            }
+        }
+    }
+
+    private fun displayAdministrativeInfo() {
+        labReport?.let { report ->
+            binding.txtDateSentDistrict.text = DateUtils.formatIsoDate( report.date_lab_sent_district)
+            binding.txtDateDistrictReceived.text = DateUtils.formatIsoDate(report.date_district_received_lab_result)
+            binding.txtRegion.text = report.region_name.orEmpty().ifEmpty { "N/A" }
+            binding.txtDistrict.text = report.district_name.orEmpty().ifEmpty { "N/A" }
+            binding.txtCreatedAt.text = DateUtils.formatIsoDateTime(report.created_at)
+        }
+    }
+
+    private fun loadLabResultImage() {
+        val imageUrl = labReport?.lab_result_image
+
+        if (imageUrl.isNullOrEmpty()) {
+            Log.w("LAB_REPORT_DETAIL", "No image URL provided")
+            binding.imgLabResult.setImageResource(R.drawable.placeholder_image)
+            binding.imgLabResult.isClickable = false
+            return
+        }
+
+        Log.d("LAB_REPORT_DETAIL", "Loading image from: $imageUrl")
+
+        Glide.with(this)
+            .load(imageUrl)
+            .placeholder(R.drawable.placeholder_image)
+            .error(R.drawable.placeholder_image)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+            .into(binding.imgLabResult)
+
+        
+        binding.imgLabResult.isClickable = true
+    }
+
+    private fun openImagePreview() {
+        val imageUrl = labReport?.lab_result_image
+
+        if (imageUrl.isNullOrEmpty()) {
+            Toast.makeText(this, "No image available to preview", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        try {
+            val intent = Intent(this, Img_Preview_Activity::class.java).apply {
+                putExtra("imageUri", imageUrl)
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("LAB_REPORT_DETAIL", "Error opening image preview", e)
+            Toast.makeText(this, "Unable to open image preview", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    companion object {
+        private const val TAG = "Lab_Reports_Detail"
+        const val EXTRA_LAB_REPORT = "data"
     }
 }

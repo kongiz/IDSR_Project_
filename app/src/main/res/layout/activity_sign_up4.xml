@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface"
+    android:background="?attr/android:colorBackground"
     tools:context=".activities.SignUp4Activity">
 
 
@@ -16,16 +16,19 @@
         android:layout_height="0dp"
         android:layout_weight="0.22">
 
+
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnBackSignup4"
             android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_height="60dp"
             android:layout_margin="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/back_btn"
             android:contentDescription="Back"
+            app:tint="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/logoImage"
@@ -33,23 +36,26 @@
             android:layout_height="120dp"
             android:src="@drawable/splash11"
             android:scaleType="centerCrop"
+            android:contentDescription="IDSR App Logo"
             app:layout_constraintTop_toBottomOf="@id/btnBackSignup4"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="-12dp"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="24dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginTop="-10dp"
+        android:layout_marginBottom="80dp"
+        app:cardCornerRadius="15dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true"
-        app:cardBackgroundColor="?attr/colorSurface">
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:strokeWidth="1dp"
+        app:strokeColor="?attr/colorSurfaceVariant">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,6 +65,7 @@
 
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Create a secure password"
@@ -69,13 +76,26 @@
                 android:fontFamily="@font/font1" />
 
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Step 5 of 5"
+                android:textSize="13sp"
+                android:textColor="@color/idsr_gray"
+                android:gravity="center" />
+
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPassword"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
+                android:hint="     Password"
+                app:startIconDrawable="@drawable/baseline_lock_outline_24"
+                app:startIconTint="?attr/colorPrimary"
                 app:endIconMode="password_toggle"
-                app:boxBackgroundMode="outline"
                 app:helperTextEnabled="true"
                 app:helperText="Minimum 8 characters, include number and symbol"
                 app:boxCornerRadiusTopStart="12dp"
@@ -87,8 +107,8 @@
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Password"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:textColor="?attr/colorOnSurface" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -119,11 +139,14 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilConfirmPassword"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:hint="     Confirm password"
+                app:startIconDrawable="@drawable/baseline_lock_outline_24"
+                app:startIconTint="?attr/colorPrimary"
                 app:endIconMode="password_toggle"
-                app:boxBackgroundMode="outline"
                 app:helperTextEnabled="true"
                 app:helperText="Must match password"
                 app:boxCornerRadiusTopStart="12dp"
@@ -135,8 +158,8 @@
                     android:id="@+id/etConfirmPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Confirm password"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:textColor="?attr/colorOnSurface" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -148,7 +171,10 @@
                 android:text="Create account"
                 android:textAllCaps="false"
                 android:textSize="16sp"
-                app:cornerRadius="12dp" />
+                android:paddingVertical="14dp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/baseline_check_24"
+                app:iconGravity="end" />
 
 
             <com.google.android.material.progressindicator.CircularProgressIndicator

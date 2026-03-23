@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.idsr_project.Model.Annex2FData
 import com.idsr_project.R
 import com.idsr_project.databinding.ActivityAnnex2FimmediateDetailsBinding
+import com.idsr_project.utils.DateUtils
 
 class Annex2F_Immediate_Details : AppCompatActivity() {
     private lateinit var binding: ActivityAnnex2FimmediateDetailsBinding
@@ -32,22 +33,22 @@ class Annex2F_Immediate_Details : AppCompatActivity() {
             binding.txtOccupation.text = data.occupation
             binding.txtDisease.text = data.disease
             binding.txtInpatientOutpatient.text = data.inpatientOutpatient
-            binding.txtDateSeen.text = data.dateSeen
-            binding.txtDateOnset.text = data.dateOfOnset
+            binding.txtDateSeen.text = DateUtils.formatIsoDate(data.dateSeen)
+            binding.txtDateOnset.text = DateUtils.formatIsoDate(data.dateOfOnset)
             binding.txtTravelHistory.text = data.travelHistory
             binding.txtDestination.text = data.destination
             binding.txtSite.text = data.site
             binding.txtVaccineDoses.text = data.vaccineDoses
-            binding.txtDateLastVaccine.text = data.dateLastVaccine
-            binding.txtDateSpecimen.text = data.dateSpecimen
-            binding.txtDateLab.text = data.dateLab
+            binding.txtDateLastVaccine.text = DateUtils.formatIsoDate(data.dateLastVaccine)
+            binding.txtDateSpecimen.text = DateUtils.formatIsoDate(data.dateSpecimen)
+            binding.txtDateLab.text = DateUtils.formatIsoDate(data.dateLab)
             binding.txtLabResults.text = data.labResults
-            binding.txtDateFacilityNotified.text = data.dateFacilityNotified
-            binding.txtDateSentDistrict.text = data.dateSentDistrict
+            binding.txtDateFacilityNotified.text = DateUtils.formatIsoDate(data.dateFacilityNotified)
+            binding.txtDateSentDistrict.text = DateUtils.formatIsoDate(data.dateSentDistrict)
             binding.txtReporterName.text = data.reporterName
             binding.txtRegion.text = data.region_name
             binding.txtDistrict.text = data.district
-            binding.txtCreatedAt.text = data.created_at
+            binding.txtCreatedAt.text = DateUtils.formatIsoDateTime(data.created_at)
         }
     }
 }

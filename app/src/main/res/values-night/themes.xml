@@ -2,20 +2,27 @@
 
     <style name="Theme.IDSR" parent="Theme.Material3.DayNight.NoActionBar">
 
-        <item name="colorPrimary">#8AB4F8</item>
-        <item name="colorOnPrimary">#000000</item>
+        <!-- Primary colors using your IDSR colors -->
+        <item name="colorPrimary">@color/idsr_primary</item>
+        <item name="colorOnPrimary">@color/idsr_on_primary</item>
         <item name="colorPrimaryContainer">#1F3A5F</item>
 
-        <item name="android:colorBackground">#121212</item>
 
-        <item name="colorSurface">#1E1E1E</item>
+        <item name="android:colorBackground">@color/idsr_background</item>
+
+
+        <item name="colorSurface">@color/idsr_surface</item>
         <item name="colorSurfaceVariant">#2A2A2A</item>
 
-        <item name="colorOnSurface">#E8EAED</item>
 
-        <item name="textInputStyle">
-            @style/Widget.Material3.TextInputLayout.OutlinedBox
-        </item>
+        <item name="colorOnSurface">@color/idsr_on_surface</item>
+
+        <item name="android:textColor">@color/idsr_on_surface</item>
+        <item name="android:textColorPrimary">@color/idsr_on_surface</item>
+        <item name="android:textColorSecondary">@color/idsr_gray</item>
+
+        <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
+
 
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>

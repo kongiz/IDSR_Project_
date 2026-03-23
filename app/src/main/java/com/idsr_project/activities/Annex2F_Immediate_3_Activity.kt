@@ -211,14 +211,14 @@ class Annex2F_Immediate_3_Activity : AppCompatActivity() {
             recordId = receivedAnnex2FReport?.recordId ?: "",
             country = receivedAnnex2FReport?.country ?: "",
             province = receivedAnnex2FReport?.province ?: "",
-            district = receivedAnnex2FReport?.district ?: "",
+            district = receivedAnnex2FReport?.district ?: 0,
             site = receivedAnnex2FReport?.site ?: "",
             disease = receivedAnnex2FReport?.disease ?: "",
             inpatientOutpatient = receivedAnnex2FReport?.inpatientOutpatient ?: "",
             dateSeen = receivedAnnex2FReport?.dateSeen ?: "",
             patientName = receivedAnnex2FReport?.patientName ?: "",
             dateOfBirth = receivedAnnex2FReport?.dateOfBirth ?: "",
-            age = receivedAnnex2FReport?.age ?: "",
+            age = receivedAnnex2FReport?.age ?: 0,
             gender = receivedAnnex2FReport?.gender ?: "",
             address = receivedAnnex2FReport?.address ?: "",
             districtAnnex2 = receivedAnnex2FReport?.districtAnnex2 ?: "",
@@ -244,5 +244,6 @@ class Annex2F_Immediate_3_Activity : AppCompatActivity() {
             putExtra("Annex2FReport", annex2FReports)
         }
         startActivity(intent)
+        finish()
     }
 }

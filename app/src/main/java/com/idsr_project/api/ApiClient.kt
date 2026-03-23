@@ -8,7 +8,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.1.9:5000/"
+        private const val SERVER_IP = "172.20.10.3"
+        private const val SERVER_PORT = "5000"
+
+        const val BASE_HOST = "http://$SERVER_IP:$SERVER_PORT"
+        private const val BASE_URL = "$BASE_HOST/api/"
 
 
     fun getClient(context: Context): ApiServices {

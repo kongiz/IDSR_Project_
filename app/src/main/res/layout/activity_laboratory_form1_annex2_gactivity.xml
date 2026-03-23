@@ -8,25 +8,30 @@
     android:layout_height="match_parent"
     android:layout_margin="10dp"
     android:padding="10dp"
+    android:background="?attr/android:colorBackground"
     tools:context=".activities.Laboratory_Form_1_Annex2G_Activity">
 
-    <ImageButton
+
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btnBackAnnex2G1"
         android:layout_width="40dp"
         android:layout_height="80dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back"
         android:src="@drawable/back_btn"
+        app:tint="?attr/colorOnSurface"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
+
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgLogo"
         android:layout_width="150dp"
         android:layout_height="120dp"
         android:layout_marginTop="10dp"
         android:scaleType="centerCrop"
         android:src="@drawable/splash11"
+        android:contentDescription="App logo"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -40,10 +45,12 @@
         android:text="Annex 2G: IDSR case-based laboratory reporting form"
         android:textSize="15sp"
         android:textStyle="bold"
+        android:textColor="?attr/colorOnSurface"
         app:layout_constraintTop_toBottomOf="@id/imgLogo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="6dp" />
+
 
     <ScrollView
         android:id="@+id/scrollForm1"
@@ -55,195 +62,217 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="16dp">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/subTitle"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Part I: Referring health worker form  to laboratory with specimen"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp" />
+            android:paddingBottom="16dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilDateSpecimenCollection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Date of specimen collection"
-            android:layout_marginTop="16dp"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/calendare"
-            app:endIconCheckable="false">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDateSpecimenCollection"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/subTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:gravity="center"
+                android:text="@string/part_i_referring_health_worker_form_to_laboratory_with_specimen"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginTop="16dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilSuspectedDisease"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Suspected Disease or Condition"
-            android:layout_marginTop="16dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etSuspectedDisease"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDateSpecimenCollection"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Date of specimen collection"
+                android:layout_marginTop="16dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/calendare"
+                app:endIconTint="?attr/colorPrimary"
+                app:endIconCheckable="false">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDateSpecimenCollection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:focusable="false"
+                    android:clickable="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tilSpecimenType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:text="Specimen type *"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/imgLogo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="25dp" />
-
-        <Spinner
-            android:id="@+id/spinnerSpecimen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/black"
-            android:layout_marginTop="6dp"
-            android:entries="@array/SpecimenType"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilSpecienUniqueID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Specimen unique identifier"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etSpecienUniqueID"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSuspectedDisease"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Suspected Disease or Condition"
+                android:layout_marginTop="16dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilPatientNameLab"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Patient Name (s)"
-            android:layout_marginTop="16dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSuspectedDisease"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPatientNameLab"
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tilSpecimenType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:gravity="start"
+                android:text="Specimen type *"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginTop="25dp" />
 
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tilSex"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Sex"
-            android:textStyle="bold"/>
-
-        <RadioGroup
-            android:id="@+id/rgSex"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="start">
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rgMale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="130dp"
-                android:text="Male" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rgFemale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Female" />
-        </RadioGroup>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilAge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Patient Age"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etAge"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Select specimen type"
+                android:layout_marginTop="6dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilDateSpecimenSentLab"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Date Specimen sent to laboratory"
-            android:layout_marginTop="16dp"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/calendare"
-            app:endIconCheckable="false">
+                <AutoCompleteTextView
+                    android:id="@+id/spinnerSpecimen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:inputType="none"
+                    android:focusable="false" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDateSpecimenSentLab"
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSpecienUniqueID"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Specimen unique identifier"
+                android:layout_marginTop="16dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilPhoneNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Phone of clinician"
-            android:layout_marginTop="16dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSpecienUniqueID"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPhoneNumber"
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPatientNameLab"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="phone" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Patient Name (s)"
+                android:layout_marginTop="16dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email address of the clinician"
-            android:layout_marginTop="16dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPatientNameLab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEmailClinician"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSex"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Sex"
+                android:layout_marginTop="16dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/spinnerSex"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:inputType="none"
+                    android:focusable="false" />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-    </LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilAge"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Patient Age"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etAge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDateSpecimenSentLab"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Date Specimen sent to laboratory"
+                android:layout_marginTop="16dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/calendare"
+                app:endIconTint="?attr/colorPrimary"
+                app:endIconCheckable="false">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDateSpecimenSentLab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:focusable="false"
+                    android:clickable="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPhoneNumber"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Phone of clinician"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email address of the clinician"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmailClinician"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
     </ScrollView>
+
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLabHW1"
         android:layout_width="0dp"
@@ -251,10 +280,11 @@
         android:text="Submit Form"
         android:textAllCaps="false"
         android:layout_marginTop="6dp"
-        android:backgroundTint="@android:color/holo_blue_dark"
         android:layout_marginBottom="25dp"
+        android:paddingVertical="14dp"
         app:cornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

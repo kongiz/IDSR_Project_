@@ -93,14 +93,36 @@ class DiseaseAdapter(private val diseaseList: MutableList<Diseases>) :
 
 
         holder.btnSaveInExpand.setOnClickListener {
-            if (validateDisease(disease)) {
-                if (diseaseDetails.none { it.name == disease.name }) {
-                    diseaseDetails.add(disease.copy())
+            val currentPosition = holder.bindingAdapterPosition
+            if (currentPosition == RecyclerView.NO_ID.toInt()) return@setOnClickListener
+
+            val currentDisease = diseaseList[currentPosition]
+
+            if (validateDisease(currentDisease)) {
+                if (diseaseDetails.none { it.name == currentDisease.name }) {
+                    diseaseDetails.add(currentDisease.copy())
                 } else {
-                    val index = diseaseDetails.indexOfFirst { it.name == disease.name }
-                    diseaseDetails[index] = disease.copy()
+                    val index = diseaseDetails.indexOfFirst { it.name == currentDisease.name }
+                    diseaseDetails[index] = currentDisease.copy()
                 }
-                Log.i("DiseaseAdapter", "Saved: ${disease.name}")
+
+                currentDisease.isExpanded = false
+                notifyItemChanged(currentPosition)
+
+                holder.btnSaveInExpand.text = "Saved ✓"
+                holder.btnSaveInExpand.isEnabled = false
+
+                holder.itemView.postDelayed({
+                    holder.btnSaveInExpand.text = "Save"
+                    holder.btnSaveInExpand.isEnabled = true
+                }, 1500)
+
+                Log.i("DiseaseAdapter", "Saved: ${currentDisease.name}")
+            } else {
+                holder.btnSaveInExpand.text = "Fill all fields"
+                holder.itemView.postDelayed({
+                    holder.btnSaveInExpand.text = "Save"
+                }, 1500)
             }
         }
     }

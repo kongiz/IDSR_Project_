@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface"
+    android:background="?attr/android:colorBackground"
     tools:context=".activities.SignUp3Activity">
 
 
@@ -16,16 +16,19 @@
         android:layout_height="0dp"
         android:layout_weight="0.22">
 
+
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnBackSignup3"
             android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_height="60dp"
             android:layout_margin="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/back_btn"
             android:contentDescription="Back"
+            app:tint="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/logoImage"
@@ -33,23 +36,26 @@
             android:layout_height="120dp"
             android:src="@drawable/splash11"
             android:scaleType="centerCrop"
+            android:contentDescription="IDSR App Logo"
             app:layout_constraintTop_toBottomOf="@id/btnBackSignup3"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="-12dp"
-        android:layout_marginBottom="25dp"
-        app:cardCornerRadius="24dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginTop="-10dp"
+        android:layout_marginBottom="80dp"
+        app:cardCornerRadius="15dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true"
-        app:cardBackgroundColor="?attr/colorSurface">
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:strokeWidth="1dp"
+        app:strokeColor="?attr/colorSurfaceVariant">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,6 +65,7 @@
 
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Select gender and designation"
@@ -69,12 +76,25 @@
                 android:fontFamily="@font/font1" />
 
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Step 3 of 5"
+                android:textSize="13sp"
+                android:textColor="@color/idsr_gray"
+                android:gravity="center" />
+
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilGender"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
-                app:boxBackgroundMode="outline"
+                android:hint="         Gender"
+                app:startIconDrawable="@drawable/baseline_person_outline_24"
+                app:startIconTint="?attr/colorPrimary"
                 app:endIconMode="dropdown_menu"
                 app:boxCornerRadiusTopStart="12dp"
                 app:boxCornerRadiusTopEnd="12dp"
@@ -85,18 +105,21 @@
                     android:id="@+id/actGender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Gender"
                     android:inputType="none"
-                    android:focusable="false" />
+                    android:focusable="false"
+                    android:textColor="?attr/colorOnSurface" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilRole"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:boxBackgroundMode="outline"
+                android:hint="         Designation"
+                app:startIconDrawable="@drawable/baseline_work_outline_24"
+                app:startIconTint="?attr/colorPrimary"
                 app:endIconMode="dropdown_menu"
                 app:boxCornerRadiusTopStart="12dp"
                 app:boxCornerRadiusTopEnd="12dp"
@@ -107,9 +130,9 @@
                     android:id="@+id/actRole"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Designation"
                     android:inputType="none"
-                    android:focusable="false" />
+                    android:focusable="false"
+                    android:textColor="?attr/colorOnSurface" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -121,7 +144,10 @@
                 android:text="Next"
                 android:textAllCaps="false"
                 android:textSize="16sp"
-                app:cornerRadius="12dp" />
+                android:paddingVertical="14dp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/baseline_arrow_forward_24"
+                app:iconGravity="end" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:padding="10dp"
     android:layout_margin="8dp"
-    android:background="@color/white"
+    android:background="?attr/android:colorBackground"
     tools:context=".activities.SurveillanceActivity3">
 
 
@@ -19,7 +19,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back"
         android:src="@drawable/back_btn"
-        android:tint="@color/black"
+        app:tint="?attr/colorOnSurface"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,6 +30,7 @@
         android:layout_height="100dp"
         android:scaleType="fitCenter"
         android:src="@drawable/splash11"
+        android:contentDescription="App logo"
         app:layout_constraintStart_toEndOf="@id/btnBackSur3"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,11 +45,12 @@
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="Weekly Totals"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorOnSurface"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imgLogo" />
+
 
     <TextView
         android:id="@+id/tvTotalsLabel"
@@ -57,7 +59,7 @@
         android:layout_height="wrap_content"
         android:text="Total Consultations for the Week"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorOnSurface"
         app:layout_constraintTop_toBottomOf="@id/tvSectionTitle"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="12dp"/>
@@ -79,7 +81,8 @@
             android:id="@+id/etU5Male"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="?attr/colorOnSurface" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -98,7 +101,8 @@
             android:id="@+id/etU5Female"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="?attr/colorOnSurface" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -118,7 +122,8 @@
             android:id="@+id/etA5Male"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="?attr/colorOnSurface" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -137,7 +142,8 @@
             android:id="@+id/etA5Female"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="?attr/colorOnSurface" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -148,10 +154,11 @@
         android:layout_height="wrap_content"
         android:text="Grand Total:"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorOnSurface"
         app:layout_constraintTop_toBottomOf="@id/tilA5Male"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="20dp" />
+
 
     <TextView
         android:id="@+id/tvGrandTotal"
@@ -160,12 +167,13 @@
         android:text="0"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorPrimary"
         android:padding="8dp"
         app:layout_constraintTop_toTopOf="@id/tvGrandTotalLabel"
         app:layout_constraintBottom_toBottomOf="@id/tvGrandTotalLabel"
         app:layout_constraintStart_toEndOf="@id/tvGrandTotalLabel"
         android:layout_marginStart="12dp" />
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilComments"
@@ -184,7 +192,7 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine|text"
             android:minLines="3"
-
+            android:textColor="?attr/colorOnSurface"
             android:gravity="top"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -204,7 +212,8 @@
             android:id="@+id/etOfficerName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"/>
+            android:inputType="textPersonName"
+            android:textColor="?attr/colorOnSurface"/>
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -223,7 +232,8 @@
             android:id="@+id/etDesignation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:textColor="?attr/colorOnSurface"/>
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -233,11 +243,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Submit Report"
-        android:backgroundTint="@android:color/holo_blue_dark"
         app:cornerRadius="12dp"
         app:iconGravity="textStart"
-        app:iconTint="@android:color/white"
         android:textAllCaps="false"
+        android:paddingVertical="14dp"
         app:layout_constraintTop_toBottomOf="@id/tilDesignation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

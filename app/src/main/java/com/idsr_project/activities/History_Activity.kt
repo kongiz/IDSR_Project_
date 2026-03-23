@@ -4,16 +4,17 @@ import FormAdapter
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.color.MaterialColors
 import com.idsr_project.Adapter.OtherFormsAdapter
 import com.idsr_project.Model.*
+import com.idsr_project.R
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityHistoryBinding
 import com.idsr_project.utils.SessionManager
@@ -46,14 +47,7 @@ class History_Activity : AppCompatActivity() {
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-            insets
-        }
-
-        binding.btnBackHistory.setOnClickListener { finish() }
-
+        setupToolbar()
         setupRecyclerViews()
         setupTabs()
         setupSwipeRefresh()
@@ -62,8 +56,13 @@ class History_Activity : AppCompatActivity() {
         fetchSurveillance()
     }
 
-    private fun setupRecyclerViews() {
+    private fun setupToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
+        }
+    }
 
+    private fun setupRecyclerViews() {
         surveillanceAdapter = FormAdapter(
             forms = surveillanceForms,
             onItemClick = { form ->
@@ -120,6 +119,14 @@ class History_Activity : AppCompatActivity() {
     }
 
     private fun setupSwipeRefresh() {
+
+        val primaryColor = MaterialColors.getColor(
+            binding.root,
+            android.R.attr.colorPrimary
+        )
+
+        binding.swipeRefresh.setColorSchemeColors(primaryColor)
+
         binding.swipeRefresh.setOnRefreshListener {
             if (activeTab == TAB_SURVEILLANCE) {
                 fetchSurveillance()
@@ -129,41 +136,56 @@ class History_Activity : AppCompatActivity() {
         }
     }
 
-
-
     private fun setActiveTab(tab: String) {
         activeTab = tab
 
-        val primary = MaterialColors.getColor(binding.root,
-            com.google.android.material.R.attr.colorOnPrimary)
+        val primaryColor = MaterialColors.getColor(
+            binding.root,
+            android.R.attr.colorPrimary
+        )
 
-        val surface = MaterialColors.getColor(binding.root,
-            com.google.android.material.R.attr.colorSurface)
+        val onPrimaryColor = MaterialColors.getColor(
+            binding.root,
+            com.google.android.material.R.attr.colorOnPrimary
+        )
 
-        val onSurface = MaterialColors.getColor(binding.root,
-            com.google.android.material.R.attr.colorOnSurface)
+        val surfaceVariantColor = MaterialColors.getColor(
+            binding.root,
+            com.google.android.material.R.attr.colorSurfaceVariant
+        )
+
+        val onSurfaceColor = MaterialColors.getColor(
+            binding.root,
+            android.R.attr.textColor
+        )
 
         if (tab == TAB_SURVEILLANCE) {
-            binding.btnSurveillance.setBackgroundColor(primary)
-            binding.btnSurveillance.setTextColor(surface)
 
-            binding.btnOtherForms.setBackgroundColor(surface)
-            binding.btnOtherForms.setTextColor(onSurface)
+            binding.btnSurveillance.setBackgroundColor(primaryColor)
+            binding.btnSurveillance.setTextColor(onPrimaryColor)
+
+
+            binding.btnOtherForms.setBackgroundColor(surfaceVariantColor)
+            binding.btnOtherForms.setTextColor(onSurfaceColor)
+
 
             binding.rvSurveillanceForms.visibility = View.VISIBLE
             binding.rvOtherForms.visibility = View.GONE
         } else {
-            binding.btnOtherForms.setBackgroundColor(primary)
-            binding.btnOtherForms.setTextColor(surface)
 
-            binding.btnSurveillance.setBackgroundColor(surface)
-            binding.btnSurveillance.setTextColor(onSurface)
+            binding.btnOtherForms.setBackgroundColor(primaryColor)
+            binding.btnOtherForms.setTextColor(onPrimaryColor)
+
+
+            binding.btnSurveillance.setBackgroundColor(surfaceVariantColor)
+            binding.btnSurveillance.setTextColor(onSurfaceColor)
+
 
             binding.rvSurveillanceForms.visibility = View.GONE
             binding.rvOtherForms.visibility = View.VISIBLE
         }
 
-        binding.txtEmptyMessage.visibility = View.GONE
+        binding.emptyStateLayout.visibility = View.GONE
     }
 
     private fun finishLoading() {
@@ -173,15 +195,23 @@ class History_Activity : AppCompatActivity() {
     }
 
     private fun showEmpty(show: Boolean) {
-        binding.txtEmptyMessage.visibility = if (show) View.VISIBLE else View.GONE
-    }
+        binding.emptyStateLayout.visibility = if (show) View.VISIBLE else View.GONE
 
+        if (show) {
+            binding.txtEmptyMessage.text = if (activeTab == TAB_SURVEILLANCE) {
+                "No surveillance reports found"
+            } else {
+                "No other forms found"
+            }
+        }
+    }
 
     private fun fetchSurveillance() {
         if (isLoading) return
         isLoading = true
 
         binding.progressBar.visibility = View.VISIBLE
+        binding.emptyStateLayout.visibility = View.GONE
 
         val request = FormRequest(
             userId = SessionManager.getUserId(this),
@@ -190,7 +220,7 @@ class History_Activity : AppCompatActivity() {
         )
 
         ApiClient.getClient(this)
-            .getSurveillanceReport(request)
+            .getSurveillanceReport("Bearer ${SessionManager.getAccessToken(this)}")
             .enqueue(object : Callback<FormResponse> {
 
                 @SuppressLint("NotifyDataSetChanged")
@@ -201,7 +231,7 @@ class History_Activity : AppCompatActivity() {
                     finishLoading()
                     surveillanceForms.clear()
 
-                    if (response.isSuccessful && response.body()?.status == "success") {
+                    if (response.isSuccessful && response.body()?.success == true) {
                         surveillanceForms.addAll(response.body()?.data ?: emptyList())
                     }
 
@@ -211,7 +241,12 @@ class History_Activity : AppCompatActivity() {
 
                 override fun onFailure(call: Call<FormResponse>, t: Throwable) {
                     finishLoading()
-                    Toast.makeText(this@History_Activity, t.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@History_Activity,
+                        "Failed to load reports: ${t.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    showEmpty(surveillanceForms.isEmpty())
                 }
             })
     }
@@ -221,6 +256,7 @@ class History_Activity : AppCompatActivity() {
         isLoading = true
 
         binding.progressBar.visibility = View.VISIBLE
+        binding.emptyStateLayout.visibility = View.GONE
         otherForms.clear()
 
         var completedCalls = 0
@@ -235,6 +271,7 @@ class History_Activity : AppCompatActivity() {
             }
         }
 
+        // Fetch Immediate Reports (Annex2F)
         ApiClient.getClient(this)
             .getImmediateReport("Bearer ${SessionManager.getAccessToken(this)}")
             .enqueue(object : Callback<Annex2FResponse> {
@@ -242,7 +279,7 @@ class History_Activity : AppCompatActivity() {
                     call: Call<Annex2FResponse>,
                     response: Response<Annex2FResponse>
                 ) {
-                    if (response.isSuccessful && response.body()?.status == "success") {
+                    if (response.isSuccessful && response.body()?.success == true) {
                         response.body()?.data?.forEach {
                             otherForms.add(
                                 OtherFormsData(
@@ -260,11 +297,11 @@ class History_Activity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<Annex2FResponse>, t: Throwable) {
-                    Toast.makeText(this@History_Activity, t.message, Toast.LENGTH_SHORT).show()
                     checkAndFinishLoading()
                 }
             })
 
+        // Fetch Specimen Reports (Annex2G Part 1)
         ApiClient.getClient(this)
             .getAnnex2GLabReports("Bearer ${SessionManager.getAccessToken(this)}")
             .enqueue(object : Callback<Annex2GResponse> {
@@ -272,8 +309,9 @@ class History_Activity : AppCompatActivity() {
                     call: Call<Annex2GResponse?>,
                     response: Response<Annex2GResponse?>
                 ) {
-                    if (response.isSuccessful && response.body()?.status == "success") {
-                        response.body()?.data?.forEach {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        // data is now a wrapper object, results is the list
+                        response.body()?.data?.results?.forEach {
                             otherForms.add(
                                 OtherFormsData(
                                     id = it.id,
@@ -285,17 +323,19 @@ class History_Activity : AppCompatActivity() {
                                 )
                             )
                         }
+                    } else {
+                        Log.e("ANNEX2G", "Failed: ${response.code()} - ${response.errorBody()?.string()}")
                     }
                     checkAndFinishLoading()
                 }
 
                 override fun onFailure(call: Call<Annex2GResponse?>, t: Throwable) {
-                    Toast.makeText(this@History_Activity, t.message, Toast.LENGTH_SHORT).show()
+                    Log.e("ANNEX2G", "Error: ${t.message}")
                     checkAndFinishLoading()
                 }
             })
 
-
+        // Fetch Lab Results (Annex2G Part 2)
         ApiClient.getClient(this)
             .getLabReports("Bearer ${SessionManager.getAccessToken(this)}")
             .enqueue(object : Callback<LabReportResponse> {
@@ -321,7 +361,6 @@ class History_Activity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<LabReportResponse?>, t: Throwable) {
-                    Toast.makeText(this@History_Activity, t.message, Toast.LENGTH_SHORT).show()
                     checkAndFinishLoading()
                 }
             })

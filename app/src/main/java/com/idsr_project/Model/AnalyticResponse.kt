@@ -2,18 +2,24 @@ package com.idsr_project.Model
 
 data class AnalyticResponse(
     val success: Boolean,
+    val data: AnalyticData
+)
 
-    val total_surveillance: Int,
-    val total_immediate: Int,
-    val total_lab_results: Int,
-    val total_specimen: Int,
-    val weekly_trend: List<TrendItem>,
-    val top_diseases: List<DiseaseItem>,
+data class AnalyticData(
+    val totals: ReportTotals,
+    val weekly_trend: List<TrendItem>?,
+    val top_diseases: List<DiseaseItem>?,
+    val gender_distribution: GenderDistribution?,
+    val age_groups: AgeGroups?,
+    val top_facilities: List<FacilityItem>?,
+    val lab_turnaround: LabTurnaround?
+)
 
-    val gender_distribution: GenderDistribution,
-    val age_groups: AgeGroups,
-    val top_facilities: List<FacilityItem>,
-    val lab_turnaround: LabTurnaround
+data class ReportTotals(
+    val surveillance: Int,
+    val immediate: Int,
+    val lab: Int,
+    val specimen: Int
 )
 
 data class TrendItem(
@@ -40,7 +46,7 @@ data class AgeGroups(
 )
 
 data class FacilityItem(
-    val health_facility: String,
+    val facility_name: String,  // ← was health_facility
     val total: Int
 )
 

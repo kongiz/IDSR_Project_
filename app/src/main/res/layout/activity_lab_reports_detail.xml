@@ -1,203 +1,362 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="16dp">
+    android:background="?attr/android:colorBackground"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <ImageButton
-            android:id="@+id/btnBackLabReportDetail"
-            android:layout_width="40dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="16dp"
-            android:layout_gravity="start"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/back_btn"
-            app:tint="@color/black"
-            android:contentDescription="Back" />
+        android:orientation="vertical"
+        android:layout_marginTop="25dp"
+        android:padding="16dp">
 
 
-        <ImageView
-            android:id="@+id/imgLogo"
-            android:layout_width="150dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="16dp"
-            android:src="@drawable/splash11"
-            android:scaleType="fitCenter" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <ImageButton
+                android:id="@+id/btnBackLabReportDetail"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="start"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/back_btn"
+                android:contentDescription="Back"
+                app:tint="?attr/colorOnSurface" />
+
+            <ImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="150dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="24dp"
+                android:src="@drawable/splash11"
+                android:scaleType="centerInside"
+                android:contentDescription="IDSR App Logo" />
+        </LinearLayout>
 
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="6dp">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorSurfaceVariant">
 
             <LinearLayout
-                android:padding="16dp"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Lab Information"
                     android:textStyle="bold"
                     android:textSize="20sp"
+                    android:textColor="?attr/colorPrimary"
+                    android:fontFamily="@font/font1"
+                    android:layout_marginBottom="16dp" />
+
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp" />
+                    android:text="Lab Name"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
 
-                <TextView android:text="Lab Name" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
-                <TextView android:id="@+id/txtLabName"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp" />
+                <TextView
+                    android:id="@+id/txtLabName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"
+                    tools:text="National Reference Lab" />
 
-                <TextView android:text="Date Lab Received" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
-                <TextView android:id="@+id/txtDateLabReceived"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp" />
 
-                <TextView android:text="Specimen Condition" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
-                <TextView android:id="@+id/txtSpecimenCondition"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Date Lab Received"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
 
-                <TextView android:text="Tests Performed" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
-                <TextView android:id="@+id/txtTestTypes"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/txtDateLabReceived"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"
+                    tools:text="2024-01-15" />
 
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Specimen Condition"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
+
+                <TextView
+                    android:id="@+id/txtSpecimenCondition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"
+                    tools:text="Good" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tests Performed"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
+
+                <TextView
+                    android:id="@+id/txtTestTypes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="PCR, Culture" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
 
-
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="6dp">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorSurfaceVariant">
 
             <LinearLayout
-                android:padding="16dp"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Final Laboratory Result"
                     android:textStyle="bold"
                     android:textSize="20sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp" />
+                    android:textColor="?attr/colorPrimary"
+                    android:fontFamily="@font/font1"
+                    android:layout_marginBottom="16dp" />
 
-                <TextView android:text="Final Result" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
-                <TextView android:id="@+id/txtFinalResult"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp" />
-
-                <TextView android:text="Lab Result Image" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:id="@+id/imgLabResult"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:scaleType="centerCrop"
-                    android:layout_marginTop="8dp"
-                    android:background="#EEEEEE" />
-
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp">
-
-            <LinearLayout
-                android:padding="16dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Final Result"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
+
+                <TextView
+                    android:id="@+id/txtFinalResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="16dp"
+                    tools:text="Positive" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lab Result Image"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="?attr/colorSurfaceVariant">
+
+                    <ImageView
+                        android:id="@+id/imgLabResult"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:scaleType="centerCrop"
+                        android:background="?attr/colorSurfaceVariant"
+                        android:contentDescription="Lab result image" />
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorSurfaceVariant">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Administrative Information"
                     android:textStyle="bold"
                     android:textSize="20sp"
+                    android:textColor="?attr/colorPrimary"
+                    android:fontFamily="@font/font1"
+                    android:layout_marginBottom="16dp" />
+
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp" />
+                    android:text="Date Lab Sent to District"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
 
-                <TextView android:text="Date Lab Sent to District" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
-                <TextView android:id="@+id/txtDateSentDistrict"
+                <TextView
+                    android:id="@+id/txtDateSentDistrict"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp" />
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"
+                    tools:text="2024-01-16" />
 
-                <TextView android:text="Date District Received Result" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
 
-                <TextView android:id="@+id/txtDateDistrictReceived"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp" />
+                    android:text="Date District Received Result"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
 
-                <TextView android:text="Region" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
-                <TextView android:id="@+id/txtRegion"
+                <TextView
+                    android:id="@+id/txtDateDistrictReceived"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp" />
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"
+                    tools:text="2024-01-17" />
 
-                <TextView android:text="District" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
 
-                <TextView android:id="@+id/txtDistrict"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp" />
+                    android:text="Region"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
 
-                <TextView android:text="Created At" android:textStyle="bold"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
-                <TextView android:id="@+id/txtCreatedAt"
+                <TextView
+                    android:id="@+id/txtRegion"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"
+                    tools:text="Greater Accra Region" />
 
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="District"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
+
+                <TextView
+                    android:id="@+id/txtDistrict"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"
+                    tools:text="Accra Metro" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Created At"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.7" />
+
+                <TextView
+                    android:id="@+id/txtCreatedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="2024-01-15 10:30 AM" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <Button
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBackLabReportReport"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Go Back"
-            android:textColor="@color/white"
             android:textAllCaps="false"
-            android:backgroundTint="@color/primary"
-            android:padding="12dp"
+            android:textSize="16sp"
+            android:paddingVertical="14dp"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/baseline_arrow_back_24"
+            app:iconGravity="start"
             android:layout_marginBottom="16dp" />
 
     </LinearLayout>

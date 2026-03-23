@@ -17,9 +17,9 @@ data class Disease(
 data class FormData(
     val id: Int,
     val user_id: Int?,
-    val health_facility: String?,
-    val health_region: String?,
-    val district: String?,
+    val facility_name: String?,
+    val region_name: String?,
+    val district_name: String?,
     val epiweek: String?,
     val date_from: String?,
     val date_to: String?,
@@ -38,8 +38,8 @@ data class FormData(
 ): Parcelable
 
 data class FormResponse(
-    val status: String,
-    val data: List<FormData>
+    val success: Boolean,
+    val data: List<FormData>?
 )
 
 data class FormRequest(

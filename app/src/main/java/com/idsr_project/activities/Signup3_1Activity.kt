@@ -110,7 +110,7 @@ class Signup3_1Activity : AppCompatActivity() {
                     binding.actRegion.setAdapter(adapter)
 
                     binding.actRegion.setOnItemClickListener { _, _, position, _ ->
-                        selectedRegionId = regions[position].regions_id
+                        selectedRegionId = regions[position].region_id
                         binding.tilRegion.error = null
 
                         // Reset district

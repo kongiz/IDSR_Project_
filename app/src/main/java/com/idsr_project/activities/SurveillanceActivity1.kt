@@ -7,8 +7,6 @@ import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.EditText
@@ -22,18 +20,16 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.idsr_project.Model.ApiResponse
 import com.idsr_project.Model.HealthDistricts
+import com.idsr_project.Model.HealthFacilities
 import com.idsr_project.Model.HealthRegions
 import com.idsr_project.Model.surveillanceData
 import com.idsr_project.R
 import com.idsr_project.api.ApiClient
-import com.idsr_project.api.ApiServices
 import com.idsr_project.databinding.ActivitySurveillance1Binding
-import com.idsr_project.utils.SessionManager
 import retrofit2.Call
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Locale
-
 
 class SurveillanceActivity1 : AppCompatActivity() {
     private lateinit var binding: ActivitySurveillance1Binding
@@ -41,6 +37,14 @@ class SurveillanceActivity1 : AppCompatActivity() {
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
+    private var regionsList: List<HealthRegions> = emptyList()
+    private var districtsList: List<HealthDistricts> = emptyList()
+    private var facilitiesList: List<HealthFacilities> = emptyList()
+
+
+    private var selectedRegionId: Int? = null
+    private var selectedDistrictId: Int? = null
+    private var selectedFacilityId: Int? = null
 
     private val mapPickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -64,19 +68,19 @@ class SurveillanceActivity1 : AppCompatActivity() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         setupClickListeners()
-        setupSpinners()
+        loadRegions()
     }
 
     private fun setupClickListeners() {
         binding.btnBackSur1.setOnClickListener { finish() }
 
         binding.btnNextSur1.setOnClickListener {
-            if (validateSurveillance1From()) {
+            if (validateForm()) {
                 moveDataToNextScreen()
             }
         }
 
-        binding.btnUseCurrentLocation.setOnClickListener{ requestLocation() }
+        binding.btnUseCurrentLocation.setOnClickListener { requestLocation() }
 
         binding.btnPickOnMap.setOnClickListener {
             val intent = Intent(this, MapPickerActivity::class.java)
@@ -86,96 +90,210 @@ class SurveillanceActivity1 : AppCompatActivity() {
         binding.etDateFrom.setOnClickListener { showDatePickerDialog(binding.etDateFrom) }
         binding.etDateTo.setOnClickListener { showDatePickerDialog(binding.etDateTo) }
     }
-    private fun setupSpinners() {
+
+
+    private fun loadRegions() {
         val api = ApiClient.getClient(context = this)
         api.getRegions().enqueue(object : retrofit2.Callback<ApiResponse<List<HealthRegions>>> {
             override fun onResponse(
                 call: Call<ApiResponse<List<HealthRegions>>?>,
                 response: Response<ApiResponse<List<HealthRegions>>?>
             ) {
-                if (response.isSuccessful && response.body() != null) {
-                    val regions = response.body()!!.data ?: emptyList()
-
-                    val regionName = regions.map { it.region_name ?: "Unknown Region" }
-
-                    val regionAdapter = ArrayAdapter(
+                if (response.isSuccessful && response.body()?.data != null) {
+                    regionsList = response.body()!!.data!!
+                    val regionNames = regionsList.map { it.region_name }
+                    val adapter = ArrayAdapter(
                         this@SurveillanceActivity1,
-                        android.R.layout.simple_spinner_item,
-                        regionName
+                        android.R.layout.simple_list_item_1,
+                        regionNames
                     )
-                    regionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    binding.spinnerRegion.adapter = regionAdapter
+                    binding.spinnerRegion.setAdapter(adapter)
+                    binding.spinnerRegion.setOnClickListener { binding.spinnerRegion.showDropDown() }
+                    binding.spinnerRegion.setOnItemClickListener { _, _, position, _ ->
+                        selectedRegionId = regionsList[position].region_id
 
-                    binding.spinnerRegion.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                        override fun onItemSelected(
-                            parent: AdapterView<*>?,
-                            view: View?,
-                            position: Int,
-                            id: Long
-                        ) {
-                            val selectedRegionId = regions[position].regions_id
-                            loadDistricts(selectedRegionId)
-                        }
 
-                        override fun onNothingSelected(parent: AdapterView<*>?) {}
+                        binding.spinnerDistrict.setText("", false)
+                        binding.spinnerFacility.setText("", false)
+                        selectedDistrictId = null
+                        selectedFacilityId = null
+                        districtsList = emptyList()
+                        facilitiesList = emptyList()
+
+                        loadDistricts(selectedRegionId!!)
                     }
                 } else {
-                        Toast.makeText(this@SurveillanceActivity1, "Failed to load regions", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SurveillanceActivity1, "Failed to load regions", Toast.LENGTH_SHORT).show()
                 }
             }
+
             override fun onFailure(call: Call<ApiResponse<List<HealthRegions>>?>, t: Throwable) {
                 Toast.makeText(this@SurveillanceActivity1, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                Log.e("SurveillanceActivity1", "Error loading regions: ${t.message}")
             }
         })
     }
+
+
     private fun loadDistricts(regionId: Int) {
         val api = ApiClient.getClient(context = this)
-        api.getDistrictsByRegion(regionId).enqueue(object : retrofit2.Callback<ApiResponse<List<HealthDistricts>>> {
-            override fun onResponse(
-                call: Call<ApiResponse<List<HealthDistricts>>?>,
-                response: Response<ApiResponse<List<HealthDistricts>>?>
-            ) {
-                if (response.isSuccessful && response.body() != null) {
-                    val districts = response.body()!!.data ?: emptyList()
-                    val districtNames = districts.map { it.district_name ?: "Unknown District" }
+        api.getDistrictsByRegion(regionId)
+            .enqueue(object : retrofit2.Callback<ApiResponse<List<HealthDistricts>>> {
+                override fun onResponse(
+                    call: Call<ApiResponse<List<HealthDistricts>>?>,
+                    response: Response<ApiResponse<List<HealthDistricts>>?>
+                ) {
+                    if (response.isSuccessful && response.body()?.data != null) {
+                        districtsList = response.body()!!.data!!
+                        val districtNames = districtsList.map { it.district_name }
+                        val adapter = ArrayAdapter(
+                            this@SurveillanceActivity1,
+                            android.R.layout.simple_list_item_1,
+                            districtNames
+                        )
+                        binding.spinnerDistrict.setAdapter(adapter)
+                        binding.spinnerDistrict.setOnClickListener { binding.spinnerDistrict.showDropDown() }
+                        binding.spinnerDistrict.setOnItemClickListener { _, _, position, _ ->
+                            selectedDistrictId = districtsList[position].district_id
 
-                    val districtAdapter = ArrayAdapter(
-                        this@SurveillanceActivity1,
-                        android.R.layout.simple_spinner_item,
-                        districtNames
-                    )
-                    districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    binding.spinnerDistrict.adapter = districtAdapter
-                } else {
-                    Toast.makeText(this@SurveillanceActivity1, "Failed to load districts", Toast.LENGTH_SHORT).show()
+
+                            binding.spinnerFacility.setText("", false)
+                            selectedFacilityId = null
+                            facilitiesList = emptyList()
+
+                            loadFacilities(selectedDistrictId!!)
+                        }
+                    } else {
+                        Toast.makeText(this@SurveillanceActivity1, "Failed to load districts", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
-            override fun onFailure(call: Call<ApiResponse<List<HealthDistricts>>?>, t: Throwable) {
-                Toast.makeText(this@SurveillanceActivity1, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                Log.e("SurveillanceActivity1", "Error loading districts: ${t.message}")
-            }
-        })
+
+                override fun onFailure(call: Call<ApiResponse<List<HealthDistricts>>?>, t: Throwable) {
+                    Toast.makeText(this@SurveillanceActivity1, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+
+    private fun loadFacilities(districtId: Int) {
+        val api = ApiClient.getClient(context = this)
+        api.getFacilities(districtId)
+            .enqueue(object : retrofit2.Callback<ApiResponse<List<HealthFacilities>>> {
+                override fun onResponse(
+                    call: Call<ApiResponse<List<HealthFacilities>>?>,
+                    response: Response<ApiResponse<List<HealthFacilities>>?>
+                ) {
+                    if (response.isSuccessful && response.body()?.data != null) {
+                        facilitiesList = response.body()!!.data!!
+                        val facilityNames = facilitiesList.map { it.facility_name }
+                        val adapter = ArrayAdapter(
+                            this@SurveillanceActivity1,
+                            android.R.layout.simple_list_item_1,
+                            facilityNames
+                        )
+                        binding.spinnerFacility.setAdapter(adapter)
+                        binding.spinnerFacility.setOnClickListener { binding.spinnerFacility.showDropDown() }
+                        binding.spinnerFacility.setOnItemClickListener { _, _, position, _ ->
+                            selectedFacilityId = facilitiesList[position].facility_id
+                        }
+                    } else {
+                        Toast.makeText(this@SurveillanceActivity1, "Failed to load facilities", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ApiResponse<List<HealthFacilities>>?>, t: Throwable) {
+                    Toast.makeText(this@SurveillanceActivity1, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun showDatePickerDialog(editText: EditText) {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val today = Calendar.getInstance()
 
-        val datePickerDialog = DatePickerDialog(this,
+        val datePickerDialog = DatePickerDialog(
+            this,
             { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
                 calendar.set(year, month, dayOfMonth)
+                val selectedDate = calendar.time
+
+                if (calendar.after(today)) {
+                    Toast.makeText(this, "Date cannot be in the future", Toast.LENGTH_SHORT).show()
+                    return@DatePickerDialog
+                }
+
+                val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+                when (editText.id) {
+                    R.id.etDateFrom -> {
+                        if (dayOfWeek != Calendar.MONDAY) {
+                            Toast.makeText(this, "Date From must be a Monday (start of the week)", Toast.LENGTH_LONG).show()
+                            return@DatePickerDialog
+                        }
+                    }
+                    R.id.etDateTo -> {
+                        if (dayOfWeek != Calendar.SUNDAY) {
+                            Toast.makeText(this, "Date To must be a Sunday (end of the week)", Toast.LENGTH_LONG).show()
+                            return@DatePickerDialog
+                        }
+
+                        val dateFromStr = binding.etDateFrom.text.toString()
+                        if (dateFromStr.isNotEmpty()) {
+                            try {
+                                val dateFrom = dateFormat.parse(dateFromStr)
+                                if (dateFrom != null && selectedDate.before(dateFrom)) {
+                                    Toast.makeText(this, "Date To must be after Date From", Toast.LENGTH_SHORT).show()
+                                    return@DatePickerDialog
+                                }
+
+                                val diffInMillis = selectedDate.time - dateFrom!!.time
+                                val diffInDays = (diffInMillis / (1000 * 60 * 60 * 24)).toInt()
+
+                                if (diffInDays != 6) {
+                                    Toast.makeText(this, "Date To must be exactly 6 days after Date From (same week)", Toast.LENGTH_LONG).show()
+                                    return@DatePickerDialog
+                                }
+                            } catch (e: Exception) {
+                                Log.e("DateValidation", "Error parsing date: ${e.message}")
+                            }
+                        }
+                    }
+                }
+
                 editText.setText(dateFormat.format(calendar.time))
+
+                if (editText.id == R.id.etDateFrom) {
+                    autoFillDateTo(dateFormat.format(calendar.time))
+                }
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
+
+        datePickerDialog.datePicker.maxDate = today.timeInMillis
         datePickerDialog.show()
     }
 
-    private fun requestLocation() {
+    private fun autoFillDateTo(dateFromStr: String) {
+        try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val dateFrom = dateFormat.parse(dateFromStr)
+            if (dateFrom != null) {
+                val calendar = Calendar.getInstance()
+                calendar.time = dateFrom
+                calendar.add(Calendar.DAY_OF_MONTH, 6)
+                if (binding.etDateTo.text.toString().isEmpty()) {
+                    binding.etDateTo.setText(dateFormat.format(calendar.time))
+                    Toast.makeText(this, "Date To auto-filled (Sunday of the same week)", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("AutoFill", "Error auto-filling Date To: ${e.message}")
+        }
+    }
 
+    private fun requestLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
@@ -188,8 +306,7 @@ class SurveillanceActivity1 : AppCompatActivity() {
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
-                val geoText = "${location.latitude}, ${location.longitude}"
-                binding.facilityGeo.setText(geoText)
+                binding.facilityGeo.setText("${location.latitude}, ${location.longitude}")
             } else {
                 Toast.makeText(this, "Unable to get location. Try map picker instead.", Toast.LENGTH_SHORT).show()
             }
@@ -202,77 +319,130 @@ class SurveillanceActivity1 : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE &&
+            grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             requestLocation()
         } else if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            Toast.makeText(this, "Location permission denied. Cannot use current location.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Location permission denied.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun validateSurveillance1From() : Boolean {
+    private fun validateForm(): Boolean {
         var isValid = true
 
-        if (binding.etHealthFacility.text.isNullOrEmpty()) {
-            binding.etHealthFacility.error = "Health Facility is required"
-            isValid = false
-        } else {
-            binding.tilHealthFacility.error = null
-        }
-        if (binding.etEpiweek.text.toString().isEmpty()) {
-            binding.etEpiweek.error = "Epiweek No. is required"
-            isValid = false
-        }
-        if (binding.etDateFrom.text.toString().isEmpty()) {
-            binding.etDateFrom.error = "Date From is required"
-            isValid = false
-        }
-        if (binding.etDateTo.text.toString().isEmpty()) {
-            binding.etDateTo.error = "Date To is required"
-            isValid = false
-        }
+        binding.tilHealthFacility.error = null
+        binding.tilEpiweek.error = null
+        binding.tilDateFrom.error = null
+        binding.tilDateTo.error = null
+        binding.tilFacilityGeo.error = null
 
-        if (binding.spinnerRegion.selectedItemPosition == AdapterView.INVALID_POSITION) {
+        if (binding.spinnerRegion.text.toString().isEmpty()) {
             Toast.makeText(this, "Please select a health region", Toast.LENGTH_SHORT).show()
             isValid = false
         }
-        if (binding.spinnerDistrict.selectedItemPosition == AdapterView.INVALID_POSITION) {
+
+        if (binding.spinnerDistrict.text.toString().isEmpty()) {
             Toast.makeText(this, "Please select a district", Toast.LENGTH_SHORT).show()
             isValid = false
+        }
+
+        if (binding.spinnerFacility.text.toString().isEmpty() || selectedFacilityId == null) {
+            binding.tilHealthFacility.error = "Please select a health facility"
+            isValid = false
+        }
+
+        if (binding.etEpiweek.text.toString().isEmpty()) {
+            binding.tilEpiweek.error = "Epiweek No. is required"
+            isValid = false
+        }
+
+        if (binding.etDateFrom.text.toString().isEmpty()) {
+            binding.tilDateFrom.error = "Date From is required"
+            isValid = false
+        }
+
+        if (binding.etDateTo.text.toString().isEmpty()) {
+            binding.tilDateTo.error = "Date To is required"
+            isValid = false
+        }
+
+        if (binding.etDateFrom.text.toString().isNotEmpty() && binding.etDateTo.text.toString().isNotEmpty()) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            try {
+                val dateFrom = dateFormat.parse(binding.etDateFrom.text.toString())
+                val dateTo   = dateFormat.parse(binding.etDateTo.text.toString())
+                val today    = Calendar.getInstance().time
+
+                if (dateFrom != null && dateFrom.after(today)) {
+                    binding.tilDateFrom.error = "Date cannot be in the future"
+                    isValid = false
+                }
+
+                if (dateTo != null && dateTo.after(today)) {
+                    binding.tilDateTo.error = "Date cannot be in the future"
+                    isValid = false
+                }
+
+                if (dateFrom != null && dateTo != null && dateTo.before(dateFrom)) {
+                    binding.tilDateTo.error = "Date To must be after Date From"
+                    isValid = false
+                }
+
+                if (dateFrom != null && dateTo != null && isValid) {
+                    val calFrom = Calendar.getInstance().apply { time = dateFrom }
+                    val calTo   = Calendar.getInstance().apply { time = dateTo }
+
+                    if (calFrom.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+                        binding.tilDateFrom.error = "Date From must be a Monday"
+                        isValid = false
+                    }
+
+                    if (calTo.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                        binding.tilDateTo.error = "Date To must be a Sunday"
+                        isValid = false
+                    }
+
+                    val diffInDays = ((dateTo.time - dateFrom.time) / (1000 * 60 * 60 * 24)).toInt()
+                    if (diffInDays != 6) {
+                        binding.tilDateTo.error = "Must be exactly one week (Monday to Sunday)"
+                        isValid = false
+                    }
+                }
+            } catch (e: Exception) {
+                binding.tilDateFrom.error = "Invalid date format"
+                Log.e("DateValidation", "Error: ${e.message}")
+                isValid = false
+            }
         }
 
         return isValid
     }
 
     private fun moveDataToNextScreen() {
-        val healthFacility = binding.etHealthFacility.text.toString().trim()
-        val healthRegion = binding.spinnerRegion.selectedItem.toString()
-        val district = binding.spinnerDistrict.selectedItem.toString()
-        val epiweek = binding.etEpiweek.text.toString().trim()
-        val dateFrom = binding.etDateFrom.text.toString().trim()
-        val dateTo = binding.etDateTo.text.toString().trim()
-        val facilityGeo = binding.facilityGeo.text.toString().trim()
-
-
         val surveillance1Details = surveillanceData(
-            healthFacility = healthFacility,
-            healthRegion = healthRegion,
-            district = district,
-            epiweek = epiweek,
-            dateFrom = dateFrom,
-            dateTo = dateTo,
-            facilityGeo = facilityGeo,
-            totConU5Male = 0,
-            totConU5Female = 0,
-            totConA5Male = 0,
-            totConA5Female = 0,
-            grandTotal = 0,
-            officerComment = "",
-            officerName = "",
-            designation = "",
+            healthFacility  = binding.spinnerFacility.text.toString().trim(),
+            healthRegion    = binding.spinnerRegion.text.toString().trim(),
+            district        = binding.spinnerDistrict.text.toString().trim(),
+            epiweek         = binding.etEpiweek.text.toString().trim(),
+            dateFrom        = binding.etDateFrom.text.toString().trim(),
+            dateTo          = binding.etDateTo.text.toString().trim(),
+            facilityGeo     = binding.facilityGeo.text.toString().trim(),
+            facilityId      = selectedFacilityId ?: 0,
+            regionId        = selectedRegionId ?: 0,
+            districtId      = selectedDistrictId ?: 0,
+            totConU5Male    = 0,
+            totConU5Female  = 0,
+            totConA5Male    = 0,
+            totConA5Female  = 0,
+            grandTotal      = 0,
+            officerComment  = "",
+            officerName     = "",
+            designation     = "",
             updatedDiseases = arrayListOf()
         )
 
-        val intent = Intent(this@SurveillanceActivity1, SurveillanceActivity2::class.java).apply {
+        val intent = Intent(this, SurveillanceActivity2::class.java).apply {
             putExtra("SurveillanceData", surveillance1Details)
         }
         startActivity(intent)

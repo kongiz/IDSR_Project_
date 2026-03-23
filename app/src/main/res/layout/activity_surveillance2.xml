@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA"
+    android:layout_margin="10dp"
+    android:background="?attr/android:colorBackground"
     tools:context=".activities.SurveillanceActivity2">
 
     <androidx.appcompat.widget.AppCompatImageButton
@@ -15,6 +16,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back"
         android:src="@drawable/back_btn"
+        app:tint="?attr/colorOnSurface"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,11 +37,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Weekly Disease Surveillance"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:textColor="@android:color/black"
+        android:textColor="?attr/colorOnSurface"
         android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="16dp"
         app:layout_constraintTop_toBottomOf="@id/imgLogo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -50,19 +53,22 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingBottom="10dp"
+        android:paddingTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/titleText"
         app:layout_constraintBottom_toTopOf="@id/saveProceedBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/saveProceedBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text=" Proceed"
-        android:layout_margin="12dp"
-        android:backgroundTint="@android:color/holo_blue_dark"
-        android:textColor="@android:color/white"
+        android:text="Proceed"
+        android:layout_margin="16dp"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        android:paddingVertical="14dp"
+        app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

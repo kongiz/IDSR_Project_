@@ -1,51 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000">
+    android:background="@android:color/black">
 
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/fullImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        android:contentDescription="Preview image" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="Close"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_close"
+        app:tint="@android:color/white"
+        app:backgroundTint="#80000000"
+        app:layout_anchor="@id/fullImage"
+        app:layout_anchorGravity="top|start" />
 
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="end"
-        android:layout_gravity="top|end">
+        android:gravity="end">
 
-        <ImageButton
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnDownload"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_download"
-            android:tint="@android:color/white"
-            android:contentDescription="Download" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="Download image"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_download"
+            app:tint="@android:color/white"
+            app:backgroundTint="#80000000" />
 
-        <ImageButton
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnShare"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_share"
-            android:tint="@android:color/white"
-            android:contentDescription="Share" />
-
-        <ImageButton
-            android:id="@+id/btnClose"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_close_white"
-            android:tint="@android:color/white"
-            android:contentDescription="Close" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Share image"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_share"
+            app:tint="@android:color/white"
+            app:backgroundTint="#80000000" />
     </LinearLayout>
 
-</FrameLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="@android:color/white" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

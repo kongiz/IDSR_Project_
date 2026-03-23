@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.idsr_project.Adapter.DiseaseListAdapter
 import com.idsr_project.Model.FormData
 import com.idsr_project.databinding.ActivityHistoryDetailBinding
+import com.idsr_project.utils.DateUtils
 
 class HistoryDetail_Activity : AppCompatActivity() {
     private lateinit var binding: ActivityHistoryDetailBinding
@@ -34,12 +35,12 @@ class HistoryDetail_Activity : AppCompatActivity() {
             return
         }
 
-        binding.txtFacility.text = form.health_facility ?: "N/A"
-        binding.txtRegion.text = form.health_region ?: "N/A"
-        binding.txtDistrict.text = form.district ?: "N/A"
+        binding.txtFacility.text = form.facility_name ?: "N/A"
+        binding.txtRegion.text = form.region_name ?: "N/A"
+        binding.txtDistrict.text = form.district_name ?: "N/A"
         binding.txtEpiweek.text = form.epiweek ?: "N/A"
-        binding.txtDateFrom.text = form.date_from ?: "N/A"
-        binding.txtDateTo.text = form.date_to ?: "N/A"
+        binding.txtDateFrom.text = DateUtils.formatIsoDate(form.date_from)
+        binding.txtDateTo.text = DateUtils.formatIsoDate(form.date_to)
         binding.txtTotalU5Male.text = form.tot_con_u5_male?.toString() ?: "0"
         binding.txtTotalU5Female.text = form.tot_con_u5_female?.toString() ?: "0"
         binding.txtTotalA5Male.text = form.tot_con_a5_male?.toString() ?: "0"
@@ -48,7 +49,7 @@ class HistoryDetail_Activity : AppCompatActivity() {
         binding.txtComment.text = form.officer_comment ?: "No comments"
         binding.txtOfficerName.text = form.officer_name ?: "N/A"
         binding.txtDesignation.text = form.designation ?: "N/A"
-        binding.txtCreatedAt.text = form.created_at ?: "N/A"
+        binding.txtCreatedAt.text = DateUtils.formatIsoDateTime(form.created_at)
 
         val diseaseNames = form.diseases?.joinToString(", ") { it.name ?: "Unknown" } ?: "No diseases listed"
 

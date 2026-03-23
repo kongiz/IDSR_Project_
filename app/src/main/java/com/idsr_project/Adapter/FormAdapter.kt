@@ -2,6 +2,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.idsr_project.utils.DateUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.idsr_project.Model.FormData
 import com.idsr_project.R
@@ -17,12 +18,16 @@ class FormAdapter(
         private val tvFormDate: TextView = view.findViewById(R.id.tvFormDate)
 
         fun bind(form: FormData) {
-            tvFormTitle.text = form.health_facility ?: "Unknown Facility"
-            tvFormDate.text =
-                "From ${form.date_from ?: "-"} to ${form.date_to ?: "-"}"
+
+            tvFormTitle.text = form.facility_name ?: "Unknown Facility"
+
+            val fromDate = DateUtils.formatIsoDate(form.date_from)
+            val toDate = DateUtils.formatIsoDate(form.date_to)
+
+            tvFormDate.text = "$fromDate – $toDate"
 
             itemView.setOnClickListener {
-                onItemClick(form)   // ✅ PASS CLICKED ITEM
+                onItemClick(form)
             }
         }
     }

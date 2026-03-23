@@ -6,21 +6,21 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:padding="16dp"
-    android:background="@color/white"
+    android:background="?attr/android:colorBackground"
     tools:context=".activities.SurveillanceActivity1">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:orientation="vertical">
-
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp">
 
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btnBackSur1"
                 android:layout_width="40dp"
                 android:layout_height="60dp"
@@ -31,7 +31,7 @@
                 android:src="@drawable/back_btn"
                 app:tint="?attr/colorOnSurface" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgLogo"
                 android:layout_width="140dp"
                 android:layout_height="100dp"
@@ -46,111 +46,129 @@
             android:id="@+id/tvFormTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="IDSR Weekly Reporting Form"
+            android:text="IDSR Weekly Surveillance Form"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
             android:gravity="center"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Health Region"
+            android:layout_marginTop="16dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/spinnerRegion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSurface"
+                android:inputType="none"
+                android:focusable="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Health District"
+            android:layout_marginTop="8dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/spinnerDistrict"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSurface"
+                android:inputType="none"
+                android:focusable="false" />
+        </com.google.android.material.textfield.TextInputLayout>
 
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilHealthFacility"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Health Facility"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="8dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etHealthFacility"
+            <AutoCompleteTextView
+                android:id="@+id/spinnerFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
+                android:textColor="?attr/colorOnSurface"
+                android:inputType="none"
+                android:focusable="false" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
-        <TextView
-            android:id="@+id/healthRegion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Health Region"
-            android:textStyle="bold"
-            android:layout_marginTop="12dp" />
-
-        <Spinner
-            android:id="@+id/spinnerRegion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/spinner_background"
-            android:spinnerMode="dropdown" />
-
-        <TextView
-            android:id="@+id/healthDistrict"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Health District"
-            android:textStyle="bold"
-            android:layout_marginTop="12dp" />
-
-        <Spinner
-            android:id="@+id/spinnerDistrict"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/spinner_background"
-            android:spinnerMode="dropdown" />
-
-
-
-
-
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEpiweek"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Epiweek No."
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEpiweek"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSurface"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
+
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilDateFrom"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Date From"
             android:layout_marginTop="8dp"
             app:endIconMode="custom"
-            app:endIconDrawable="@drawable/calendare">
+            app:endIconDrawable="@drawable/calendare"
+            app:endIconTint="?attr/colorPrimary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etDateFrom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSurface"
                 android:focusable="false"
                 android:clickable="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
+
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilDateTo"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Date To"
             android:layout_marginTop="8dp"
             app:endIconMode="custom"
-            app:endIconDrawable="@drawable/calendare">
+            app:endIconDrawable="@drawable/calendare"
+            app:endIconTint="?attr/colorPrimary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etDateTo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSurface"
                 android:focusable="false"
                 android:clickable="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilFacilityGeo"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Health Facility Location"
@@ -160,48 +178,58 @@
                 android:id="@+id/facilityGeo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSurface"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:weightSum="2">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnUseCurrentLocation"
+                style="@style/Widget.Material3.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Use Current Location"
-                android:backgroundTint="@android:color/holo_blue_dark"
+                android:layout_marginEnd="4dp"
                 android:textAllCaps="false"
-                app:cornerRadius="10dp" />
+                app:cornerRadius="10dp"
+                app:icon="@android:drawable/ic_menu_mylocation"
+                app:iconGravity="textStart" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPickOnMap"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:text="Pick on Map"
-                android:backgroundTint="@android:color/holo_green_light"
                 android:textAllCaps="false"
-                app:cornerRadius="10dp" />
+                app:cornerRadius="10dp"
+                app:icon="@android:drawable/ic_dialog_map"
+                app:iconGravity="textStart" />
         </LinearLayout>
 
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNextSur1"
+            style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Next"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"
             android:textAllCaps="false"
+            android:minHeight="56dp"
             app:cornerRadius="10dp" />
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

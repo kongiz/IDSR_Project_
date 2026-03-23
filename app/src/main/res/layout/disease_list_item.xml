@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="6dp"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="?attr/colorSurface"
     android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:padding="16dp">
 
 
         <LinearLayout
@@ -31,14 +33,15 @@
                 android:text="Disease Name"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/black"/>
+                android:textColor="?attr/colorOnSurface"/>
 
             <ImageView
                 android:id="@+id/dropdownIcon"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/im2"
-                app:tint="@android:color/darker_gray" />
+                app:tint="?attr/colorOnSurface"
+                android:contentDescription="Expand details" />
         </LinearLayout>
 
 
@@ -48,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:paddingTop="12dp">
+            android:paddingTop="16dp">
 
 
             <TextView
@@ -57,112 +60,111 @@
                 android:text="Alive Cases"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:paddingBottom="6dp"/>
+                android:textColor="?attr/colorOnSurface"
+                android:paddingBottom="8dp"/>
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#F1F3F4"
-                android:padding="8dp"
-                android:layout_marginBottom="12dp">
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="2"
-                    android:padding="4dp">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:paddingEnd="6dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="U5 Male"/>
-
-                        <EditText
-                            android:id="@+id/u5MaleAlive"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:background="@android:drawable/edit_text"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="U5 Female"/>
-
-                        <EditText
-                            android:id="@+id/u5FemaleAlive"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:background="@android:drawable/edit_text"/>
-                    </LinearLayout>
-                </LinearLayout>
-
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorPrimary"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="2"
-                    android:padding="4dp">
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:paddingEnd="6dp">
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:paddingBottom="8dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="A5 Male"/>
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:hint="U5 Male"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            app:boxBackgroundColor="?attr/colorSurface">
 
-                        <EditText
-                            android:id="@+id/a5MaleAlive"
-                            android:layout_width="match_parent"
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/u5MaleAlive"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="?attr/colorOnSurface"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:background="@android:drawable/edit_text"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:hint="U5 Female"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            app:boxBackgroundColor="?attr/colorSurface">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/u5FemaleAlive"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="?attr/colorOnSurface"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
 
+
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:weightSum="2">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="A5 Female"/>
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:hint="A5 Male"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            app:boxBackgroundColor="?attr/colorSurface">
 
-                        <EditText
-                            android:id="@+id/a5FemaleAlive"
-                            android:layout_width="match_parent"
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/a5MaleAlive"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="?attr/colorOnSurface"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:background="@android:drawable/edit_text"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:hint="A5 Female"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            app:boxBackgroundColor="?attr/colorSurface">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/a5FemaleAlive"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="?attr/colorOnSurface"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
             <TextView
@@ -171,111 +173,115 @@
                 android:text="Death Cases"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:paddingBottom="6dp"/>
+                android:textColor="?attr/colorOnSurface"
+                android:paddingBottom="8dp"/>
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#FDECEA"
-                android:padding="8dp">
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="2"
-                    android:padding="4dp">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:paddingEnd="6dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="U5 Male"/>
-
-                        <EditText
-                            android:id="@+id/u5MaleDeath"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:background="@android:drawable/edit_text"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="U5 Female"/>
-
-                        <EditText
-                            android:id="@+id/u5FemaleDeath"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:background="@android:drawable/edit_text"/>
-                    </LinearLayout>
-                </LinearLayout>
-
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/idsr_error"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="2"
-                    android:padding="4dp">
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:paddingEnd="6dp">
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:paddingBottom="8dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="A5 Male"/>
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:hint="U5 Male"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            app:boxBackgroundColor="?attr/colorSurface"
+                            app:boxStrokeColor="@color/idsr_error">
 
-                        <EditText
-                            android:id="@+id/a5MaleDeath"
-                            android:layout_width="match_parent"
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/u5MaleDeath"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="?attr/colorOnSurface"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:background="@android:drawable/edit_text"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:hint="U5 Female"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            app:boxBackgroundColor="?attr/colorSurface"
+                            app:boxStrokeColor="@color/idsr_error">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/u5FemaleDeath"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="?attr/colorOnSurface"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
 
+
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:weightSum="2">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="A5 Female"/>
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:hint="A5 Male"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            app:boxBackgroundColor="?attr/colorSurface"
+                            app:boxStrokeColor="@color/idsr_error">
 
-                        <EditText
-                            android:id="@+id/a5FemaleDeath"
-                            android:layout_width="match_parent"
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/a5MaleDeath"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="?attr/colorOnSurface"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:background="@android:drawable/edit_text"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:hint="A5 Female"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            app:boxBackgroundColor="?attr/colorSurface"
+                            app:boxStrokeColor="@color/idsr_error">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/a5FemaleDeath"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="?attr/colorOnSurface"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
             <TextView
@@ -284,49 +290,46 @@
                 android:text="Total Samples Collected"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:paddingTop="12dp"
-                android:paddingBottom="6dp"/>
+                android:textColor="?attr/colorOnSurface"
+                android:paddingBottom="8dp"/>
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#E3F2FD"
-                android:padding="8dp"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorSecondary"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
-                <EditText
-                    android:id="@+id/totalSamples"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
+                    android:layout_margin="12dp"
                     android:hint="Enter total samples"
-                    android:background="@android:drawable/edit_text"
-                    android:padding="8dp"/>
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    app:boxBackgroundColor="?attr/colorSurface">
 
-                </LinearLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/totalSamples"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:textColor="?attr/colorOnSurface"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            <LinearLayout
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveInExpand"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#E3F2FD"
-                android:padding="8dp"
-                android:layout_marginBottom="12dp">
-
-                <Button
-                    android:id="@+id/btnSaveInExpand"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Save"
-                    android:layout_marginHorizontal="20dp"
-                    android:backgroundTint="@android:color/holo_blue_dark"
-                    android:textAllCaps="false"
-                    app:cornerRadius="10dp" />
-            </LinearLayout>
+                android:text="Save"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:paddingVertical="12dp"
+                app:cornerRadius="8dp" />
         </LinearLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
-
-
+</com.google.android.material.card.MaterialCardView>
