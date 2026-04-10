@@ -211,14 +211,33 @@
                     app:strokeWidth="1dp"
                     app:strokeColor="?attr/colorSurfaceVariant">
 
-                    <ImageView
-                        android:id="@+id/imgLabResult"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:scaleType="centerCrop"
-                        android:background="?attr/colorSurfaceVariant"
-                        android:contentDescription="Lab result image" />
-                </com.google.android.material.card.MaterialCardView>
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgLabResult"
+                            android:layout_width="match_parent"
+                            android:layout_height="220dp"
+                            android:scaleType="centerCrop"
+                            android:background="?attr/colorSurfaceVariant"
+                            android:contentDescription="Lab result image" />
+
+                        <TextView
+                            android:id="@+id/tvImageCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|end"
+                            android:layout_margin="12dp"
+                            android:background="#80000000"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            tools:text="1 of 3 images" />
+
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>w>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

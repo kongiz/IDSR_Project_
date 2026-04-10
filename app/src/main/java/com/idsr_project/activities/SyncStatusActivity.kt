@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.idsr_project.data.local.AppDatabase
 import com.idsr_project.data.local.PendingReportEntity
 import com.idsr_project.databinding.ActivitySyncStatusBinding
@@ -20,7 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext  // ← ADD THIS
 
-class SyncStatusActivity : AppCompatActivity() {
+class SyncStatusActivity : BaseActivity() {
 
     private lateinit var binding: ActivitySyncStatusBinding
     private lateinit var adapter: ReportStatusAdapter
@@ -43,6 +44,8 @@ class SyncStatusActivity : AppCompatActivity() {
         setupRecyclerView()
         setupTabs()
         loadReports()
+
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "SyncStatusActivity")
 
         binding.btnRetryFailed.setOnClickListener {
             SyncWorker.schedule(this)

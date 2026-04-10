@@ -1,5 +1,6 @@
 package com.idsr_project.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +10,10 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.messaging.FirebaseMessaging
 import com.idsr_project.Model.LoginRequest
+import com.idsr_project.Model.OtpResponse
 import com.idsr_project.Model.loginResponse
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityLoginBinding
@@ -21,7 +25,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Login_Activity : AppCompatActivity() {
+class Login_Activity : BaseActivity() {
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -51,6 +55,9 @@ class Login_Activity : AppCompatActivity() {
 
         binding.btnLogin.setOnClickListener {
             validateAndLogin()
+        }
+        binding.tvForgotPassword.setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
     }
 
@@ -113,7 +120,6 @@ class Login_Activity : AppCompatActivity() {
 
         ApiClient.getClient(this).loginUser(request)
             .enqueue(object : Callback<loginResponse> {
-
                 override fun onResponse(
                     call: Call<loginResponse>,
                     response: Response<loginResponse>
@@ -121,15 +127,10 @@ class Login_Activity : AppCompatActivity() {
                     showLoading(false)
 
                     if (response.isSuccessful && response.body() != null) {
-
                         val res = response.body()!!
-
                         if (res.success && res.user != null) {
-
-                            // Save session and navigate AFTER saving completes
                             lifecycleScope.launch(Dispatchers.IO) {
                                 try {
-                                    // Save user session
                                     SessionManager.saveUserSession(
                                         context = this@Login_Activity,
                                         userId = res.user.id,
@@ -143,20 +144,33 @@ class Login_Activity : AppCompatActivity() {
                                         accessToken = res.access_token,
                                         refreshToken = res.refresh_token
                                     )
+                                    SessionManager.saveTokens(
+                                        context = this@Login_Activity,
+                                        accessToken = res.access_token,
+                                        refreshToken = res.refresh_token
+                                    )
 
-                                    // Navigate on Main thread AFTER saving
+                                    val crashlytics = FirebaseCrashlytics.getInstance()
+                                    crashlytics.setUserId(res.user.id.toString())
+                                    crashlytics.setCustomKey("user_role", res.user.role ?: "Health Officer")
+                                    crashlytics.setCustomKey("user_email", res.user.email)
+                                    crashlytics.setCustomKey("region_id", res.user.regionId?.toString() ?: "none")
+                                    crashlytics.setCustomKey("district_id", res.user.districtId?.toString() ?: "none")
+                                    crashlytics.log("User logged in: ${res.user.firstname} ${res.user.lastname}")
+
+                                    withContext(Dispatchers.Main) { registerFcmToken() }
                                     withContext(Dispatchers.Main) {
                                         Toast.makeText(
                                             this@Login_Activity,
                                             "Welcome ${res.user.firstname}",
                                             Toast.LENGTH_SHORT
                                         ).show()
-
-                                        val intent = Intent(
-                                            this@Login_Activity,
-                                            MainActivity::class.java
+                                        startActivity(
+                                            Intent(
+                                                this@Login_Activity,
+                                                MainActivity::class.java
+                                            )
                                         )
-                                        startActivity(intent)
                                         finish()
                                     }
                                 } catch (e: Exception) {
@@ -170,17 +184,41 @@ class Login_Activity : AppCompatActivity() {
                                     }
                                 }
                             }
-
                         } else {
                             binding.tilPassword.error = res.msg ?: "Login failed"
                         }
-
                     } else {
-                        binding.tilPassword.error = "Invalid email or password"
-                        Log.e("LOGIN", response.errorBody()?.string() ?: "Login error")
+                        val errorJson = response.errorBody()?.string()
+                        try {
+                            val errorBody = com.google.gson.Gson()
+                                .fromJson(errorJson, OtpResponse::class.java)
+
+                            when {
+                                errorBody?.requiresVerification == true -> {
+                                    startActivity(
+                                        Intent(
+                                            this@Login_Activity,
+                                            EmailVerifyActivity::class.java
+                                        ).apply {
+                                            putExtra("email", errorBody.email)
+                                            putExtra("mode", "VERIFY_EMAIL")
+                                        }
+                                    )
+                                }
+                                response.code() == 401 -> {
+                                    binding.tilPassword.error = "Invalid email or password"
+                                }
+
+                                else -> {
+                                    binding.tilPassword.error = errorBody?.message ?: "Login failed"
+                                }
+                            }
+                        } catch (e: Exception) {
+                            binding.tilPassword.error = "Invalid email or password"
+                            Log.e("LOGIN", errorJson ?: "Login error")
+                        }
                     }
                 }
-
                 override fun onFailure(call: Call<loginResponse>, t: Throwable) {
                     showLoading(false)
                     Toast.makeText(
@@ -200,5 +238,27 @@ class Login_Activity : AppCompatActivity() {
         binding.btnLogin.isEnabled = !isLoading
         binding.btnLogin.text =
             if (isLoading) "Please wait..." else "Login"
+    }
+
+    @SuppressLint("HardwareIds")
+    private fun registerFcmToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) return@addOnCompleteListener
+            val token = task.result
+            val deviceId = android.provider.Settings.Secure.getString(
+                contentResolver,
+                android.provider.Settings.Secure.ANDROID_ID
+            )
+            SessionManager.saveFcmToken(this, token)
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    ApiClient.getClient(this@Login_Activity)
+                        .saveFcmToken(mapOf("fcm_token" to token, "device_id" to deviceId)).execute()
+                    Log.d("FCM", "Token registered after login")
+                } catch (e: Exception) {
+                    Log.e("FCM", "Token registration failed: ${e.message}")
+                }
+            }
+        }
     }
 }

@@ -173,20 +173,29 @@ class SignUp4Activity : AppCompatActivity() {
         return object : Callback<ResponseApi> {
             override fun onResponse(call: Call<ResponseApi>, response: Response<ResponseApi>) {
                 showLoading(false)
-
-                val res = response.body()
-                if (response.isSuccessful && res?.success == true) {
+                if (response.isSuccessful && response.body()?.success == true) {
+                    val res = response.body()!!
                     Toast.makeText(this@SignUp4Activity, res.msg, Toast.LENGTH_SHORT).show()
 
+                    val registerMode = intent.getStringExtra("REGISTER_MODE") ?: "SELF"
 
-                    startActivity(
-                        Intent(this@SignUp4Activity, MainActivity::class.java)
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    if (registerMode == "SELF") {
+                        val email = intent.getStringExtra("EMAIL") ?: ""
+                        startActivity(
+                            Intent(this@SignUp4Activity, EmailVerifyActivity::class.java).apply {
+                                putExtra("email", email)
+                                putExtra("mode", "VERIFY_EMAIL")
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            }
+                        )
+                        finish()
+                    } else {
+                        Toast.makeText(this@SignUp4Activity, "User registered successfully", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
 
-                    )
-                    finish()
                 } else {
-                    val errorMessage = res?.msg ?: "Signup failed. Please try again."
+                    val errorMessage = response.body()?.msg ?: "Signup failed. Please try again."
                     binding.tilPassword.error = errorMessage
                     Toast.makeText(this@SignUp4Activity, errorMessage, Toast.LENGTH_LONG).show()
                 }
@@ -194,17 +203,15 @@ class SignUp4Activity : AppCompatActivity() {
 
             override fun onFailure(call: Call<ResponseApi>, t: Throwable) {
                 showLoading(false)
-                val errorMessage = if (t is java.net.UnknownHostException) {
-                    "No internet connection"
-                } else {
-                    "Network error. Please check your connection and try again."
-                }
-                Toast.makeText(this@SignUp4Activity, errorMessage, Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@SignUp4Activity,
+                    "Network error. Please check your connection and try again.",
+                    Toast.LENGTH_LONG
+                ).show()
                 Log.e("SignUp4", "Signup error", t)
             }
         }
     }
-
     private fun validatePasswords(password: String, confirmPassword: String): Boolean {
         binding.tilPassword.error = null
         binding.tilConfirmPassword.error = null

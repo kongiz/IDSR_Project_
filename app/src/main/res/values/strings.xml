@@ -28,6 +28,7 @@
     <string name="annex_2g_idsr_case_based_laboratory_reporting_form">Annex 2G: IDSR case-based laboratory reporting form</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="already_have_an_account">Already have an account?</string>
+    <string name="offline_saving_to_device">Offline — Saving to Device</string>
 
     <string-array name="Outcome">
         <item>Alive</item>

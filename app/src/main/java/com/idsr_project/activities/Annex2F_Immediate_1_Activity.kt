@@ -1,6 +1,6 @@
 package com.idsr_project.activities
 
-import android.annotation.SuppressLint
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.idsr_project.Model.ApiResponse
 import com.idsr_project.Model.HealthDistricts
 import com.idsr_project.Model.HealthRegions
@@ -18,7 +19,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Annex2F_Immediate_1_Activity : AppCompatActivity() {
+
+class Annex2F_Immediate_1_Activity : BaseActivity() {
     private lateinit var binding: ActivityAnnex2Fimmediate1Binding
 
     private var regions = listOf<HealthRegions>()
@@ -32,13 +34,16 @@ class Annex2F_Immediate_1_Activity : AppCompatActivity() {
         binding = ActivityAnnex2Fimmediate1Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnBackAnnex1.setOnClickListener {
-            finish()
-        }
-
+        setupClickListeners()
         setupSpinners()
         loadRegions()
         setUpFieldListener()
+
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "Annex2F_Immediate_1_Activity")
+    }
+
+    private fun setupClickListeners() {
+        binding.btnBackAnnex1.setOnClickListener { finish() }
 
         binding.btnNextAnnex1.setOnClickListener {
             if (validateImmediate1Form()) {
@@ -48,16 +53,10 @@ class Annex2F_Immediate_1_Activity : AppCompatActivity() {
     }
 
     private fun setupSpinners() {
-        // Country is already set to "Gambia" and disabled in XML
-
-
         val inpatientOutpatient = arrayOf("Inpatient", "Outpatient")
-        val inpatientAdapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            inpatientOutpatient
-        )
+        val inpatientAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, inpatientOutpatient)
         binding.spinnerInpatientOutpatient.setAdapter(inpatientAdapter)
+
 
         binding.spinnerInpatientOutpatient.setOnItemClickListener { _, _, _, _ ->
             binding.titleInpatientOutpatient.error = null
@@ -67,46 +66,26 @@ class Annex2F_Immediate_1_Activity : AppCompatActivity() {
     private fun loadRegions() {
         ApiClient.getClient(this).getRegions()
             .enqueue(object : Callback<ApiResponse<List<HealthRegions>>> {
+                override fun onResponse(call: Call<ApiResponse<List<HealthRegions>>>, response: Response<ApiResponse<List<HealthRegions>>>) {
+                    if (response.isSuccessful && response.body()?.data != null) {
+                        regions = response.body()!!.data!!
+                        val regionNames = regions.map { it.region_name ?: "Unknown Region" }
+                        val adapter = ArrayAdapter(this@Annex2F_Immediate_1_Activity, android.R.layout.simple_list_item_1, regionNames)
+                        binding.spinnerRegion.setAdapter(adapter)
 
-                override fun onResponse(
-                    call: Call<ApiResponse<List<HealthRegions>>>,
-                    response: Response<ApiResponse<List<HealthRegions>>>
-                ) {
-                    if (!response.isSuccessful || response.body()?.data == null) {
-                        binding.titleRegion.error = "Failed to load regions"
-                        return
-                    }
+                        binding.spinnerRegion.setOnItemClickListener { _, _, position, _ ->
+                            selectedRegionId = regions[position].region_id
+                            binding.titleRegion.error = null
 
-                    regions = response.body()!!.data!!
-                    val regionNames = regions.map { it.region_name ?: "Region" }
-
-                    val adapter = ArrayAdapter(
-                        this@Annex2F_Immediate_1_Activity,
-                        android.R.layout.simple_list_item_1,
-                        regionNames
-                    )
-
-                    binding.spinnerRegion.setAdapter(adapter)
-
-                    binding.spinnerRegion.setOnItemClickListener { _, _, position, _ ->
-                        selectedRegionId = regions[position].region_id
-                        binding.titleRegion.error = null
-
-
-                        selectedDistrictId = null
-                        binding.spinnerDistrict.setText("", false)
-
-
-                        loadDistricts(selectedRegionId!!)
+                            // Reset district when region changes
+                            selectedDistrictId = null
+                            binding.spinnerDistrict.setText("", false)
+                            loadDistricts(selectedRegionId!!)
+                        }
                     }
                 }
-
-                override fun onFailure(
-                    call: Call<ApiResponse<List<HealthRegions>>>,
-                    t: Throwable
-                ) {
-                    Log.e("Annex2F_Immediate_1", "Error loading regions", t)
-                    binding.titleRegion.error = "Error loading regions"
+                override fun onFailure(call: Call<ApiResponse<List<HealthRegions>>>, t: Throwable) {
+                    binding.titleRegion.error = "Check internet connection"
                 }
             })
     }
@@ -114,166 +93,83 @@ class Annex2F_Immediate_1_Activity : AppCompatActivity() {
     private fun loadDistricts(regionId: Int) {
         ApiClient.getClient(this).getDistrictsByRegion(regionId)
             .enqueue(object : Callback<ApiResponse<List<HealthDistricts>>> {
+                override fun onResponse(call: Call<ApiResponse<List<HealthDistricts>>>, response: Response<ApiResponse<List<HealthDistricts>>>) {
+                    if (response.isSuccessful && response.body()?.data != null) {
+                        districts = response.body()!!.data!!
+                        val districtNames = districts.map { it.district_name ?: "Unknown District" }
+                        val adapter = ArrayAdapter(this@Annex2F_Immediate_1_Activity, android.R.layout.simple_list_item_1, districtNames)
+                        binding.spinnerDistrict.setAdapter(adapter)
 
-                override fun onResponse(
-                    call: Call<ApiResponse<List<HealthDistricts>>>,
-                    response: Response<ApiResponse<List<HealthDistricts>>>
-                ) {
-                    if (!response.isSuccessful || response.body()?.data == null) {
-                        binding.titleDistrict.error = "Failed to load districts"
-                        return
-                    }
-
-                    districts = response.body()!!.data!!
-                    val districtNames = districts.map { it.district_name ?: "District" }
-
-                    val adapter = ArrayAdapter(
-                        this@Annex2F_Immediate_1_Activity,
-                        android.R.layout.simple_list_item_1,
-                        districtNames
-                    )
-
-                    binding.spinnerDistrict.setAdapter(adapter)
-
-                    binding.spinnerDistrict.setOnItemClickListener { _, _, position, _ ->
-                        selectedDistrictId = districts[position].district_id
-                        binding.titleDistrict.error = null
+                        binding.spinnerDistrict.setOnItemClickListener { _, _, position, _ ->
+                            selectedDistrictId = districts[position].district_id
+                            binding.titleDistrict.error = null
+                        }
                     }
                 }
-
-                override fun onFailure(
-                    call: Call<ApiResponse<List<HealthDistricts>>>,
-                    t: Throwable
-                ) {
-                    Log.e("Annex2F_Immediate_1", "Error loading districts", t)
+                override fun onFailure(call: Call<ApiResponse<List<HealthDistricts>>>, t: Throwable) {
                     binding.titleDistrict.error = "Error loading districts"
                 }
             })
     }
 
-    @SuppressLint("SuspiciousIndentation")
     private fun validateImmediate1Form(): Boolean {
         var isValid = true
 
-        if (binding.etRecordId.text.isNullOrEmpty()) {
-            binding.titleRecordId.error = "Record's Unique Identifier is required"
-            isValid = false
-        } else {
-            binding.titleRecordId.error = null
+        fun checkEmpty(et: android.widget.EditText, til: com.google.android.material.textfield.TextInputLayout, msg: String) {
+            if (et.text.toString().trim().isEmpty()) {
+                til.error = msg
+                isValid = false
+            } else til.error = null
         }
 
-        // Country is always "Gambia" (no validation needed)
+        checkEmpty(binding.etRecordId, binding.titleRecordId, "Required")
+        checkEmpty(binding.etSite, binding.titleSite, "Required")
+        checkEmpty(binding.etDisease, binding.titleDisease, "Required")
 
-        if (binding.spinnerRegion.text.isNullOrEmpty()) {
-            binding.titleRegion.error = "Reporting Region is required"
+        if (binding.spinnerRegion.text.isEmpty()) {
+            binding.titleRegion.error = "Required"
             isValid = false
-        } else {
-            binding.titleRegion.error = null
         }
-
-        if (binding.spinnerDistrict.text.isNullOrEmpty()) {
-            binding.titleDistrict.error = "Reporting District is required"
+        if (selectedDistrictId == null) {
+            binding.titleDistrict.error = "Required"
             isValid = false
-        } else {
-            binding.titleDistrict.error = null
         }
-
-        if (binding.etSite.text.isNullOrEmpty()) {
-            binding.titleSite.error = "Reporting Site (e.g. Health Facility, Village...) is required"
+        if (binding.spinnerInpatientOutpatient.text.isEmpty()) {
+            binding.titleInpatientOutpatient.error = "Required"
             isValid = false
-        } else {
-            binding.titleSite.error = null
-        }
-
-        if (binding.etDisease.text.isNullOrEmpty()) {
-            binding.titleDisease.error = "Disease/Event (diagnosis) is required"
-            isValid = false
-        } else {
-            binding.titleDisease.error = null
-        }
-
-        if (binding.spinnerInpatientOutpatient.text.isNullOrEmpty()) {
-            binding.titleInpatientOutpatient.error = "Inpatient or Outpatient? is required"
-            isValid = false
-        } else {
-            binding.titleInpatientOutpatient.error = null
         }
 
         return isValid
     }
 
     private fun setUpFieldListener() {
-        // Text fields
-        binding.etRecordId.addTextChangedListener {
-            if (!it.isNullOrEmpty()) {
-                binding.titleRecordId.error = null
-            }
-        }
-
-        binding.etSite.addTextChangedListener {
-            if (!it.isNullOrEmpty()) {
-                binding.titleSite.error = null
-            }
-        }
-
-        binding.etDisease.addTextChangedListener {
-            if (!it.isNullOrEmpty()) {
-                binding.titleDisease.error = null
-            }
-        }
+        binding.etRecordId.addTextChangedListener { binding.titleRecordId.error = null }
+        binding.etSite.addTextChangedListener { binding.titleSite.error = null }
+        binding.etDisease.addTextChangedListener { binding.titleDisease.error = null }
     }
 
     private fun passDataToNextScreen() {
-        val recordId           = binding.etRecordId.text.toString().trim()
-        val country            = "Gambia"
-        val province           = binding.spinnerRegion.text.toString().trim()
-        val site               = binding.etSite.text.toString().trim()
-        val disease            = binding.etDisease.text.toString().trim()
-        val inpatientOutpatient = binding.spinnerInpatientOutpatient.text.toString().trim()
-
-        val districtId = selectedDistrictId
-        if (districtId == null) {
-            binding.titleDistrict.error = "Please select a district"
-            return
-        }
-
         val annex2FReports = immediateReportForm(
-            recordId             = recordId,
-            country              = country,
-            province             = province,
-            district             = districtId,
-            site                 = site,
-            disease              = disease,
-            inpatientOutpatient  = inpatientOutpatient,
-            dateSeen             = "",
-            patientName          = "",
-            dateOfBirth          = "",
-            age                  = 0,
-            gender               = "",
-            address              = "",
-            districtAnnex2       = "",
-            urbanRural           = "",
-            phoneNumber          = "",
-            occupation           = "",
-            dateOfOnset          = "",
-            travelHistory        = "No",
-            destination          = "",
-            vaccineDoses         = "0",
-            dateLastVaccine      = "",
-            dateSpecimen         = "",
-            dateLab              = "",
-            labResults           = "",
-            outcome              = "",
-            classification       = "",
-            dateFacilityNotified = "",
-            dateSentDistrict     = "",
-            reporterName         = ""
+            recordId             = binding.etRecordId.text.toString().trim(),
+            country              = "Gambia",
+            province             = binding.spinnerRegion.text.toString().trim(),
+            district             = selectedDistrictId!!, // Pass ID
+            site                 = binding.etSite.text.toString().trim(),
+            disease              = binding.etDisease.text.toString().trim(),
+            inpatientOutpatient  = binding.spinnerInpatientOutpatient.text.toString().trim(),
+
+
+            dateSeen = "", patientName = "", dateOfBirth = "", age = 0, gender = "",
+            address = "", districtAnnex2 = "", urbanRural = "", phoneNumber = "",
+            occupation = "", dateOfOnset = "", travelHistory = "No", destination = "",
+            vaccineDoses = "0", dateLastVaccine = "", dateSpecimen = "", dateLab = "",
+            labResults = "", outcome = "", classification = "", dateFacilityNotified = "",
+            dateSentDistrict = "", reporterName = ""
         )
 
         val intent = Intent(this, Annex2F_Immediate_2_Activity::class.java).apply {
             putExtra("Annex2FReport", annex2FReports)
         }
         startActivity(intent)
-        finish()
     }
 }

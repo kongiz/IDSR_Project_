@@ -14,17 +14,31 @@ class LabUploader(private val context: Context) {
 
     fun tryUpload(data: LabFormOfflineData): Boolean {
         return try {
-            val file = File(data.imagePath)
-            if (!file.exists()) {
-                Log.e("LAB_UPLOAD", "Image file not found: ${data.imagePath}")
-                return false
+
+            val imageParts = data.imagePaths.mapNotNull { path ->
+                val file = File(path)
+                if (!file.exists()) {
+                    Log.e("LAB_UPLOAD", "Image file missing: $path")
+                    return@mapNotNull null
+                }
+
+                val mimeType = when {
+                    file.name.endsWith(".png", ignoreCase = true) -> "image/png"
+                    file.name.endsWith(".gif", ignoreCase = true) -> "image/gif"
+                    else -> "image/jpeg"
+                }
+
+                MultipartBody.Part.createFormData(
+                    "labResultImages[]",
+                    file.name,
+                    file.asRequestBody(mimeType.toMediaTypeOrNull())
+                )
             }
 
-            val imagePart = MultipartBody.Part.createFormData(
-                "labResultImage",
-                file.name,
-                file.asRequestBody("image/*".toMediaTypeOrNull())
-            )
+            if (imageParts.isEmpty()) {
+                Log.e("LAB_UPLOAD", "No valid images found to upload for lab: ${data.labName}")
+                return false
+            }
 
             val response = ApiClient.getClient(context).submitLabReport(
                 labName                       = data.labName.toRequestBody("text/plain".toMediaTypeOrNull()),
@@ -34,7 +48,7 @@ class LabUploader(private val context: Context) {
                 finalLabResult                = data.finalLabResult.toRequestBody("text/plain".toMediaTypeOrNull()),
                 dateLabSentDistrict           = data.dateLabSentDistrict.toRequestBody("text/plain".toMediaTypeOrNull()),
                 dateDistrictReceivedLabResult = data.dateDistrictReceivedLabResult.toRequestBody("text/plain".toMediaTypeOrNull()),
-                labResultImage                = imagePart
+                labResultImages               = imageParts
             ).execute()
 
             response.isSuccessful

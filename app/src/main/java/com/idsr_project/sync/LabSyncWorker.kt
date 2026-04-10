@@ -1,6 +1,7 @@
 package com.idsr_project.sync
 
 import android.content.Context
+import android.util.Log
 import androidx.work.*
 import com.google.gson.Gson
 import com.idsr_project.activities.Laboratory_Form_2_Annex2G_Activity.LabFormOfflineData
@@ -13,9 +14,10 @@ class LabSyncWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-        val dao      = AppDatabase.getInstance(context).pendingReportDao()
-        val gson     = Gson()
-        val pending  = dao.getPendingReports().filter { it.formType == "LAB" }
+        val dao = AppDatabase.getInstance(context).pendingReportDao()
+        val gson = Gson()
+
+        val pending = dao.getPendingReports().filter { it.formType == "LAB" && it.status != "SYNCED" }
 
         if (pending.isEmpty()) return Result.success()
 
@@ -23,16 +25,23 @@ class LabSyncWorker(
         var hadFailure = false
 
         for (report in pending) {
-            val data   = gson.fromJson(report.reportJson, LabFormOfflineData::class.java)
-            val synced = uploader.tryUpload(data)
+            try {
+                val data = gson.fromJson(report.reportJson, LabFormOfflineData::class.java)
+                val synced = uploader.tryUpload(data)
 
-            if (synced) {
-                dao.updateStatus(report.id, "SYNCED")
-            } else {
-                dao.updateStatus(report.id, "FAILED")
+                if (synced) {
+                    dao.updateStatus(report.id, "SYNCED")
+                    Log.d("LAB_SYNC", "Report ${report.id} synced successfully")
+                } else {
+                    dao.updateStatus(report.id, "FAILED")
+                    hadFailure = true
+                }
+            } catch (e: Exception) {
+                Log.e("LAB_SYNC", "Error parsing/uploading report ${report.id}", e)
                 hadFailure = true
             }
         }
+
 
         return if (hadFailure) Result.retry() else Result.success()
     }

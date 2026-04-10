@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.idsr_project.Model.immediateReportForm
 import com.idsr_project.databinding.ActivityAnnex2Fimmediate2Binding
 import com.idsr_project.utils.SessionManager
@@ -14,7 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class Annex2F_Immediate_2_Activity : AppCompatActivity() {
+class Annex2F_Immediate_2_Activity : BaseActivity() {
     private lateinit var binding: ActivityAnnex2Fimmediate2Binding
     private val calendar = Calendar.getInstance()
 
@@ -30,6 +31,8 @@ class Annex2F_Immediate_2_Activity : AppCompatActivity() {
 
         setupResidenceSpinner()
 
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "Annex2F_Immediate_2_Activity")
+
 
         binding.btnBackAnnex1.setOnClickListener {
             finish()
@@ -37,21 +40,26 @@ class Annex2F_Immediate_2_Activity : AppCompatActivity() {
 
 
         binding.etDateSeen.setOnClickListener {
-            showDatePicker { dateString ->
+            showDatePicker(isDOB = false) { dateString ->
                 binding.etDateSeen.setText(dateString)
+
+                val dob = binding.etDateOfBirth.text.toString()
+                if (dob.isNotEmpty()) {
+                    val age = calculateAgeFromDOB(dob)
+                    binding.tvAge.setText("$age years")
+                }
             }
         }
+
 
         binding.etDateOfBirth.setOnClickListener {
-            showDatePicker { dateString ->
+            showDatePicker(isDOB = true) { dateString ->
                 binding.etDateOfBirth.setText(dateString)
-
-
                 val age = calculateAgeFromDOB(dateString)
                 binding.tvAge.setText("$age years")
+                binding.titleDateOfBirth.error = null
             }
         }
-
 
         binding.btnNextAnnex2.setOnClickListener {
             if (validateImmediate2Form()) {
@@ -82,7 +90,7 @@ class Annex2F_Immediate_2_Activity : AppCompatActivity() {
         }
     }
 
-    private fun showDatePicker(onDateSelected: (String) -> Unit) {
+    private fun showDatePicker(isDOB: Boolean, onDateSelected: (String) -> Unit) {
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
@@ -98,6 +106,9 @@ class Annex2F_Immediate_2_Activity : AppCompatActivity() {
             },
             year, month, day
         )
+
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+
         datePickerDialog.show()
     }
 
@@ -118,87 +129,83 @@ class Annex2F_Immediate_2_Activity : AppCompatActivity() {
     private fun validateImmediate2Form(): Boolean {
         var isValid = true
 
+        val dateSeenStr = binding.etDateSeen.text.toString().trim()
+        val dobStr = binding.etDateOfBirth.text.toString().trim()
+        val patientName = binding.etPatientName.text.toString().trim()
+        val gender = binding.spinnerGender.text.toString().trim()
+        val address = binding.etAddress.text.toString().trim()
+        val districtRes = binding.etDistrictAnnex2.text.toString().trim()
+        val residence = binding.spinnerResidence.text.toString().trim()
+        val phone = binding.etPhoneNumber.text.toString().trim()
+        val occupation = binding.etOccupation.text.toString().trim()
 
-        if (binding.etDateSeen.text.isNullOrEmpty()) {
-            binding.titleDateSeen.error = "Date seen  s required"
+        if (dateSeenStr.isEmpty()) {
+            binding.titleDateSeen.error = "Date seen is required"
             isValid = false
         } else {
             binding.titleDateSeen.error = null
         }
 
-
-        if (binding.etPatientName.text.isNullOrEmpty()) {
-            binding.titlePatientName.error = "Patient Name(s) is required"
-            isValid = false
-        } else {
-            binding.titlePatientName.error = null
-        }
-
-
-        if (binding.etDateOfBirth.text.isNullOrEmpty()) {
+        if (dobStr.isEmpty()) {
             binding.titleDateOfBirth.error = "Date of Birth is required"
             isValid = false
         } else {
             binding.titleDateOfBirth.error = null
         }
 
-        // Age is auto-calculated, so we don't need to validate it separately
-        // It will automatically be filled when DOB is selected
+        if (dobStr.isNotEmpty() && dateSeenStr.isNotEmpty()) {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val dob = sdf.parse(dobStr)
+            val dateSeen = sdf.parse(dateSeenStr)
 
+            if (dateSeen != null && dob != null && dateSeen.before(dob)) {
+                binding.titleDateSeen.error = "Date seen cannot be before Date of Birth"
+                isValid = false
+            }
+        }
 
-        if (binding.spinnerGender.text.isNullOrEmpty()) {
+        if (patientName.isEmpty()) {
+            binding.titlePatientName.error = "Patient Name is required"
+            isValid = false
+        } else binding.titlePatientName.error = null
+
+        if (gender.isEmpty()) {
             binding.titleGender.error = "Please select Gender"
             isValid = false
-        } else {
-            binding.titleGender.error = null
-        }
+        } else binding.titleGender.error = null
 
-
-        if (binding.etAddress.text.isNullOrEmpty()) {
+        if (address.isEmpty()) {
             binding.titleAddress.error = "Patient Address is required"
             isValid = false
-        } else {
-            binding.titleAddress.error = null
-        }
+        } else binding.titleAddress.error = null
 
-
-        if (binding.etDistrictAnnex2.text.isNullOrEmpty()) {
-            binding.titleDistrictResidence.error = "Name of District of residence is required"
+        if (districtRes.isEmpty()) {
+            binding.titleDistrictResidence.error = "District of residence is required"
             isValid = false
-        } else {
-            binding.titleDistrictResidence.error = null
-        }
+        } else binding.titleDistrictResidence.error = null
 
-
-        if (binding.spinnerResidence.text.isNullOrEmpty()) {
+        if (residence.isEmpty()) {
             binding.titleResidence.error = "Please select Residence"
             isValid = false
-        } else {
-            binding.titleResidence.error = null
-        }
+        } else binding.titleResidence.error = null
 
-        val phone = binding.etPhoneNumber.text?.toString()?.trim()
-        if (phone.isNullOrEmpty()) {
+        if (phone.isEmpty()) {
             binding.titlePhoneNumber.error = "Patient Phone is required"
             isValid = false
-        } else if (!phone.matches(Regex("^[0-9]{10}$"))) {
-            binding.titlePhoneNumber.error = "Enter a valid 10-digit phone number"
+        } else if (!phone.matches(Regex("^[0-9]{7,15}$"))) {
+            binding.titlePhoneNumber.error = "Enter a valid phone number (7-15 digits)"
             isValid = false
         } else {
             binding.titlePhoneNumber.error = null
         }
 
-
-        if (binding.etOccupation.text.isNullOrEmpty()) {
+        if (occupation.isEmpty()) {
             binding.titleOccupation.error = "Patient's Occupation is required"
             isValid = false
-        } else {
-            binding.titleOccupation.error = null
-        }
+        } else binding.titleOccupation.error = null
 
         return isValid
     }
-
     private fun passDataToNextScreen() {
         val dateSeen = binding.etDateSeen.text.toString().trim()
         val patientName = binding.etPatientName.text.toString().trim()

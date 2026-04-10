@@ -2,15 +2,16 @@ package com.idsr_project.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.idsr_project.R
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.idsr_project.databinding.ActivityFormTypeBinding
+import com.idsr_project.utils.SessionManager
 
 class Form_Type_Activity : AppCompatActivity() {
     private lateinit var binding: ActivityFormTypeBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -18,20 +19,57 @@ class Form_Type_Activity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnBackFormType.setOnClickListener { finish() }
+        setupRoleBasedForms()
+        setupClickListeners()
 
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "Form_Type_Activity")
+    }
 
+    private fun setupRoleBasedForms() {
+        val role = SessionManager.getUserRole(this) ?: "Health Officer"
+
+        when (role) {
+            "Lab Technician" -> {
+                binding.Annex2FImmediate.visibility         = View.GONE
+                binding.Annex2GCaseBaseReportLab.visibility = View.VISIBLE
+                binding.LabToCompleteForm.visibility        = View.VISIBLE
+                binding.titleTxt.text = "Select a lab form to submit"
+            }
+            "Clinician" -> {
+                binding.Annex2FImmediate.visibility         = View.VISIBLE
+                binding.Annex2GCaseBaseReportLab.visibility = View.VISIBLE
+                binding.LabToCompleteForm.visibility        = View.GONE
+                binding.titleTxt.text = "Select the type of form to submit"
+            }
+            "Community Health Worker" -> {
+                binding.Annex2FImmediate.visibility         = View.VISIBLE
+                binding.Annex2GCaseBaseReportLab.visibility = View.VISIBLE
+                binding.LabToCompleteForm.visibility        = View.GONE
+                binding.titleTxt.text = "Select the type of form to submit"
+            }
+            "Health Officer" -> {
+                binding.Annex2FImmediate.visibility         = View.VISIBLE
+                binding.Annex2GCaseBaseReportLab.visibility = View.VISIBLE
+                binding.LabToCompleteForm.visibility        = View.VISIBLE
+                binding.titleTxt.text = "Select the type of form to submit"
+            }
+            else -> {
+                binding.Annex2FImmediate.visibility         = View.GONE
+                binding.Annex2GCaseBaseReportLab.visibility = View.GONE
+                binding.LabToCompleteForm.visibility        = View.GONE
+            }
+        }
+    }
+
+    private fun setupClickListeners() {
         binding.Annex2FImmediate.setOnClickListener {
-            val intent = Intent(this, Annex2F_Immediate_1_Activity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, Annex2F_Immediate_1_Activity::class.java))
         }
         binding.Annex2GCaseBaseReportLab.setOnClickListener {
-            val intent = Intent(this, Laboratory_Form_1_Annex2G_Activity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, Laboratory_Form_1_Annex2G_Activity::class.java))
         }
         binding.LabToCompleteForm.setOnClickListener {
-            val intent = Intent(this, Laboratory_Form_2_Annex2G_Activity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, Laboratory_Form_2_Annex2G_Activity::class.java))
         }
-
     }
 }

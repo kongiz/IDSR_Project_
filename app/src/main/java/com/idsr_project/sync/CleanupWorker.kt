@@ -44,7 +44,7 @@ class CleanupWorker(
 
         nm.notify(1001,
             NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(com.google.android.gms.cast.R.drawable.cast_ic_notification_0)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle("Storage Cleaned")
                 .setContentText("$count synced ${if (count == 1) "report" else "reports"} older than 30 days removed.")
                 .setStyle(NotificationCompat.BigTextStyle().bigText(

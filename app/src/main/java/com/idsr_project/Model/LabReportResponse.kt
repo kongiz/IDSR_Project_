@@ -5,7 +5,12 @@ import kotlinx.parcelize.Parcelize
 
 data class LabReportResponse(
     val status: String,
-    val data: List<LabReportData>
+    val role: String?,
+    val page: Int?,
+    val limit: Int?,
+    val total_records: Int?,
+    val total_pages: Int?,
+    val data: List<LabReportData>?
 )
 @Parcelize
 data class LabReportData(
@@ -18,7 +23,7 @@ data class LabReportData(
     val final_lab_result: String?,
     val date_lab_sent_district: String?,
     val date_district_received_lab_result: String?,
-    val lab_result_image: String?,
+    val lab_result_images: List<String>?,
     val created_at: String?,
     val full_name: String?,
     val region_name: String?,

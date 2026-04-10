@@ -39,6 +39,11 @@ data class FormData(
 
 data class FormResponse(
     val success: Boolean,
+    val role: String?,
+    val page: Int?,
+    val limit: Int?,
+    val total_records: Int?,
+    val total_pages: Int?,
     val data: List<FormData>?
 )
 

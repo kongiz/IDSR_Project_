@@ -5,27 +5,29 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.idsr_project.R
 import com.idsr_project.Model.reportFormToLabWithSpecimen
 import com.idsr_project.data.repository.OfflineRepository
 import com.idsr_project.data.repository.SubmitResult
 import com.idsr_project.databinding.ActivityLaboratoryForm1Annex2GactivityBinding
-import com.idsr_project.utils.SessionManager
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
-class Laboratory_Form_1_Annex2G_Activity : AppCompatActivity() {
+class Laboratory_Form_1_Annex2G_Activity : BaseActivity() {
 
     private lateinit var binding: ActivityLaboratoryForm1Annex2GactivityBinding
     private val calendar = Calendar.getInstance()
     private val repository by lazy { OfflineRepository(this) }
+    private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +38,13 @@ class Laboratory_Form_1_Annex2G_Activity : AppCompatActivity() {
         setupDropdowns()
         setUpFieldListeners()
         setupDatePickers()
-        autoFillSubmittedBy()
+        handleBackPress()
 
-        binding.btnBackAnnex2G1.setOnClickListener {
-            finish()
-        }
+        generateSpecimenID()
+
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "Laboratory_Form_1_Annex2G_Activity")
+
+        binding.btnBackAnnex2G1.setOnClickListener { showExitWarning() }
 
         binding.btnLabHW1.setOnClickListener {
             if (validateLabForm1()) {
@@ -49,11 +53,92 @@ class Laboratory_Form_1_Annex2G_Activity : AppCompatActivity() {
         }
     }
 
-    // ── added: store who submitted for status screen later ─────────────────────
-    private fun autoFillSubmittedBy() {
-        // SessionManager tracks the submitter — no UI field needed
-        // just ensuring it's available when we build the entity in repository
+    private fun generateSpecimenID() {
+        val year = Calendar.getInstance().get(Calendar.YEAR)
+        val randomNum = (1000..9999).random()
+        // Format: SPEC-2026-8492
+        val generatedID = "SPEC-$year-$randomNum"
+        binding.etSpecienUniqueID.setText(generatedID)
     }
+
+    private fun setupDatePickers() {
+        binding.etDateSpecimenCollection.setOnClickListener {
+            showDatePicker(null) { date ->
+                binding.etDateSpecimenCollection.setText(date)
+                binding.etDateSpecimenSentLab.text = null
+            }
+        }
+
+        binding.etDateSpecimenSentLab.setOnClickListener {
+            val collectDateStr = binding.etDateSpecimenCollection.text.toString()
+            if (collectDateStr.isEmpty()) {
+                Toast.makeText(this, "Select collection date first", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val minDate = sdf.parse(collectDateStr)?.time
+            showDatePicker(minDate) { date ->
+                binding.etDateSpecimenSentLab.setText(date)
+            }
+        }
+    }
+
+    private fun showDatePicker(minDate: Long?, onDateSelected: (String) -> Unit) {
+        val dialog = DatePickerDialog(this, { _, y, m, d ->
+            val cal = Calendar.getInstance().apply { set(y, m, d) }
+            onDateSelected(sdf.format(cal.time))
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+
+        dialog.datePicker.maxDate = System.currentTimeMillis()
+        minDate?.let { dialog.datePicker.minDate = it }
+
+        dialog.show()
+    }
+
+    private fun validateLabForm1(): Boolean {
+        var isValid = true
+
+        val requiredFields = listOf(
+            binding.etDateSpecimenCollection to binding.tilDateSpecimenCollection,
+            binding.etSuspectedDisease to binding.tilSuspectedDisease,
+            binding.etPatientNameLab to binding.tilPatientNameLab,
+            binding.etAge to binding.tilAge,
+            binding.etDateSpecimenSentLab to binding.tilDateSpecimenSentLab,
+            binding.etPhoneNumber to binding.tilPhoneNumber
+        )
+
+        for ((et, til) in requiredFields) {
+            if (et.text.isNullOrEmpty()) {
+                til.error = "This field is required"
+                isValid = false
+            }
+        }
+
+        val age = binding.etAge.text.toString().toIntOrNull() ?: 0
+        if (age > 120) {
+            binding.tilAge.error = "Please enter a valid age"
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    private fun handleBackPress() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() { showExitWarning() }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    private fun showExitWarning() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Discard Form?")
+            .setMessage("Are you sure? You will lose the entered specimen details.")
+            .setPositiveButton("Discard") { _, _ -> finish() }
+            .setNegativeButton("Keep Editing", null)
+            .show()
+    }
+
 
     private fun setupDropdowns() {
         val specimenTypes = resources.getStringArray(R.array.SpecimenType)
@@ -72,28 +157,6 @@ class Laboratory_Form_1_Annex2G_Activity : AppCompatActivity() {
         )
         binding.spinnerSex.setAdapter(genderAdapter)
     }
-
-    private fun setupDatePickers() {
-        binding.etDateSpecimenCollection.setOnClickListener {
-            showDatePicker { binding.etDateSpecimenCollection.setText(it) }
-        }
-        binding.etDateSpecimenSentLab.setOnClickListener {
-            showDatePicker { binding.etDateSpecimenSentLab.setText(it) }
-        }
-    }
-
-    private fun showDatePicker(onDateSelected: (String) -> Unit) {
-        val year  = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day   = calendar.get(Calendar.DAY_OF_MONTH)
-
-        DatePickerDialog(this, { _, y, m, d ->
-            val cal = Calendar.getInstance()
-            cal.set(y, m, d)
-            onDateSelected(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.time))
-        }, year, month, day).show()
-    }
-
     private fun setUpFieldListeners() {
         val fields = listOf(
             binding.tilDateSpecimenCollection to binding.etDateSpecimenCollection,
@@ -118,58 +181,6 @@ class Laboratory_Form_1_Annex2G_Activity : AppCompatActivity() {
             if (!it.isNullOrEmpty()) binding.tilSex.error = null
         }
     }
-
-    private fun validateLabForm1(): Boolean {
-        var isValid = true
-
-        if (binding.etDateSpecimenCollection.text.isNullOrEmpty()) {
-            binding.tilDateSpecimenCollection.error = "Date of specimen collection is required"
-            isValid = false
-        } else binding.tilDateSpecimenCollection.error = null
-
-        if (binding.etSuspectedDisease.text.isNullOrEmpty()) {
-            binding.tilSuspectedDisease.error = "Suspected disease or condition is required"
-            isValid = false
-        } else binding.tilSuspectedDisease.error = null
-
-        if (binding.spinnerSpecimen.text.isNullOrEmpty()) {
-            binding.tilSpecimenType.error = "Specimen type is required"
-            isValid = false
-        } else binding.tilSpecimenType.error = null
-
-        if (binding.etSpecienUniqueID.text.isNullOrEmpty()) {
-            binding.tilSpecienUniqueID.error = "Specimen unique identifier is required"
-            isValid = false
-        } else binding.tilSpecienUniqueID.error = null
-
-        if (binding.etPatientNameLab.text.isNullOrEmpty()) {
-            binding.tilPatientNameLab.error = "Patient name is required"
-            isValid = false
-        } else binding.tilPatientNameLab.error = null
-
-        if (binding.spinnerSex.text.isNullOrEmpty()) {
-            binding.tilSex.error = "Sex is required"
-            isValid = false
-        } else binding.tilSex.error = null
-
-        if (binding.etAge.text.isNullOrEmpty()) {
-            binding.tilAge.error = "Patient age is required"
-            isValid = false
-        } else binding.tilAge.error = null
-
-        if (binding.etDateSpecimenSentLab.text.isNullOrEmpty()) {
-            binding.tilDateSpecimenSentLab.error = "Date specimen sent to laboratory is required"
-            isValid = false
-        } else binding.tilDateSpecimenSentLab.error = null
-
-        if (binding.etPhoneNumber.text.isNullOrEmpty()) {
-            binding.tilPhoneNumber.error = "Clinician phone number is required"
-            isValid = false
-        } else binding.tilPhoneNumber.error = null
-
-        return isValid
-    }
-
     private fun submitSpecimenForm() {
         binding.btnLabHW1.isEnabled = false
         binding.btnLabHW1.text = "Saving..."

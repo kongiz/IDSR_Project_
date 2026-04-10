@@ -1,5 +1,6 @@
 package com.idsr_project.activities
 
+
 import android.Manifest
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
@@ -12,15 +13,25 @@ import android.os.Looper
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.GridLayout
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.perf.FirebasePerformance
 import com.idsr_project.Adapter.BannerAdapter
+import com.idsr_project.Model.AppUpdateState
 import com.idsr_project.Model.CountResponse
+import com.idsr_project.Model.NotificationsResponse
 import com.idsr_project.R
 import com.idsr_project.api.ApiClient
 import com.idsr_project.data.local.AppDatabase
@@ -33,12 +44,22 @@ import retrofit2.Callback
 import retrofit2.Response
 import kotlin.math.abs
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var bannerPager: ViewPager2
     private lateinit var bannerAdapter: BannerAdapter
     private val sliderHandler = Handler(Looper.getMainLooper())
+
+    private lateinit var inAppUpdateManager: InAppUpdateManager
+
+    private val updatedLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode != RESULT_OK) {
+            FirebaseCrashlytics.getInstance().log("Update flow result failed or cancelled")
+        }
+    }
 
     private val sliderRunnable = object : Runnable {
         override fun run() {
@@ -58,9 +79,25 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        inAppUpdateManager = InAppUpdateManager(this)
+
+        lifecycleScope.launch {
+            inAppUpdateManager.checkForUpdate(updatedLauncher)
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                inAppUpdateManager.updateState.collect { state ->
+                    handleUpdateState(state)
+                }
+            }
+        }
+
         setupClicks()
         setupBottomNav()
+        setupRoleBasedUI()
         displayUserName()
+        setupCrashlyticsContext()
 
         binding.root.post {
             setupBanner()
@@ -72,7 +109,8 @@ class MainActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED
+            ) {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
@@ -82,14 +120,60 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun handleUpdateState(state: AppUpdateState) {
+        when (state) {
+            is AppUpdateState.ReadyToInstall -> showUpdateSnackbar()
+            is AppUpdateState.Error -> Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
+            else -> Unit
+        }
+    }
+
+    private fun showUpdateSnackbar() {
+        Snackbar.make(
+            binding.root,
+            "An update has just been downloaded.",
+            Snackbar.LENGTH_INDEFINITE
+        ).apply {
+            setAction("RESTART") {
+                inAppUpdateManager.completeUpdate()
+            }
+            show()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sliderHandler.postDelayed(sliderRunnable, 3000)
+        loadReportCount()
+        loadSyncStatus()
+        loadUnreadCount()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sliderHandler.removeCallbacks(sliderRunnable)
+    }
+
+    override fun onDestroy() {
+        sliderHandler.removeCallbacks(sliderRunnable)
+        if (::inAppUpdateManager.isInitialized) {
+            inAppUpdateManager.unregister()
+        }
+        super.onDestroy()
+    }
     private fun displayUserName() {
         val fullName = SessionManager.getFullName(this)
+        val role     = SessionManager.getUserRole(this) ?: "Health Officer"
+
         binding.tvWelcomeUser.apply {
             text = if (fullName.isNotBlank()) "$fullName 👋" else "Welcome 👋"
             alpha = 0f
             translationY = 20f
             animate().alpha(1f).translationY(0f).setDuration(600).setStartDelay(150).start()
         }
+
+        binding.tvUserRole.visibility = View.VISIBLE
+        binding.tvUserRole.text = role
     }
 
     private fun setupBanner() {
@@ -136,6 +220,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.cardSyncStatus.setOnClickListener {
             startActivity(Intent(this, SyncStatusActivity::class.java))
+        }
+        binding.btnNotifications.setOnClickListener {
+            startActivity(Intent(this, Notifications_Activity::class.java))
         }
     }
 
@@ -185,7 +272,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNav() {
+        val role = SessionManager.getUserRole(this) ?: "Health Officer"
+
         binding.bottomNavigation.selectedItemId = R.id.nav_home
+
+
+        binding.bottomNavigation.menu.findItem(R.id.nav_analytics)?.isVisible = when (role) {
+            "Admin", "Regional Officer", "District Officer" -> true
+            else -> false
+        }
+
+        binding.bottomNavigation.visibility = View.VISIBLE
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> true
@@ -205,11 +302,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadReportCount() {
+        val trace = FirebasePerformance.getInstance().newTrace("load_report_count")
+        trace.start()
+
+        FirebaseCrashlytics.getInstance().log("Loading report count")
         val userId     = SessionManager.getUserId(this)
         val role       = SessionManager.getUserRole(this)
         val regionId   = SessionManager.getUserRegion(this)?.toIntOrNull()
         val districtId = SessionManager.getUserDistrict(this)?.toIntOrNull()
         val api        = ApiClient.getClient(this)
+
+
+        binding.tvCasesLabel.text = when (role) {
+            "Admin"            -> "National Reports"
+            "Regional Officer" -> "Regional Reports"
+            "District Officer" -> "District Reports"
+            else               -> "Reported Forms"
+        }
 
         val call: Call<CountResponse> = when (role) {
             "Admin"            -> api.getReportCount("admin", userId)
@@ -225,6 +334,7 @@ class MainActivity : AppCompatActivity() {
                 animateCounter(0, total)
             }
             override fun onFailure(call: Call<CountResponse>, t: Throwable) {
+                FirebaseCrashlytics.getInstance().log("Loading report count")
                 animateCounter(0, 0)
             }
         })
@@ -237,20 +347,74 @@ class MainActivity : AppCompatActivity() {
         animator.start()
     }
 
-    override fun onResume() {
-        super.onResume()
-        sliderHandler.postDelayed(sliderRunnable, 3000)
-        loadReportCount()
-        loadSyncStatus()   
+    private fun loadUnreadCount() {
+        ApiClient.getClient(this)
+            .getNotifications().enqueue(object : Callback<NotificationsResponse> {
+                override fun onResponse(
+                    call: Call<NotificationsResponse>,
+                    response: Response<NotificationsResponse>
+                ) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        val unread = response.body()!!.unread_count
+                        if (unread > 0) {
+                            binding.tvNotificationBadge.visibility = View.VISIBLE
+                            binding.tvNotificationBadge.text = if (unread > 99) "99+" else unread.toString()
+                        } else {
+                            binding.tvNotificationBadge.visibility = View.GONE
+                        }
+                    }
+                }
+                override fun onFailure(call: Call<NotificationsResponse>, t: Throwable) {}
+            })
     }
 
-    override fun onPause() {
-        super.onPause()
-        sliderHandler.removeCallbacks(sliderRunnable)
+    private fun setupRoleBasedUI() {
+        val role = SessionManager.getUserRole(this) ?: "Health Officer"
+
+        when (role) {
+            "District Officer", "Regional Officer", "Admin" -> {
+                binding.btnSubmitReport.visibility       = View.GONE
+                binding.btnWeeklySurveillance.visibility = View.GONE
+                // make remaining cards full width
+                setFullWidth(binding.btnAlerts)
+                setFullWidth(binding.btnViewReports)
+            }
+            "Lab Technician" -> {
+                binding.btnWeeklySurveillance.visibility = View.GONE
+                // make remaining cards full width
+                setFullWidth(binding.btnAlerts)
+                setFullWidth(binding.btnSubmitReport)
+                setFullWidth(binding.btnViewReports)
+            }
+            else -> {
+                binding.btnSubmitReport.visibility       = View.VISIBLE
+                binding.btnWeeklySurveillance.visibility = View.VISIBLE
+                binding.btnViewReports.visibility        = View.VISIBLE
+            }
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        sliderHandler.removeCallbacks(sliderRunnable)
+    private fun setFullWidth(view: android.view.View) {
+        val params = view.layoutParams as GridLayout.LayoutParams
+        params.columnSpec = GridLayout.spec(0, 2, 1f)
+        params.width = 0
+        view.layoutParams = params
+    }
+
+    private fun setupCrashlyticsContext() {
+        val crashlytics  = FirebaseCrashlytics.getInstance()
+        val userId       = SessionManager.getUserId(this)
+        val role         = SessionManager.getUserRole(this) ?: "Health Officer"
+        val regionId     = SessionManager.getUserRegion(this) ?: "none"
+        val districtId   = SessionManager.getUserDistrict(this) ?: "none"
+
+        if (userId != null) {
+            crashlytics.setUserId(userId.toString())
+            crashlytics.setCustomKey("user_role",    role)
+            crashlytics.setCustomKey("region_id",    regionId)
+            crashlytics.setCustomKey("district_id",  districtId)
+            crashlytics.setCustomKey("screen",       "MainActivity")
+            crashlytics.log("MainActivity launched — role: $role")
+        }
     }
 }

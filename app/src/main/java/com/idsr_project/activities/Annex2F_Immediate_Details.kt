@@ -47,7 +47,7 @@ class Annex2F_Immediate_Details : AppCompatActivity() {
             binding.txtDateSentDistrict.text = DateUtils.formatIsoDate(data.dateSentDistrict)
             binding.txtReporterName.text = data.reporterName
             binding.txtRegion.text = data.region_name
-            binding.txtDistrict.text = data.district
+            binding.txtDistrict.text = data.district_name
             binding.txtCreatedAt.text = DateUtils.formatIsoDateTime(data.created_at)
         }
     }

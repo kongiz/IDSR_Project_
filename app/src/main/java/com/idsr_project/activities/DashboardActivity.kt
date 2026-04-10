@@ -78,6 +78,13 @@ class DashboardActivity : AppCompatActivity() {
         val region = SessionManager.getUserRegion(this)?.toIntOrNull()
         val district = SessionManager.getUserDistrict(this)?.toIntOrNull()
 
+        binding.txtAnalyticsTitle.text = when (role) {
+            "admin"            -> "National Analytics"
+            "regional_officer" -> "Regional Analytics"
+            "district_officer" -> "District Analytics"
+            else               -> "Analytics Dashboard"
+        }
+
         ApiClient.getClient(this)
             .getAnalytics(role, userId, region, district)
             .enqueue(object : retrofit2.Callback<AnalyticResponse> {

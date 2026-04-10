@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.idsr_project.Model.ResponseApi
 import com.idsr_project.Model.immediateReportForm
@@ -24,7 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class Annex2F_Immediate_4_Activity : AppCompatActivity() {
+class Annex2F_Immediate_4_Activity : BaseActivity() {
 
     private lateinit var binding: ActivityAnnex2Fimmediate4Binding
     private val calendar = Calendar.getInstance()
@@ -39,6 +40,8 @@ class Annex2F_Immediate_4_Activity : AppCompatActivity() {
         setupOutcomeSpinner()
         setupClassificationSpinner()
         autoFillReporterName()
+
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "Annex2F_Immediate_4_Activity")
 
         binding.btnBackAnnex4.setOnClickListener {
             finish()
@@ -80,46 +83,62 @@ class Annex2F_Immediate_4_Activity : AppCompatActivity() {
     }
 
     private fun showDatePicker(onDateSelected: (String) -> Unit) {
-        val year  = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day   = calendar.get(Calendar.DAY_OF_MONTH)
-
-        DatePickerDialog(this, { _, y, m, d ->
-            val cal = Calendar.getInstance()
-            cal.set(y, m, d)
+        val datePickerDialog = DatePickerDialog(this, { _, y, m, d ->
+            val cal = Calendar.getInstance().apply { set(y, m, d) }
             onDateSelected(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.time))
-        }, year, month, day).show()
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+
+
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+        datePickerDialog.show()
     }
 
     private fun validateImmediate4Form(): Boolean {
         var isValid = true
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-        if (binding.spinnerOutcome.text.isNullOrEmpty() ||
-            binding.spinnerOutcome.text.toString() == "Select an outcome") {
+        val outcome = binding.spinnerOutcome.text.toString().trim()
+        val classification = binding.spinnerClassification.text.toString().trim()
+        val notifiedDateStr = binding.etDateFacilityNotified.text.toString().trim()
+        val sentDistrictStr = binding.etDateSentDistrict.text.toString().trim()
+        val reporter = binding.etReporterName.text.toString().trim()
+
+        if (outcome.isEmpty() || outcome == "Select an outcome") {
             binding.tilOutcome.error = "Please select an outcome"
             isValid = false
         } else binding.tilOutcome.error = null
 
-        if (binding.spinnerClassification.text.isNullOrEmpty() ||
-            binding.spinnerClassification.text.toString() == "Select a classification") {
+        if (classification.isEmpty() || classification == "Select a classification") {
             binding.tilClassification.error = "Please select a classification"
             isValid = false
         } else binding.tilClassification.error = null
 
-        if (binding.etDateFacilityNotified.text.isNullOrEmpty()) {
-            binding.tilDateFacilityNotified.error = "Date facility notified is required"
+        if (notifiedDateStr.isEmpty()) {
+            binding.tilDateFacilityNotified.error = "Required"
             isValid = false
         } else binding.tilDateFacilityNotified.error = null
 
-        if (binding.etDateSentDistrict.text.isNullOrEmpty()) {
-            binding.tilDateSentDistrict.error = "Date form sent to district is required"
+        if (sentDistrictStr.isEmpty()) {
+            binding.tilDateSentDistrict.error = "Required"
             isValid = false
         } else binding.tilDateSentDistrict.error = null
 
-        if (binding.etReporterName.text.isNullOrEmpty()) {
+        if (reporter.isEmpty()) {
             binding.tilReporterName.error = "Reporter name is required"
             isValid = false
         } else binding.tilReporterName.error = null
+
+
+        if (notifiedDateStr.isNotEmpty() && sentDistrictStr.isNotEmpty()) {
+            try {
+                val dateNotified = sdf.parse(notifiedDateStr)
+                val dateSent = sdf.parse(sentDistrictStr)
+                if (dateSent != null && dateNotified != null && dateSent.before(dateNotified)) {
+                    binding.tilDateSentDistrict.error = "Cannot be before notification date"
+                    isValid = false
+                }
+            } catch (e: Exception) { }
+        }
 
         return isValid
     }
@@ -146,8 +165,8 @@ class Annex2F_Immediate_4_Activity : AppCompatActivity() {
 
         lifecycleScope.launch {
             val json = Gson().toJson(finalForm)
-            Log.e("ANNEX2F_DEBUG", "=== SUBMITTING ANNEX2F ===")  // Log.e shows in red
-            Log.e("ANNEX2F_DEBUG", json)
+            Log.d("ANNEX2F_DEBUG", "=== SUBMITTING ANNEX2F ===")  // Log.e shows in red
+            Log.d("ANNEX2F_DEBUG", json)
 
 
             when (val result = repository.submitReport("ANNEX2F", json)) {

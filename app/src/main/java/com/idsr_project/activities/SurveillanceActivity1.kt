@@ -16,8 +16,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.idsr_project.Model.ApiResponse
 import com.idsr_project.Model.HealthDistricts
 import com.idsr_project.Model.HealthFacilities
@@ -31,7 +33,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class SurveillanceActivity1 : AppCompatActivity() {
+class SurveillanceActivity1 : BaseActivity() {
     private lateinit var binding: ActivitySurveillance1Binding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -67,8 +69,12 @@ class SurveillanceActivity1 : AppCompatActivity() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+
         setupClickListeners()
         loadRegions()
+        setupValidationListeners()
+
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "SurveillanceActivity1")
     }
 
     private fun setupClickListeners() {
@@ -296,20 +302,26 @@ class SurveillanceActivity1 : AppCompatActivity() {
     private fun requestLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
             return
         }
 
+        binding.btnUseCurrentLocation.isEnabled = false
+        binding.btnUseCurrentLocation.text = "Fetching..."
+
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            binding.btnUseCurrentLocation.isEnabled = true
+            binding.btnUseCurrentLocation.text = "Use Current Location"
+
             if (location != null) {
                 binding.facilityGeo.setText("${location.latitude}, ${location.longitude}")
+                binding.tilFacilityGeo.error = null
             } else {
-                Toast.makeText(this, "Unable to get location. Try map picker instead.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Location signal weak. Use Map Picker.", Toast.LENGTH_SHORT).show()
             }
+        }.addOnFailureListener {
+            binding.btnUseCurrentLocation.isEnabled = true
+            binding.btnUseCurrentLocation.text = "Use Current Location"
         }
     }
 
@@ -355,6 +367,12 @@ class SurveillanceActivity1 : AppCompatActivity() {
         if (binding.etEpiweek.text.toString().isEmpty()) {
             binding.tilEpiweek.error = "Epiweek No. is required"
             isValid = false
+        } else {
+            val week = binding.etEpiweek.text.toString().toInt()
+            if (week !in 1..53) {
+                binding.tilEpiweek.error = "Epiweek must be between 1 and 53"
+                isValid = false
+            }
         }
 
         if (binding.etDateFrom.text.toString().isEmpty()) {
@@ -419,7 +437,27 @@ class SurveillanceActivity1 : AppCompatActivity() {
         return isValid
     }
 
+    private fun setupValidationListeners() {
+
+        binding.etEpiweek.doAfterTextChanged { it ->
+            if (!it.isNullOrBlank()) {
+                val week = it.toString().toIntOrNull()
+                if (week != null && week in 1..53) {
+                    binding.tilEpiweek.error = null
+                } else {
+                    binding.tilEpiweek.error = "Enter a valid week (1-53)"
+                }
+            }
+        }
+
+        binding.spinnerRegion.doAfterTextChanged { binding.spinnerRegion.error = null }
+        binding.spinnerDistrict.doAfterTextChanged { binding.spinnerDistrict.error = null }
+        binding.spinnerFacility.doAfterTextChanged { binding.tilHealthFacility.error = null }
+    }
+
     private fun moveDataToNextScreen() {
+        binding.btnNextSur1.isEnabled = false
+
         val surveillance1Details = surveillanceData(
             healthFacility  = binding.spinnerFacility.text.toString().trim(),
             healthRegion    = binding.spinnerRegion.text.toString().trim(),
@@ -446,5 +484,7 @@ class SurveillanceActivity1 : AppCompatActivity() {
             putExtra("SurveillanceData", surveillance1Details)
         }
         startActivity(intent)
+
+        binding.root.postDelayed( {binding.btnNextSur1.isEnabled = true}, 1000)
     }
 }

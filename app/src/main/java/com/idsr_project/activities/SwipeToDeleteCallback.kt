@@ -10,7 +10,9 @@ import android.graphics.drawable.ColorDrawable
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.idsr_project.R
 import com.idsr_project.data.local.PendingReportEntity
+import androidx.core.graphics.drawable.toDrawable
 
 class SwipeToDeleteCallback(
     private val context: Context,
@@ -23,8 +25,8 @@ class SwipeToDeleteCallback(
 ) {
     private val deleteIcon = ContextCompat.getDrawable(context, android.R.drawable.ic_menu_delete)!!
     private val retryIcon  = ContextCompat.getDrawable(context, android.R.drawable.ic_menu_rotate)!!
-    private val deleteBackground = ColorDrawable(Color.parseColor("#F44336"))
-    private val retryBackground  = ColorDrawable(Color.parseColor("#1976D2"))
+    private val deleteBackground = ContextCompat.getColor(context, R.color.idsr_error).toDrawable()
+    private val retryBackground  = ContextCompat.getColor(context, R.color.idsr_primary).toDrawable()
     private val clearPaint = Paint().apply {
         xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
     }

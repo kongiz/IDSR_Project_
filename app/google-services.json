@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "74728065795",
+    "project_id": "idsr-app",
+    "storage_bucket": "idsr-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:74728065795:android:365eabef9c36642becb736",
+        "android_client_info": {
+          "package_name": "com.idsr_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_A-h_0LxmrtWKfZRXECKgnhozlyg18uk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

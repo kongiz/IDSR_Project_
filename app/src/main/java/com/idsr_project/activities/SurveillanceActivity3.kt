@@ -6,19 +6,22 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.idsr_project.Model.Diseases
 import com.idsr_project.Model.surveillanceData
+import com.idsr_project.R
 import com.idsr_project.data.repository.OfflineRepository
 import com.idsr_project.data.repository.SubmitResult
 import com.idsr_project.databinding.ActivitySurveillance3Binding
 import com.idsr_project.utils.SessionManager
 import kotlinx.coroutines.launch
 
-class SurveillanceActivity3 : AppCompatActivity() {
+class SurveillanceActivity3 : BaseActivity() {
 
     private lateinit var binding: ActivitySurveillance3Binding
     private var receivedData: surveillanceData? = null
@@ -35,6 +38,8 @@ class SurveillanceActivity3 : AppCompatActivity() {
         retrieveActivityData()
         autoFillOfficerDetails()
         setupListeners()
+
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "SurveillanceActivity3")
     }
 
     private fun autoFillOfficerDetails() {
@@ -98,10 +103,20 @@ class SurveillanceActivity3 : AppCompatActivity() {
                 getInt(binding.etA5Female)
 
         binding.tvGrandTotal.text = total.toString()
+
+        if (total > 0) {
+            binding.tvGrandTotal.setTextColor(ContextCompat.getColor(this, R.color.idsr_primary))
+        } else {
+            binding.tvGrandTotal.setTextColor(ContextCompat.getColor(this, R.color.idsr_gray))
+        }
     }
 
     private fun getInt(editText: TextInputEditText): Int {
-        return editText.text?.toString()?.trim()?.toIntOrNull()?.coerceAtLeast(0) ?: 0
+        val text = editText.text?.toString()?.trim()
+        if (text.isNullOrEmpty()) return 0
+
+        val value = text.toIntOrNull() ?: 0
+        return if (value < 0) 0 else value
     }
 
     private fun prepareFinalData(): surveillanceData? {
@@ -132,49 +147,64 @@ class SurveillanceActivity3 : AppCompatActivity() {
 
 
     private fun submitSurveillanceReport() {
+
+        binding.btnSubmit.isEnabled = false
+        binding.btnSubmit.alpha = 0.5f
+        binding.btnSubmit.text = "Processing..."
+
         val finalReport = prepareFinalData() ?: run {
             Toast.makeText(this, "Submission failed: Missing data.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        binding.btnSubmit.isEnabled = false
-        binding.btnSubmit.text = "Saving..."
-
         lifecycleScope.launch {
-            val json = Gson().toJson(finalReport)
+            try {
+                val json = Gson().toJson(finalReport)
 
-            when (val result = repository.submitReport("SURVEILLANCE", json)) {
+                when (val result = repository.submitReport("SURVEILLANCE", json)) {
 
-                is SubmitResult.SyncedOnline -> {
-                    Toast.makeText(
-                        this@SurveillanceActivity3,
-                        result.message,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    is SubmitResult.SyncedOnline -> {
+                        Toast.makeText(
+                            this@SurveillanceActivity3,
+                            result.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                    is SubmitResult.SavedOffline -> {
+                        Toast.makeText(
+                            this@SurveillanceActivity3,
+                            "Report saved. Will sync automatically when online.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                    is SubmitResult.Error -> {
+                        Toast.makeText(
+                            this@SurveillanceActivity3,
+                            "Error: ${result.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        binding.btnSubmit.isEnabled = true
+                        binding.btnSubmit.text = "Submit"
+                        return@launch
+                    }
                 }
 
-                is SubmitResult.SavedOffline -> {
-                    Toast.makeText(
-                        this@SurveillanceActivity3,
-                        "Report saved. Will sync automatically when online.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                startActivity(Intent(this@SurveillanceActivity3, Success_Activity::class.java))
+                finish()
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+                resetSubmitButton()
+                Toast.makeText(this@SurveillanceActivity3, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
 
-                is SubmitResult.Error -> {
-                    Toast.makeText(
-                        this@SurveillanceActivity3,
-                        "Error: ${result.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    binding.btnSubmit.isEnabled = true
-                    binding.btnSubmit.text = "Submit"
-                    return@launch
-                }
             }
-
-            startActivity(Intent(this@SurveillanceActivity3, Success_Activity::class.java))
-            finish()
         }
+    }
+
+    private fun resetSubmitButton() {
+        binding.btnSubmit.isEnabled = true
+        binding.btnSubmit.alpha = 1.0f
+        binding.btnSubmit.text = "Submit Report"
     }
 }

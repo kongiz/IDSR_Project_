@@ -2,20 +2,18 @@ package com.idsr_project.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
-import android.util.Log
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.idsr_project.Adapter.DiseaseAdapter
 import com.idsr_project.Model.Diseases
 import com.idsr_project.Model.surveillanceData
 import com.idsr_project.databinding.ActivitySurveillance2Binding
-import java.util.ArrayList
 
-class SurveillanceActivity2 : AppCompatActivity() {
+class SurveillanceActivity2 : BaseActivity() {
 
     private lateinit var binding: ActivitySurveillance2Binding
     private lateinit var adapter: DiseaseAdapter
@@ -25,28 +23,11 @@ class SurveillanceActivity2 : AppCompatActivity() {
     private val initialDiseases = mutableListOf(
         Diseases("Acute Flaccid Paralysis"),
         Diseases("Animal Bite"),
-//        Disease("Anthrax"),
-//        Disease("Cholera"),
-//        Disease("COVID-19"),
-//        Disease("Diarrhoea with blood"),
-//        Disease("Dog Bite"),
-//        Disease("Human Rabies"),
-//        Disease("Leprosy"),
-//        Disease("Lymphatic Filariasis"),
-//        Disease("Maternal Death"),
-//        Disease("Measles"),
-//        Disease("Meningitis"),
-//        Disease("Neonatal Tetanus"),
-//        Disease("Schistosomiasis"),
-//        Disease("Shigellosis"),
-//        Disease("Snake Bite"),
-//        Disease("Suspected VHF (incl. EVD)"),
-//        Disease("Trachoma"),
-//        Disease("Unexplained Cluster of Health Events"),
-//        Disease("Unexplained Cluster of Deaths"),
-//        Disease("Yellow Fever")
+        Diseases("Measles"),
+        Diseases("Yellow Fever"),
+        Diseases("Cholera"),
+        Diseases("Meningitis")
     )
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,35 +38,53 @@ class SurveillanceActivity2 : AppCompatActivity() {
 
         val receivedData = intent.getParcelableExtra<surveillanceData>("SurveillanceData")
         if (receivedData == null) {
-            Toast.makeText(this, "No initial data received. Exiting.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Session lost. Please restart form.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
         surveillanceReceivedData = receivedData
 
-        Log.d("Surveillance2", "Received from Activity1: $surveillanceReceivedData")
-
-
-        binding.diseasesRecyclerView.layoutManager = LinearLayoutManager(this)
 
         adapter = DiseaseAdapter(initialDiseases)
-        binding.diseasesRecyclerView.adapter = adapter
-
-
-        binding.btnBackSur2.setOnClickListener {
-            finish()
+        binding.diseasesRecyclerView.apply {
+            layoutManager = LinearLayoutManager(this@SurveillanceActivity2)
+            adapter = this@SurveillanceActivity2.adapter
+            setHasFixedSize(true)
         }
+
+
+        val backCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitWarning()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, backCallback)
+        binding.btnBackSur2.setOnClickListener { showExitWarning() }
+
 
         binding.saveProceedBtn.setOnClickListener {
-            val updatedDiseases = adapter.getDiseases()
-            Log.i("UpdatedDiseases", "Count of recorded diseases: ${updatedDiseases.size}")
+            val finalDiseases = adapter.getDiseases()
+
+
+            if (finalDiseases.any { it.u5MaleAlive < 0 }) {
+                Toast.makeText(this, "Please check for negative values", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val intent = Intent(this, SurveillanceActivity3::class.java).apply {
                 putExtra("SurveillanceData", surveillanceReceivedData)
-                putParcelableArrayListExtra("UpdatedDiseases", ArrayList(updatedDiseases))
-
+                putParcelableArrayListExtra("UpdatedDiseases", ArrayList(finalDiseases))
             }
             startActivity(intent)
-            finish()
         }
+    }
+
+    private fun showExitWarning() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Discard Report?")
+            .setMessage("All progress on this disease list will be lost.")
+            .setPositiveButton("Discard") { _, _ -> finish() }
+            .setNegativeButton("Keep Editing", null)
+            .show()
     }
 }

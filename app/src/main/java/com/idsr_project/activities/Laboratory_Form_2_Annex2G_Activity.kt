@@ -1,27 +1,35 @@
 package com.idsr_project.activities
 
+import android.Manifest
 import android.app.DatePickerDialog
 import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
+import com.idsr_project.api.ApiClient
 import com.idsr_project.data.local.AppDatabase
 import com.idsr_project.data.local.PendingReportEntity
 import com.idsr_project.data.repository.OfflineRepository
-import com.idsr_project.data.repository.SubmitResult
 import com.idsr_project.databinding.ActivityLaboratoryForm2Annex2GactivityBinding
 import com.idsr_project.sync.LabSyncWorker
 import com.idsr_project.utils.SessionManager
@@ -32,26 +40,20 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import com.idsr_project.api.ApiClient
 import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import java.util.*
 
-class Laboratory_Form_2_Annex2G_Activity : AppCompatActivity() {
+class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
 
     private lateinit var binding: ActivityLaboratoryForm2Annex2GactivityBinding
     private val calendar = Calendar.getInstance()
-    private lateinit var imgPreview: ImageView
-    private lateinit var uploadBtn: MaterialButton
-    private var photoUri: Uri? = null
+    private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val photoUris = mutableListOf<Uri>()
+    private var tempCameraUri: Uri? = null
     private val repository by lazy { OfflineRepository(this) }
 
-    // ── data class to hold all form fields + image path for JSON storage ───────
     data class LabFormOfflineData(
         val labName: String,
         val dateLabReceived: String,
@@ -60,23 +62,20 @@ class Laboratory_Form_2_Annex2G_Activity : AppCompatActivity() {
         val finalLabResult: String,
         val dateLabSentDistrict: String,
         val dateDistrictReceivedLabResult: String,
-        val imagePath: String   // absolute file path — not a URI
+        val imagePaths: List<String> // Changed to plural
     )
 
-    private var galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            binding.cardImagePreview.visibility = View.VISIBLE
-            imgPreview.setImageURI(it)
-            photoUri = it
-            Toast.makeText(this, "Image selected from gallery", Toast.LENGTH_SHORT).show()
+    private var galleryLauncher = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+        uris?.let {
+            photoUris.addAll(it)
+            updateImagePreview()
         }
     }
 
-    private var cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
-        if (success && photoUri != null) {
-            binding.cardImagePreview.visibility = View.VISIBLE
-            imgPreview.setImageURI(photoUri)
-            Toast.makeText(this, "Photo captured successfully", Toast.LENGTH_SHORT).show()
+    private var cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success && tempCameraUri != null) {
+            photoUris.add(tempCameraUri!!)
+            updateImagePreview()
         }
     }
 
@@ -86,13 +85,29 @@ class Laboratory_Form_2_Annex2G_Activity : AppCompatActivity() {
         binding = ActivityLaboratoryForm2Annex2GactivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        imgPreview = binding.imgLabResultPreview
-        uploadBtn  = binding.btnUploadLabResult
-
         setupDropdowns()
         setupFieldListeners()
         setupDatePickers()
-        setupClickListeners()
+        handleBackPress()
+
+        binding.btnUploadLabResult.setOnClickListener { showImagePickerDialog() }
+        binding.btnBackAnnex2G2.setOnClickListener { showExitWarning() }
+
+        binding.btnLabTech.setOnClickListener {
+            if (validateLabFormForLabTech2()) {
+                submitLabForm2()
+            }
+        }
+
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "Laboratory_Form_2_Annex2G_Activity")
+    }
+
+    private fun updateImagePreview() {
+        if (photoUris.isNotEmpty()) {
+            binding.cardImagePreview.visibility = View.VISIBLE
+            binding.imgLabResultPreview.setImageURI(photoUris.last())
+            binding.tvFinalLabResult.text = "Final Laboratory Result images (${photoUris.size} attached)"
+        }
     }
 
     private fun setupDropdowns() {
@@ -103,65 +118,35 @@ class Laboratory_Form_2_Annex2G_Activity : AppCompatActivity() {
 
     private fun setupDatePickers() {
         binding.etDateLabReceived.setOnClickListener {
-            showDatePicker { binding.etDateLabReceived.setText(it) }
+            showDatePicker(null) { binding.etDateLabReceived.setText(it) }
         }
+
         binding.etDateLabSentDistrict.setOnClickListener {
-            showDatePicker { binding.etDateLabSentDistrict.setText(it) }
+            val minDate = try { sdf.parse(binding.etDateLabReceived.text.toString())?.time } catch (e: Exception) { null }
+            showDatePicker(minDate) { binding.etDateLabSentDistrict.setText(it) }
         }
+
         binding.etDateDistrictReceivedLabResult.setOnClickListener {
-            showDatePicker { binding.etDateDistrictReceivedLabResult.setText(it) }
+            val minDate = try { sdf.parse(binding.etDateLabSentDistrict.text.toString())?.time } catch (e: Exception) { null }
+            showDatePicker(minDate) { binding.etDateDistrictReceivedLabResult.setText(it) }
         }
     }
 
-    private fun setupClickListeners() {
-        binding.btnBackAnnex2G2.setOnClickListener { finish() }
+    private fun showDatePicker(minDate: Long?, onDateSelected: (String) -> Unit) {
+        val dialog = DatePickerDialog(this, { _, y, m, d ->
+            val cal = Calendar.getInstance().apply { set(y, m, d) }
+            onDateSelected(sdf.format(cal.time))
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
 
-        uploadBtn.setOnClickListener { showImagePickerDialog() }
-
-        binding.btnLabTech.setOnClickListener {
-            if (validateLabFormForLabTech2()) {
-                binding.btnLabTech.isEnabled = false
-                binding.btnLabTech.text = "Saving..."
-                submitLabForm2()
-            }
-        }
-    }
-
-    private fun setupFieldListeners() {
-        val fields = listOf(
-            binding.tilLabName                          to binding.etLabName,
-            binding.tilDateLabReceived                  to binding.etDateLabReceived,
-            binding.tilTestTypesPerformed               to binding.etTestTypesPerformed,
-            binding.tilFinalLabResult                   to binding.etFinalLAbResult,
-            binding.tilDateLabSentDistrict              to binding.etDateLabSentDistrict,
-            binding.tilDateDistrictReceivedLabResult    to binding.etDateDistrictReceivedLabResult
-        )
-        for ((layout, editText) in fields) {
-            editText.addTextChangedListener {
-                if (!it.isNullOrEmpty()) layout.error = null
-            }
-        }
-        binding.spinnerSpecimenCon.addTextChangedListener {
-            if (!it.isNullOrEmpty()) binding.tilSpecimenCon.error = null
-        }
-    }
-
-    private fun showDatePicker(onDateSelected: (String) -> Unit) {
-        val year  = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day   = calendar.get(Calendar.DAY_OF_MONTH)
-
-        DatePickerDialog(this, { _, y, m, d ->
-            val cal = Calendar.getInstance()
-            cal.set(y, m, d)
-            onDateSelected(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.time))
-        }, year, month, day).show()
+        dialog.datePicker.maxDate = System.currentTimeMillis()
+        minDate?.let { dialog.datePicker.minDate = it }
+        dialog.show()
     }
 
     private fun showImagePickerDialog() {
         AlertDialog.Builder(this)
             .setTitle("Upload Image")
-            .setItems(arrayOf("Gallery", "Camera")) { _, which ->
+            .setItems(arrayOf("Gallery (Select Multiple)", "Camera")) { _, which ->
                 when (which) {
                     0 -> galleryLauncher.launch("image/*")
                     1 -> checkCameraPermission()
@@ -170,8 +155,7 @@ class Laboratory_Form_2_Annex2G_Activity : AppCompatActivity() {
     }
 
     private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST)
         } else {
             openCamera()
@@ -180,141 +164,84 @@ class Laboratory_Form_2_Annex2G_Activity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_REQUEST &&
-            grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == CAMERA_PERMISSION_REQUEST && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             openCamera()
-        } else {
-            Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun openCamera() {
         val values = ContentValues().apply {
-            put(android.provider.MediaStore.Images.Media.TITLE, "Lab Result")
-            put(android.provider.MediaStore.Images.Media.DESCRIPTION, "Photo taken for lab result")
+            put(MediaStore.Images.Media.TITLE, "Lab Result ${System.currentTimeMillis()}")
         }
-        photoUri = contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-        photoUri?.let { cameraLauncher.launch(it) }
+        tempCameraUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        tempCameraUri?.let { cameraLauncher.launch(it) }
     }
 
     private fun validateLabFormForLabTech2(): Boolean {
         var isValid = true
+        val fields = listOf(
+            binding.etLabName to binding.tilLabName,
+            binding.etDateLabReceived to binding.tilDateLabReceived,
+            binding.etTestTypesPerformed to binding.tilTestTypesPerformed,
+            binding.etFinalLAbResult to binding.tilFinalLabResult,
+            binding.etDateLabSentDistrict to binding.tilDateLabSentDistrict,
+            binding.etDateDistrictReceivedLabResult to binding.tilDateDistrictReceivedLabResult
+        )
 
-        if (binding.etLabName.text.isNullOrEmpty()) {
-            binding.tilLabName.error = "Lab name is required"
-            isValid = false
-        } else binding.tilLabName.error = null
-
-        if (binding.etDateLabReceived.text.isNullOrEmpty()) {
-            binding.tilDateLabReceived.error = "Date laboratory received is required"
-            isValid = false
-        } else binding.tilDateLabReceived.error = null
+        for ((et, til) in fields) {
+            if (et.text.isNullOrEmpty()) {
+                til.error = "Required"
+                isValid = false
+            }
+        }
 
         if (binding.spinnerSpecimenCon.text.isNullOrEmpty()) {
-            binding.tilSpecimenCon.error = "Specimen condition is required"
+            binding.tilSpecimenCon.error = "Required"
             isValid = false
-        } else binding.tilSpecimenCon.error = null
+        }
 
-        if (binding.etTestTypesPerformed.text.isNullOrEmpty()) {
-            binding.tilTestTypesPerformed.error = "Test types performed is required"
-            isValid = false
-        } else binding.tilTestTypesPerformed.error = null
-
-        if (binding.etFinalLAbResult.text.isNullOrEmpty()) {
-            binding.tilFinalLabResult.error = "Final laboratory result is required"
-            isValid = false
-        } else binding.tilFinalLabResult.error = null
-
-        if (binding.etDateLabSentDistrict.text.isNullOrEmpty()) {
-            binding.tilDateLabSentDistrict.error = "Date laboratory sent to district is required"
-            isValid = false
-        } else binding.tilDateLabSentDistrict.error = null
-
-        if (binding.etDateDistrictReceivedLabResult.text.isNullOrEmpty()) {
-            binding.tilDateDistrictReceivedLabResult.error = "Date district received laboratory result is required"
-            isValid = false
-        } else binding.tilDateDistrictReceivedLabResult.error = null
-
-        if (photoUri == null) {
-            Toast.makeText(this, "Please upload lab result image", Toast.LENGTH_SHORT).show()
+        if (photoUris.isEmpty()) {
+            Toast.makeText(this, "Please attach at least one lab result image", Toast.LENGTH_SHORT).show()
             isValid = false
         }
 
         return isValid
     }
 
-    // ── core submit function ───────────────────────────────────────────────────
     private fun submitLabForm2() {
+        binding.btnLabTech.isEnabled = false
+        binding.btnLabTech.text = "Saving..."
+
         lifecycleScope.launch {
-
-            // Step 1 — copy image to permanent app storage so it survives offline
-            val permanentFile = withContext(Dispatchers.IO) {
-                copyImageToPermanentStorage(photoUri!!)
+            val savedPaths = withContext(Dispatchers.IO) {
+                photoUris.mapNotNull { copyAndCompressImage(it) }
             }
 
-            if (permanentFile == null) {
-                Toast.makeText(
-                    this@Laboratory_Form_2_Annex2G_Activity,
-                    "Failed to process image. Please try again.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                binding.btnLabTech.isEnabled = true
-                binding.btnLabTech.text = "Submit Lab Form"
-                return@launch
-            }
-
-            // Step 2 — build the offline data object with the permanent file path
             val offlineData = LabFormOfflineData(
-                labName                      = binding.etLabName.text.toString().trim(),
-                dateLabReceived              = binding.etDateLabReceived.text.toString().trim(),
-                specimenCondition            = binding.spinnerSpecimenCon.text.toString().trim(),
-                testTypesPerformed           = binding.etTestTypesPerformed.text.toString().trim(),
-                finalLabResult               = binding.etFinalLAbResult.text.toString().trim(),
-                dateLabSentDistrict          = binding.etDateLabSentDistrict.text.toString().trim(),
+                labName = binding.etLabName.text.toString().trim(),
+                dateLabReceived = binding.etDateLabReceived.text.toString().trim(),
+                specimenCondition = binding.spinnerSpecimenCon.text.toString().trim(),
+                testTypesPerformed = binding.etTestTypesPerformed.text.toString().trim(),
+                finalLabResult = binding.etFinalLAbResult.text.toString().trim(),
+                dateLabSentDistrict = binding.etDateLabSentDistrict.text.toString().trim(),
                 dateDistrictReceivedLabResult = binding.etDateDistrictReceivedLabResult.text.toString().trim(),
-                imagePath                    = permanentFile.absolutePath
+                imagePaths = savedPaths
             )
 
             val json = Gson().toJson(offlineData)
-
-            // Step 3 — always save to Room first
             val dao = AppDatabase.getInstance(this@Laboratory_Form_2_Annex2G_Activity).pendingReportDao()
-            val rowId = dao.insert(
-                PendingReportEntity(
-                    formType    = "LAB",
-                    reportJson  = json,
-                    submittedBy = SessionManager.getFullName(this@Laboratory_Form_2_Annex2G_Activity) ?: ""
-                )
-            )
+            val rowId = dao.insert(PendingReportEntity(
+                formType = "LAB",
+                reportJson = json,
+                submittedBy = SessionManager.getFullName(this@Laboratory_Form_2_Annex2G_Activity) ?: "Unknown"
+            ))
 
-            // Step 4 — try immediate upload if online
             if (repository.isOnline()) {
-                val synced = withContext(Dispatchers.IO) {
-                    tryUploadLabNow(offlineData)
-                }
-                if (synced) {
-                    dao.updateStatus(rowId, "SYNCED")
-                    Toast.makeText(
-                        this@Laboratory_Form_2_Annex2G_Activity,
-                        "Lab report submitted successfully.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    dao.updateStatus(rowId, "FAILED")
-                    LabSyncWorker.schedule(this@Laboratory_Form_2_Annex2G_Activity)
-                    Toast.makeText(
-                        this@Laboratory_Form_2_Annex2G_Activity,
-                        "Report saved. Will sync automatically when online.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                val synced = withContext(Dispatchers.IO) { tryUploadLabNow(offlineData) }
+                if (synced) dao.updateStatus(rowId, "SYNCED")
+                else LabSyncWorker.schedule(this@Laboratory_Form_2_Annex2G_Activity)
             } else {
                 LabSyncWorker.schedule(this@Laboratory_Form_2_Annex2G_Activity)
-                Toast.makeText(
-                    this@Laboratory_Form_2_Annex2G_Activity,
-                    "Report saved. Will sync automatically when online.",
-                    Toast.LENGTH_LONG
-                ).show()
             }
 
             startActivity(Intent(this@Laboratory_Form_2_Annex2G_Activity, Success_Activity::class.java))
@@ -322,62 +249,67 @@ class Laboratory_Form_2_Annex2G_Activity : AppCompatActivity() {
         }
     }
 
-    // ── copies URI image to permanent app-internal storage ────────────────────
-    private fun copyImageToPermanentStorage(uri: Uri): File? {
+    private fun copyAndCompressImage(uri: Uri): String? {
         return try {
-            val mimeType  = contentResolver.getType(uri) ?: "image/jpeg"
-            val extension = when {
-                mimeType.contains("png") -> "png"
-                mimeType.contains("gif") -> "gif"
-                else -> "jpg"
-            }
-
-            // save to files/lab_images/ — persists until app is uninstalled
+            val inputStream = contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
             val dir = File(filesDir, "lab_images").also { it.mkdirs() }
-            val destFile = File(dir, "lab_${System.currentTimeMillis()}.$extension")
+            val file = File(dir, "lab_${UUID.randomUUID()}.jpg")
 
-            contentResolver.openInputStream(uri)?.use { input ->
-                destFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
+            FileOutputStream(file).use { out ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out)
             }
-
-            Log.d("LAB_IMAGE", "Saved to: ${destFile.absolutePath}")
-            destFile
-        } catch (e: Exception) {
-            Log.e("LAB_IMAGE", "Failed to copy image: ${e.message}", e)
-            null
-        }
+            file.absolutePath
+        } catch (e: Exception) { null }
     }
 
-    // ── builds multipart and attempts upload — used for both immediate and retry
-    fun tryUploadLabNow(data: LabFormOfflineData): Boolean {
+    private fun tryUploadLabNow(data: LabFormOfflineData): Boolean {
         return try {
-            val file = File(data.imagePath)
-            if (!file.exists()) return false
-
-            val imagePart = MultipartBody.Part.createFormData(
-                "labResultImage",
-                file.name,
-                file.asRequestBody("image/*".toMediaTypeOrNull())
-            )
+            val imageParts = data.imagePaths.map { path ->
+                val file = File(path)
+                val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("labResultImages[]", file.name, requestFile)
+            }
 
             val response = ApiClient.getClient(this).submitLabReport(
-                labName                      = data.labName.toRequestBody("text/plain".toMediaTypeOrNull()),
-                dateLabReceived              = data.dateLabReceived.toRequestBody("text/plain".toMediaTypeOrNull()),
-                specimenCondition            = data.specimenCondition.toRequestBody("text/plain".toMediaTypeOrNull()),
-                testTypesPerformed           = data.testTypesPerformed.toRequestBody("text/plain".toMediaTypeOrNull()),
-                finalLabResult               = data.finalLabResult.toRequestBody("text/plain".toMediaTypeOrNull()),
-                dateLabSentDistrict          = data.dateLabSentDistrict.toRequestBody("text/plain".toMediaTypeOrNull()),
+                labName = data.labName.toRequestBody("text/plain".toMediaTypeOrNull()),
+                dateLabReceived = data.dateLabReceived.toRequestBody("text/plain".toMediaTypeOrNull()),
+                specimenCondition = data.specimenCondition.toRequestBody("text/plain".toMediaTypeOrNull()),
+                testTypesPerformed = data.testTypesPerformed.toRequestBody("text/plain".toMediaTypeOrNull()),
+                finalLabResult = data.finalLabResult.toRequestBody("text/plain".toMediaTypeOrNull()),
+                dateLabSentDistrict = data.dateLabSentDistrict.toRequestBody("text/plain".toMediaTypeOrNull()),
                 dateDistrictReceivedLabResult = data.dateDistrictReceivedLabResult.toRequestBody("text/plain".toMediaTypeOrNull()),
-                labResultImage               = imagePart
+                labResultImages = imageParts // API must be updated to accept a List/Array
             ).execute()
 
             response.isSuccessful
-        } catch (e: Exception) {
-            Log.e("LAB_UPLOAD", "Upload failed: ${e.message}", e)
-            false
-        }
+        } catch (e: Exception) { false }
+    }
+
+    private fun handleBackPress() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() { showExitWarning() }
+        })
+    }
+
+    private fun showExitWarning() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Discard Results?")
+            .setMessage("All captured images and data will be lost.")
+            .setPositiveButton("Discard") { _, _ -> finish() }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun setupFieldListeners() {
+        val layouts = listOf(binding.tilLabName, binding.tilDateLabReceived, binding.tilSpecimenCon,
+            binding.tilTestTypesPerformed, binding.tilFinalLabResult,
+            binding.tilDateLabSentDistrict, binding.tilDateDistrictReceivedLabResult)
+
+        binding.etLabName.addTextChangedListener { binding.tilLabName.error = null }
+        binding.etDateLabReceived.addTextChangedListener { binding.tilDateLabReceived.error = null }
+        binding.spinnerSpecimenCon.addTextChangedListener { binding.tilSpecimenCon.error = null }
+
     }
 
     companion object {

@@ -10,13 +10,14 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.idsr_project.Model.immediateReportForm
 import com.idsr_project.databinding.ActivityAnnex2Fimmediate3Binding
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class Annex2F_Immediate_3_Activity : AppCompatActivity() {
+class Annex2F_Immediate_3_Activity : BaseActivity() {
     private lateinit var binding: ActivityAnnex2Fimmediate3Binding
     private val calendar = Calendar.getInstance()
 
@@ -65,6 +66,8 @@ class Annex2F_Immediate_3_Activity : AppCompatActivity() {
                 passDataToNextScreen()
             }
         }
+
+        FirebaseCrashlytics.getInstance().setCustomKey("screen", "Annex2F_Immediate_3_Activity")
     }
 
     private fun setupTravelHistorySpinner() {
@@ -105,59 +108,72 @@ class Annex2F_Immediate_3_Activity : AppCompatActivity() {
             { _, selectedYear, selectedMonth, selectedDay ->
                 val selectedCal = Calendar.getInstance()
                 selectedCal.set(selectedYear, selectedMonth, selectedDay)
-
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 onDateSelected(dateFormat.format(selectedCal.time))
             },
             year, month, day
         )
+
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
         datePickerDialog.show()
     }
 
     private fun validateImmediate3Form(): Boolean {
         var isValid = true
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
+        val onsetStr = binding.etDateOfOnset.text.toString().trim()
+        val travelHistory = binding.spinnerTravelHistory.text.toString().trim()
+        val destination = binding.etDestination.text.toString().trim()
+        val dosesStr = binding.etVaccineDoses.text.toString().trim()
+        val lastVaccineStr = binding.etDateLastVaccine.text.toString().trim()
+        val specimenStr = binding.etDateSpecimen.text.toString().trim()
+        val labStr = binding.etDateLab.text.toString().trim()
+        val labResults = binding.etLabResults.text.toString().trim()
 
-        if (binding.etDateOfOnset.text.isNullOrEmpty()) {
+        if (onsetStr.isEmpty()) {
             binding.tilDateOfOnset.error = "Date of onset is required"
             isValid = false
-        } else {
-            binding.tilDateOfOnset.error = null
-        }
+        } else binding.tilDateOfOnset.error = null
+
+        if (specimenStr.isEmpty()) {
+            binding.tilDateSpecimen.error = "Date specimen collected is required"
+            isValid = false
+        } else binding.tilDateSpecimen.error = null
+
+        if (labStr.isEmpty()) {
+            binding.tilDateLab.error = "Date specimen sent to lab is required"
+            isValid = false
+        } else binding.tilDateLab.error = null
+
+        if (labResults.isEmpty()) {
+            binding.tilLabResults.error = "Laboratory results are required"
+            isValid = false
+        } else binding.tilLabResults.error = null
 
 
-        if (binding.spinnerTravelHistory.text.isNullOrEmpty()) {
+        if (travelHistory.isEmpty()) {
             binding.tilTravelHistory.error = "Please select Travel history"
             isValid = false
         } else {
             binding.tilTravelHistory.error = null
-
-            if (binding.spinnerTravelHistory.text.toString() == "Yes") {
-                if (binding.etDestination.text.isNullOrEmpty()) {
-                    binding.tilDestination.error = "Destination is required when travel history is 'Yes'"
-                    isValid = false
-                } else {
-                    binding.tilDestination.error = null
-                }
+            if (travelHistory == "Yes" && destination.isEmpty()) {
+                binding.tilDestination.error = "Destination is required when travel history is 'Yes'"
+                isValid = false
+            } else {
+                binding.tilDestination.error = null
             }
         }
 
-        // Validate Vaccine Doses (optional field with conditional validation)
-        val dosesStr = binding.etVaccineDoses.text.toString().trim()
         if (dosesStr.isNotEmpty()) {
             val num = dosesStr.toIntOrNull()
-
-            if (num == null) {
+            if (num == null || num < 0) {
                 binding.tilVaccineDoses.error = "Invalid number of doses"
-                isValid = false
-            } else if (num < 0) {
-                binding.tilVaccineDoses.error = "Number of doses cannot be negative"
                 isValid = false
             } else {
                 binding.tilVaccineDoses.error = null
-
-                if (num > 0 && binding.etDateLastVaccine.text.isNullOrEmpty()) {
-                    binding.tilDateLastVaccine.error = "Date of last vaccination is required when doses > 0"
+                if (num > 0 && lastVaccineStr.isEmpty()) {
+                    binding.tilDateLastVaccine.error = "Date of last vaccination is required"
                     isValid = false
                 } else {
                     binding.tilDateLastVaccine.error = null
@@ -168,28 +184,26 @@ class Annex2F_Immediate_3_Activity : AppCompatActivity() {
             binding.tilDateLastVaccine.error = null
         }
 
-
-        if (binding.etDateSpecimen.text.isNullOrEmpty()) {
-            binding.tilDateSpecimen.error = "Date specimen collected is required"
-            isValid = false
-        } else {
-            binding.tilDateSpecimen.error = null
+        if (onsetStr.isNotEmpty() && specimenStr.isNotEmpty()) {
+            try {
+                val dateOnset = sdf.parse(onsetStr)
+                val dateSpecimen = sdf.parse(specimenStr)
+                if (dateSpecimen != null && dateOnset != null && dateSpecimen.before(dateOnset)) {
+                    binding.tilDateSpecimen.error = "Specimen cannot be collected before onset"
+                    isValid = false
+                }
+            } catch (e: Exception) { /* Handled by initial empty checks */ }
         }
 
-
-        if (binding.etDateLab.text.isNullOrEmpty()) {
-            binding.tilDateLab.error = "Date specimen sent to lab is required"
-            isValid = false
-        } else {
-            binding.tilDateLab.error = null
-        }
-
-
-        if (binding.etLabResults.text.isNullOrEmpty()) {
-            binding.tilLabResults.error = "Laboratory results are required"
-            isValid = false
-        } else {
-            binding.tilLabResults.error = null
+        if (specimenStr.isNotEmpty() && labStr.isNotEmpty()) {
+            try {
+                val dateSpecimen = sdf.parse(specimenStr)
+                val dateLab = sdf.parse(labStr)
+                if (dateLab != null && dateSpecimen != null && dateLab.before(dateSpecimen)) {
+                    binding.tilDateLab.error = "Sent to lab cannot be before collection"
+                    isValid = false
+                }
+            } catch (e: Exception) { /* Handled by initial empty checks */ }
         }
 
         return isValid

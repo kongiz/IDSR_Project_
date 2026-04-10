@@ -163,6 +163,7 @@
                         android:id="@+id/tvAge"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColorHint="?attr/colorOnSurfaceVariant"
                         android:focusable="false"
                         android:clickable="false"
                         android:inputType="none"
