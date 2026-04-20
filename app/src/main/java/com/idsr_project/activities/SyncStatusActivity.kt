@@ -119,7 +119,7 @@ class SyncStatusActivity : BaseActivity() {
             val region   = SessionManager.getUserRegion(this@SyncStatusActivity) ?: ""
             val district = SessionManager.getUserDistrict(this@SyncStatusActivity) ?: ""
 
-            allReports = withContext(Dispatchers.IO) {  // ← also move DB call to IO
+            allReports = withContext(Dispatchers.IO) {
                 when (role) {
                     "ADMIN"            -> dao.getAllReports()
                     "REGIONAL_OFFICER" -> dao.getReportsByRegion(region)

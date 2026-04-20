@@ -1,5 +1,6 @@
 package com.idsr_project.api
 
+import com.idsr_project.Model.AdminUsersResponse
 import com.idsr_project.Model.AnalyticResponse
 import com.idsr_project.Model.Annex2FResponse
 import com.idsr_project.Model.Annex2GResponse
@@ -14,6 +15,7 @@ import com.idsr_project.Model.HealthFacilities
 import com.idsr_project.Model.HealthRegions
 import com.idsr_project.Model.LabReportResponse
 import com.idsr_project.Model.LoginRequest
+import com.idsr_project.Model.MapPointsResponse
 import com.idsr_project.Model.NotificationsResponse
 import com.idsr_project.Model.OtpResponse
 import com.idsr_project.Model.ProfileResponse
@@ -21,6 +23,9 @@ import com.idsr_project.Model.ResendOtpRequest
 import com.idsr_project.Model.ResetPasswordRequest
 import com.idsr_project.Model.ResponseApi
 import com.idsr_project.Model.UpdateProfileRequest
+import com.idsr_project.Model.UpdateRoleRequest
+import com.idsr_project.Model.UpdateStatusRequest
+import com.idsr_project.Model.UpdateUserResponse
 import com.idsr_project.Model.VerifyEmailRequest
 import com.idsr_project.Model.VerifyResetOtpRequest
 import com.idsr_project.Model.immediateReportForm
@@ -37,6 +42,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -67,7 +73,6 @@ interface ApiServices {
 
     @POST("auth/reset-password")
     fun resetPassword(@Body body: ResetPasswordRequest): Call<OtpResponse>
-
 
 
     @POST("logout")
@@ -181,4 +186,63 @@ interface ApiServices {
 
     @PATCH("profile/change-password")
     fun changePassword(@Body body: ChangePasswordRequest): Call<ResponseApi>
+
+
+    @PUT("edit_surveillance_report/{id}")
+    fun editSurveillanceReport(
+        @Path("id") id: Int,
+        @Body data: surveillanceData
+    ): Call<ResponseApi>
+
+    @PUT("edit_annex2FImmediateReport/{id}")
+    fun editImmediateReport(
+        @Path("id") id: Int,
+        @Body data: immediateReportForm
+    ): Call<ResponseApi>
+
+    @PUT("edit_annex2GLabSpecimen/{id}")
+    fun editSpecimenReport(
+        @Path("id") id: Int,
+        @Body data: reportFormToLabWithSpecimen
+    ): Call<ResponseApi>
+
+    @Multipart
+    @PUT("edit_lab_report/{id}")
+    fun editLabReport(
+        @Path("id") id: Int,
+        @Part("labName") labName: RequestBody,
+        @Part("dateLabReceived") dateLabReceived: RequestBody,
+        @Part("specimenCondition") specimenCondition: RequestBody,
+        @Part("testTypesPerformed") testTypesPerformed: RequestBody,
+        @Part("finalLabResult") finalLabResult: RequestBody,
+        @Part("dateLabSentDistrict") dateLabSentDistrict: RequestBody,
+        @Part("dateDistrictReceivedLabResult") dateDistrictReceivedLabResult: RequestBody,
+        @Part labResultImages: List<MultipartBody.Part>
+    ): Call<ResponseApi>
+
+
+    @GET("get_map")
+    fun getMapPoints(): Call<MapPointsResponse>
+
+    @GET("admin/users")
+    fun getAllUsers(
+        @Query("role") role: String? = null,
+        @Query("region_id") regionId: Int? = null,
+        @Query("district_id") districtId: Int? = null,
+        @Query("is_active") isActive: Boolean? = null,
+        @Query("search") search: String? = null
+    ): Call<AdminUsersResponse>
+
+    @PATCH("admin/users/{id}/status")
+    fun updateUserStatus(
+        @Path("id") userId: Int,
+        @Body request: UpdateStatusRequest
+    ): Call<UpdateUserResponse>
+
+    @PATCH("admin/users/{id}/role")
+    fun updateUserRole(
+        @Path("id") userId: Int,
+        @Body request: UpdateRoleRequest
+    ): Call<UpdateUserResponse>
 }
+

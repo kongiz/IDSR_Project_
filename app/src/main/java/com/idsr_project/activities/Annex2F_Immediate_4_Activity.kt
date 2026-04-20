@@ -12,13 +12,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
+import com.idsr_project.Model.Annex2FData
 import com.idsr_project.Model.ResponseApi
 import com.idsr_project.Model.immediateReportForm
 import com.idsr_project.R
+import com.idsr_project.api.ApiClient
 import com.idsr_project.data.repository.OfflineRepository
 import com.idsr_project.data.repository.SubmitResult
 import com.idsr_project.databinding.ActivityAnnex2Fimmediate4Binding
 import com.idsr_project.sync.SyncWorker
+import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.SessionManager
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -30,6 +33,10 @@ class Annex2F_Immediate_4_Activity : BaseActivity() {
     private lateinit var binding: ActivityAnnex2Fimmediate4Binding
     private val calendar = Calendar.getInstance()
     private val repository by lazy { OfflineRepository(this) }
+
+    private var isEditMode   = false
+    private var editReportId = -1
+    private var editData: Annex2FData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +66,15 @@ class Annex2F_Immediate_4_Activity : BaseActivity() {
             if (validateImmediate4Form()) {
                 submitAnnex2FImmediateToDB()
             }
+        }
+
+        isEditMode   = intent.getBooleanExtra(EditModeExtras.EXTRA_EDIT_MODE, false)
+        editReportId = intent.getIntExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, -1)
+        editData     = intent.getParcelableExtra(EditModeExtras.EXTRA_EDIT_DATA)
+
+        if (isEditMode && editData != null) {
+            prefillAnnex2F4(editData!!)
+            binding.btnNextAnnex4.text = "Update Report"
         }
     }
 
@@ -145,13 +161,13 @@ class Annex2F_Immediate_4_Activity : BaseActivity() {
 
     private fun submitAnnex2FImmediateToDB() {
         binding.btnNextAnnex4.isEnabled = false
-        binding.btnNextAnnex4.text = "Saving..."
+        binding.btnNextAnnex4.text      = if (isEditMode) "Updating..." else "Saving..."
 
         val receivedAnnex2Report = intent.getParcelableExtra<immediateReportForm>("Annex2FReport")
         if (receivedAnnex2Report == null) {
             Toast.makeText(this, "No report data received", Toast.LENGTH_SHORT).show()
             binding.btnNextAnnex4.isEnabled = true
-            binding.btnNextAnnex4.text = "Submit Form"
+            binding.btnNextAnnex4.text      = if (isEditMode) "Update Report" else "Submit Form"
             return
         }
 
@@ -164,45 +180,69 @@ class Annex2F_Immediate_4_Activity : BaseActivity() {
         )
 
         lifecycleScope.launch {
-            val json = Gson().toJson(finalForm)
-            Log.d("ANNEX2F_DEBUG", "=== SUBMITTING ANNEX2F ===")  // Log.e shows in red
-            Log.d("ANNEX2F_DEBUG", json)
-
-
-            when (val result = repository.submitReport("ANNEX2F", json)) {
-
-                is SubmitResult.SyncedOnline -> {
-                    Toast.makeText(
-                        this@Annex2F_Immediate_4_Activity,
-                        result.message,
-                        Toast.LENGTH_LONG
-                    ).show()
+            try {
+                if (isEditMode && editReportId != -1) {
+                    // ── Edit mode — PUT ──
+                    val response = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                        ApiClient.getClient(this@Annex2F_Immediate_4_Activity)
+                            .editImmediateReport(editReportId, finalForm)
+                            .execute()
+                    }
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        Toast.makeText(this@Annex2F_Immediate_4_Activity,
+                            "Report updated successfully", Toast.LENGTH_LONG).show()
+                        startActivity(Intent(this@Annex2F_Immediate_4_Activity, Success_Activity::class.java))
+                        finish()
+                    } else {
+                        val errorMsg = when (response.code()) {
+                            403  -> "Edit window has expired or you don't have permission"
+                            404  -> "Report not found"
+                            else -> "Update failed. Please try again."
+                        }
+                        Toast.makeText(this@Annex2F_Immediate_4_Activity, errorMsg, Toast.LENGTH_LONG).show()
+                        binding.btnNextAnnex4.isEnabled = true
+                        binding.btnNextAnnex4.text      = "Update Report"
+                    }
+                } else {
+                    // ── New submission ──
+                    val json = Gson().toJson(finalForm)
+                    when (val result = repository.submitReport("ANNEX2F", json)) {
+                        is SubmitResult.SyncedOnline -> {
+                            Toast.makeText(this@Annex2F_Immediate_4_Activity, result.message, Toast.LENGTH_LONG).show()
+                            startActivity(Intent(this@Annex2F_Immediate_4_Activity, Success_Activity::class.java))
+                            finish()
+                        }
+                        is SubmitResult.SavedOffline -> {
+                            Toast.makeText(this@Annex2F_Immediate_4_Activity,
+                                "Report saved. Will sync automatically when online.", Toast.LENGTH_LONG).show()
+                            SyncWorker.schedule(this@Annex2F_Immediate_4_Activity)
+                            startActivity(Intent(this@Annex2F_Immediate_4_Activity, Success_Activity::class.java))
+                            finish()
+                        }
+                        is SubmitResult.Error -> {
+                            Toast.makeText(this@Annex2F_Immediate_4_Activity,
+                                "Error: ${result.message}", Toast.LENGTH_LONG).show()
+                            binding.btnNextAnnex4.isEnabled = true
+                            binding.btnNextAnnex4.text      = "Submit Form"
+                        }
+                    }
                 }
-
-                is SubmitResult.SavedOffline -> {
-                    Toast.makeText(
-                        this@Annex2F_Immediate_4_Activity,
-                        "Report saved. Will sync automatically when online.",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    SyncWorker.schedule(this@Annex2F_Immediate_4_Activity)
-                }
-
-                is SubmitResult.Error -> {
-                    Toast.makeText(
-                        this@Annex2F_Immediate_4_Activity,
-                        "Error: ${result.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    binding.btnNextAnnex4.isEnabled = true
-                    binding.btnNextAnnex4.text = "Submit Form"
-                    return@launch
-                }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+                binding.btnNextAnnex4.isEnabled = true
+                binding.btnNextAnnex4.text      = if (isEditMode) "Update Report" else "Submit Form"
+                Toast.makeText(this@Annex2F_Immediate_4_Activity,
+                    "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
-
-            startActivity(Intent(this@Annex2F_Immediate_4_Activity, Success_Activity::class.java))
-            finish()
         }
+    }
+
+
+    private fun prefillAnnex2F4(data: Annex2FData) {
+        binding.spinnerOutcome.setText(data.outcome ?: "", false)
+        binding.spinnerClassification.setText(data.classification ?: "", false)
+        binding.etDateFacilityNotified.setText(data.dateFacilityNotified ?: "")
+        binding.etDateSentDistrict.setText(data.dateSentDistrict ?: "")
+        binding.etReporterName.setText(data.reporterName ?: "")
     }
 }

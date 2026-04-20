@@ -18,6 +18,7 @@ import com.idsr_project.Model.loginResponse
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityLoginBinding
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.workers.ReferenceDataSyncWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -159,6 +160,7 @@ class Login_Activity : BaseActivity() {
                                     crashlytics.log("User logged in: ${res.user.firstname} ${res.user.lastname}")
 
                                     withContext(Dispatchers.Main) { registerFcmToken() }
+                                    withContext(Dispatchers.Main) { ReferenceDataSyncWorker.schedule(this@Login_Activity) }
                                     withContext(Dispatchers.Main) {
                                         Toast.makeText(
                                             this@Login_Activity,

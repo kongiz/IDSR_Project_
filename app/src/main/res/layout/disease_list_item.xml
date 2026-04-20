@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-
+        <!-- ── Header (disease name + expand arrow) ── -->
         <LinearLayout
             android:id="@+id/headerLayout"
             android:orientation="horizontal"
@@ -41,10 +41,10 @@
                 android:layout_height="24dp"
                 android:src="@drawable/im2"
                 app:tint="?attr/colorOnSurface"
-                android:contentDescription="Expand details" />
+                android:contentDescription="Expand details"/>
         </LinearLayout>
 
-
+        <!-- ── Expandable details section ── -->
         <LinearLayout
             android:id="@+id/detailsLayout"
             android:orientation="vertical"
@@ -53,7 +53,7 @@
             android:visibility="gone"
             android:paddingTop="16dp">
 
-
+            <!-- ── Alive Cases ── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
 
-
+                    <!-- U5 row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -88,6 +88,7 @@
                         android:paddingBottom="8dp">
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/u5MaleAliveLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -105,6 +106,7 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/u5FemaleAliveLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -122,7 +124,7 @@
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
 
-
+                    <!-- A5 row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -130,6 +132,7 @@
                         android:weightSum="2">
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/a5MaleAliveLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -147,6 +150,7 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/a5FemaleAliveLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -166,7 +170,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-
+            <!-- ── Death Cases ── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -192,7 +196,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
 
-
+                    <!-- U5 row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -201,6 +205,7 @@
                         android:paddingBottom="8dp">
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/u5MaleDeathLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -219,6 +224,7 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/u5FemaleDeathLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -237,7 +243,7 @@
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
 
-
+                    <!-- A5 row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -245,6 +251,7 @@
                         android:weightSum="2">
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/a5MaleDeathLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -263,6 +270,7 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/a5FemaleDeathLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -283,7 +291,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-
+            <!-- ── Total Samples ── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -304,6 +312,7 @@
                 app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/totalSamplesLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="12dp"
@@ -320,7 +329,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </com.google.android.material.card.MaterialCardView>
 
-
+            <!-- ── Save button ── -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveInExpand"
                 android:layout_width="match_parent"
@@ -329,7 +338,8 @@
                 android:textAllCaps="false"
                 android:textStyle="bold"
                 android:paddingVertical="12dp"
-                app:cornerRadius="8dp" />
+                app:cornerRadius="8dp"/>
+
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

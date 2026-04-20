@@ -201,6 +201,36 @@
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditReport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Edit Report"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:paddingVertical="14dp"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/baseline_edit_24"
+            app:iconGravity="start"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnExport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Export Report"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textColor="@color/idsr_on_primary"
+            android:paddingVertical="14dp"
+            android:visibility="gone"
+            app:backgroundTint="@color/idsr_secondary"
+            app:cornerRadius="12dp"
+            app:icon="@android:drawable/ic_menu_share"
+            app:iconTint="@color/idsr_on_primary"
+            app:iconGravity="start"
+            android:layout_marginBottom="8dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBack"

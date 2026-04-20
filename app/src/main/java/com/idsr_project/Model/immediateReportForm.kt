@@ -13,6 +13,7 @@ data class immediateReportForm(
     @SerializedName("site")                  val site: String,
     @SerializedName("disease")               val disease: String,
     @SerializedName("inpatientOutpatient")   val inpatientOutpatient: String,
+                                                     val caseGeo: String = "",
     @SerializedName("dateSeen")              val dateSeen: String,
     @SerializedName("patientName")           val patientName: String,
     @SerializedName("dateOfBirth")           val dateOfBirth: String,

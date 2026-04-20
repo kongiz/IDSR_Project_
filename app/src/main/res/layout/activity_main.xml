@@ -70,9 +70,10 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_notification"
+                    android:src="@drawable/notifications_24px"
                     android:contentDescription="Notifications"
                     app:tint="?attr/colorOnSurface"/>
+
 
                 <TextView
                     android:id="@+id/tvNotificationBadge"
@@ -90,11 +91,11 @@
             </FrameLayout>
 
             <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/btnThemeToggle"
+                android:id="@+id/btnMap"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/dark_mode_24px"
+                android:src="@drawable/location_on_24px"
                 android:contentDescription="Toggle Theme"
                 app:tint="?attr/colorOnSurface"/>
         </LinearLayout>
@@ -342,6 +343,53 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="History"
+                            android:textSize="12sp"
+                            android:textColor="@color/idsr_gray"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnManageUsers"
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:visibility="gone"
+                    app:cardCornerRadius="18dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="?attr/colorSurfaceVariant"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/icon_bg_blue"
+                            android:padding="8dp"
+                            android:src="@android:drawable/ic_menu_manage"
+                            android:contentDescription="Manage users"
+                            app:tint="?attr/colorOnPrimary"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Manage Users"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Accounts &amp; roles"
                             android:textSize="12sp"
                             android:textColor="@color/idsr_gray"/>
                     </LinearLayout>

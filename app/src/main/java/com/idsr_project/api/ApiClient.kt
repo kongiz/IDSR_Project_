@@ -20,7 +20,7 @@ object ApiClient {
 
 
     @Volatile
-    private var instance: ApiServices? = null
+    var instance: ApiServices? = null
 
     fun getClient(context: Context): ApiServices {
         return instance ?: synchronized(this) {

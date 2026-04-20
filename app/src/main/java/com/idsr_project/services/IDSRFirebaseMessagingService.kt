@@ -53,7 +53,7 @@ class IDSRFirebaseMessagingService : FirebaseMessagingService() {
         val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.drawable.notifications_24px)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)

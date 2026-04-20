@@ -3,6 +3,7 @@ package com.idsr_project.activities
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -14,10 +15,11 @@ import com.idsr_project.Model.LabReportData
 import com.idsr_project.R
 import com.idsr_project.databinding.ActivityLabReportsDetailBinding
 import com.idsr_project.utils.DateUtils
+import com.idsr_project.utils.EditModeExtras
+import com.idsr_project.utils.ExportManager
 import com.idsr_project.utils.SessionManager
 
 class Lab_Reports_Detail_Activity : AppCompatActivity() {
-
     private lateinit var binding: ActivityLabReportsDetailBinding
     private var labReport: LabReportData? = null
 
@@ -34,33 +36,65 @@ class Lab_Reports_Detail_Activity : AppCompatActivity() {
     private fun setupClickListeners() {
         binding.btnBackLabReportDetail.setOnClickListener { finish() }
         binding.btnBackLabReportReport.setOnClickListener { finish() }
-
-        binding.imgLabResult.setOnClickListener {
-            openImagePreview()
-        }
+        binding.imgLabResult.setOnClickListener { openImagePreview() }
     }
 
     private fun loadLabReportData() {
         labReport = intent.getParcelableExtra<LabReportData>("data")
-
         if (labReport == null) {
             Toast.makeText(this, "Error loading lab report data", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
-
         displayLabInformation()
         displayFinalResult()
         displayAdministrativeInfo()
         loadLabResultImages()
+        setupEditButton()
+        setupExportButton()
+    }
+
+    private fun setupEditButton() {
+        val report        = labReport!!
+        val currentUserId = SessionManager.getUserId(this)
+        val role          = SessionManager.getUserRole(this) ?: ""
+        val isOwner       = report.user_id == currentUserId
+        val isAdmin       = role == "Admin"
+
+        if (!isOwner && !isAdmin) { binding.btnEditReport.visibility = View.GONE; return }
+        if (!isWithin48Hours(report.created_at) && !isAdmin) { binding.btnEditReport.visibility = View.GONE; return }
+
+        binding.btnEditReport.visibility = View.VISIBLE
+        binding.btnEditReport.setOnClickListener {
+            startActivity(
+                Intent(this, Laboratory_Form_2_Annex2G_Activity::class.java).apply {
+                    putExtra(EditModeExtras.EXTRA_EDIT_MODE, true)
+                    putExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, report.id)
+                    putExtra(EditModeExtras.EXTRA_EDIT_DATA, report)
+                }
+            )
+        }
+    }
+
+    private fun isWithin48Hours(createdAt: String?): Boolean {
+        if (createdAt == null) return false
+        return try {
+            val sdf      = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault())
+            sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+            val created  = sdf.parse(createdAt) ?: return false
+            val diffHours = (System.currentTimeMillis() - created.time) / (1000 * 60 * 60)
+            diffHours <= 48
+        } catch (e: Exception) {
+            false
+        }
     }
 
     private fun displayLabInformation() {
         labReport?.let { report ->
-            binding.txtLabName.text = report.lab_name.orEmpty().ifEmpty { "N/A" }
-            binding.txtDateLabReceived.text = DateUtils.formatIsoDate(report.date_lab_received)
+            binding.txtLabName.text           = report.lab_name.orEmpty().ifEmpty { "N/A" }
+            binding.txtDateLabReceived.text   = DateUtils.formatIsoDate(report.date_lab_received)
             binding.txtSpecimenCondition.text = report.specimen_condition.orEmpty().ifEmpty { "N/A" }
-            binding.txtTestTypes.text = report.test_types_performed.orEmpty().ifEmpty { "N/A" }
+            binding.txtTestTypes.text         = report.test_types_performed.orEmpty().ifEmpty { "N/A" }
         }
     }
 
@@ -68,81 +102,82 @@ class Lab_Reports_Detail_Activity : AppCompatActivity() {
         labReport?.let { report ->
             val finalResult = report.final_lab_result.orEmpty().ifEmpty { "Pending" }
             binding.txtFinalResult.text = finalResult
-
             when (finalResult.lowercase()) {
                 "positive" -> binding.txtFinalResult.setTextColor(getColor(R.color.idsr_error))
                 "negative" -> binding.txtFinalResult.setTextColor(getColor(android.R.color.holo_green_dark))
-                else -> binding.txtFinalResult.setTextColor(getColor(R.color.idsr_gray))
+                else       -> binding.txtFinalResult.setTextColor(getColor(R.color.idsr_gray))
             }
         }
     }
 
     private fun displayAdministrativeInfo() {
         labReport?.let { report ->
-            binding.txtDateSentDistrict.text = DateUtils.formatIsoDate(report.date_lab_sent_district)
-            binding.txtDateDistrictReceived.text = DateUtils.formatIsoDate(report.date_district_received_lab_result)
-            binding.txtRegion.text = report.region_name.orEmpty().ifEmpty { "N/A" }
-            binding.txtDistrict.text = report.district_name.orEmpty().ifEmpty { "N/A" }
-            binding.txtCreatedAt.text = DateUtils.formatIsoDateTime(report.created_at)
+            binding.txtDateSentDistrict.text      = DateUtils.formatIsoDate(report.date_lab_sent_district)
+            binding.txtDateDistrictReceived.text  = DateUtils.formatIsoDate(report.date_district_received_lab_result)
+            binding.txtRegion.text                = report.region_name.orEmpty().ifEmpty { "N/A" }
+            binding.txtDistrict.text              = report.district_name.orEmpty().ifEmpty { "N/A" }
+            binding.txtCreatedAt.text             = DateUtils.formatIsoDateTime(report.created_at)
         }
     }
 
     private fun loadLabResultImages() {
         val images = labReport?.lab_result_images
-
         if (images.isNullOrEmpty()) {
             binding.imgLabResult.setImageResource(R.drawable.placeholder_image)
             binding.tvImageCount.text = "No images available"
             binding.imgLabResult.isClickable = false
             return
         }
-
-
         binding.tvImageCount.text = "1 of ${images.size} images (Tap to preview all)"
-
-        val token = SessionManager.getAccessToken(this)
-        val firstImageUrl = images[0]
-
-
-        val glideUrl = GlideUrl(
-            firstImageUrl,
-            LazyHeaders.Builder()
-                .addHeader("Authorization", "Bearer $token")
-                .build()
-        )
-
-        Glide.with(this)
-            .load(glideUrl)
+        val token    = SessionManager.getAccessToken(this)
+        val glideUrl = GlideUrl(images[0], LazyHeaders.Builder()
+            .addHeader("Authorization", "Bearer $token").build())
+        Glide.with(this).load(glideUrl)
             .placeholder(R.drawable.placeholder_image)
             .error(R.drawable.placeholder_image)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .centerCrop()
             .into(binding.imgLabResult)
-
         binding.imgLabResult.isClickable = true
     }
 
     private fun openImagePreview() {
         val images = labReport?.lab_result_images
-
         if (images.isNullOrEmpty()) {
             Toast.makeText(this, "No images available to preview", Toast.LENGTH_SHORT).show()
             return
         }
-
         try {
-            val intent = Intent(this, Img_Preview_Activity::class.java).apply {
-                // Pass the list as an ArrayList of strings
+            startActivity(Intent(this, Img_Preview_Activity::class.java).apply {
                 putStringArrayListExtra("imageList", ArrayList(images))
-            }
-            startActivity(intent)
+            })
         } catch (e: Exception) {
             Log.e("LAB_REPORT_DETAIL", "Error opening image preview", e)
             Toast.makeText(this, "Unable to open image preview", Toast.LENGTH_SHORT).show()
         }
     }
 
-    companion object {
-        private const val TAG = "Lab_Reports_Detail"
+    private fun setupExportButton() {
+        val role = SessionManager.getUserRole(this) ?: ""
+        val allowedRoles = listOf("Admin", "Regional Officer", "District Officer")
+
+        if (role !in allowedRoles) {
+            binding.btnExport.visibility = View.GONE
+            return
+        }
+
+        binding.btnExport.visibility = View.VISIBLE
+        binding.btnExport.setOnClickListener {
+            android.app.AlertDialog.Builder(this)
+                .setTitle("Export Lab Report")
+                .setItems(arrayOf("Export as PDF", "Export as CSV")) { _, which ->
+                    when (which) {
+                        0 -> ExportManager.exportLabReportPdf(this, labReport!!)
+                        1 -> ExportManager.exportLabReportCsv(this, labReport!!)
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
     }
 }

@@ -26,12 +26,14 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
+import com.idsr_project.Model.LabReportData
 import com.idsr_project.api.ApiClient
 import com.idsr_project.data.local.AppDatabase
 import com.idsr_project.data.local.PendingReportEntity
 import com.idsr_project.data.repository.OfflineRepository
 import com.idsr_project.databinding.ActivityLaboratoryForm2Annex2GactivityBinding
 import com.idsr_project.sync.LabSyncWorker
+import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.SessionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -79,6 +81,10 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
         }
     }
 
+    private var isEditMode   = false
+    private var editReportId = -1
+    private var editData: LabReportData? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -97,6 +103,15 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
             if (validateLabFormForLabTech2()) {
                 submitLabForm2()
             }
+        }
+        isEditMode   = intent.getBooleanExtra(EditModeExtras.EXTRA_EDIT_MODE, false)
+        editReportId = intent.getIntExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, -1)
+        editData     = intent.getParcelableExtra(EditModeExtras.EXTRA_EDIT_DATA)
+
+        if (isEditMode && editData != null) {
+            prefillLabForm2(editData!!)
+            binding.btnLabTech.text = "Update Report"
+            // Image not required in edit mode if keeping existing
         }
 
         FirebaseCrashlytics.getInstance().setCustomKey("screen", "Laboratory_Form_2_Annex2G_Activity")
@@ -200,7 +215,7 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
             isValid = false
         }
 
-        if (photoUris.isEmpty()) {
+        if (photoUris.isEmpty() && !isEditMode) {
             Toast.makeText(this, "Please attach at least one lab result image", Toast.LENGTH_SHORT).show()
             isValid = false
         }
@@ -210,42 +225,93 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
 
     private fun submitLabForm2() {
         binding.btnLabTech.isEnabled = false
-        binding.btnLabTech.text = "Saving..."
+        binding.btnLabTech.text      = if (isEditMode) "Updating..." else "Saving..."
 
         lifecycleScope.launch {
-            val savedPaths = withContext(Dispatchers.IO) {
-                photoUris.mapNotNull { copyAndCompressImage(it) }
+            try {
+                if (isEditMode && editReportId != -1) {
+                    val savedPaths = if (photoUris.isNotEmpty()) {
+                        withContext(Dispatchers.IO) { photoUris.mapNotNull { copyAndCompressImage(it) } }
+                    } else emptyList()
+
+                    val response = withContext(Dispatchers.IO) {
+                        val imageParts = savedPaths.map { path ->
+                            val file        = File(path)
+                            val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                            MultipartBody.Part.createFormData("labResultImage", file.name, requestFile)
+                        }
+
+                        ApiClient.getClient(this@Laboratory_Form_2_Annex2G_Activity)
+                            .editLabReport(
+                                id                             = editReportId,
+                                labName                        = binding.etLabName.text.toString().trim().toRequestBody("text/plain".toMediaTypeOrNull()),
+                                dateLabReceived                = binding.etDateLabReceived.text.toString().trim().toRequestBody("text/plain".toMediaTypeOrNull()),
+                                specimenCondition              = binding.spinnerSpecimenCon.text.toString().trim().toRequestBody("text/plain".toMediaTypeOrNull()),
+                                testTypesPerformed             = binding.etTestTypesPerformed.text.toString().trim().toRequestBody("text/plain".toMediaTypeOrNull()),
+                                finalLabResult                 = binding.etFinalLAbResult.text.toString().trim().toRequestBody("text/plain".toMediaTypeOrNull()),
+                                dateLabSentDistrict            = binding.etDateLabSentDistrict.text.toString().trim().toRequestBody("text/plain".toMediaTypeOrNull()),
+                                dateDistrictReceivedLabResult  = binding.etDateDistrictReceivedLabResult.text.toString().trim().toRequestBody("text/plain".toMediaTypeOrNull()),
+                                labResultImages                = imageParts
+                            ).execute()
+                    }
+
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        Toast.makeText(this@Laboratory_Form_2_Annex2G_Activity,
+                            "Lab report updated successfully", Toast.LENGTH_LONG).show()
+                        startActivity(Intent(this@Laboratory_Form_2_Annex2G_Activity, Success_Activity::class.java))
+                        finish()
+                    } else {
+                        val errorMsg = when (response.code()) {
+                            403  -> "Edit window has expired or you don't have permission"
+                            404  -> "Report not found"
+                            else -> "Update failed. Please try again."
+                        }
+                        Toast.makeText(this@Laboratory_Form_2_Annex2G_Activity, errorMsg, Toast.LENGTH_LONG).show()
+                        binding.btnLabTech.isEnabled = true
+                        binding.btnLabTech.text      = "Update Report"
+                    }
+                } else {
+                    val savedPaths = withContext(Dispatchers.IO) {
+                        photoUris.mapNotNull { copyAndCompressImage(it) }
+                    }
+
+                    val offlineData = LabFormOfflineData(
+                        labName                        = binding.etLabName.text.toString().trim(),
+                        dateLabReceived                = binding.etDateLabReceived.text.toString().trim(),
+                        specimenCondition              = binding.spinnerSpecimenCon.text.toString().trim(),
+                        testTypesPerformed             = binding.etTestTypesPerformed.text.toString().trim(),
+                        finalLabResult                 = binding.etFinalLAbResult.text.toString().trim(),
+                        dateLabSentDistrict            = binding.etDateLabSentDistrict.text.toString().trim(),
+                        dateDistrictReceivedLabResult  = binding.etDateDistrictReceivedLabResult.text.toString().trim(),
+                        imagePaths                     = savedPaths
+                    )
+
+                    val json  = Gson().toJson(offlineData)
+                    val dao   = AppDatabase.getInstance(this@Laboratory_Form_2_Annex2G_Activity).pendingReportDao()
+                    val rowId = dao.insert(PendingReportEntity(
+                        formType    = "LAB",
+                        reportJson  = json,
+                        submittedBy = SessionManager.getFullName(this@Laboratory_Form_2_Annex2G_Activity) ?: "Unknown"
+                    ))
+
+                    if (repository.isOnline()) {
+                        val synced = withContext(Dispatchers.IO) { tryUploadLabNow(offlineData) }
+                        if (synced) dao.updateStatus(rowId, "SYNCED")
+                        else LabSyncWorker.schedule(this@Laboratory_Form_2_Annex2G_Activity)
+                    } else {
+                        LabSyncWorker.schedule(this@Laboratory_Form_2_Annex2G_Activity)
+                    }
+
+                    startActivity(Intent(this@Laboratory_Form_2_Annex2G_Activity, Success_Activity::class.java))
+                    finish()
+                }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+                binding.btnLabTech.isEnabled = true
+                binding.btnLabTech.text      = if (isEditMode) "Update Report" else "Submit Form"
+                Toast.makeText(this@Laboratory_Form_2_Annex2G_Activity,
+                    "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
-
-            val offlineData = LabFormOfflineData(
-                labName = binding.etLabName.text.toString().trim(),
-                dateLabReceived = binding.etDateLabReceived.text.toString().trim(),
-                specimenCondition = binding.spinnerSpecimenCon.text.toString().trim(),
-                testTypesPerformed = binding.etTestTypesPerformed.text.toString().trim(),
-                finalLabResult = binding.etFinalLAbResult.text.toString().trim(),
-                dateLabSentDistrict = binding.etDateLabSentDistrict.text.toString().trim(),
-                dateDistrictReceivedLabResult = binding.etDateDistrictReceivedLabResult.text.toString().trim(),
-                imagePaths = savedPaths
-            )
-
-            val json = Gson().toJson(offlineData)
-            val dao = AppDatabase.getInstance(this@Laboratory_Form_2_Annex2G_Activity).pendingReportDao()
-            val rowId = dao.insert(PendingReportEntity(
-                formType = "LAB",
-                reportJson = json,
-                submittedBy = SessionManager.getFullName(this@Laboratory_Form_2_Annex2G_Activity) ?: "Unknown"
-            ))
-
-            if (repository.isOnline()) {
-                val synced = withContext(Dispatchers.IO) { tryUploadLabNow(offlineData) }
-                if (synced) dao.updateStatus(rowId, "SYNCED")
-                else LabSyncWorker.schedule(this@Laboratory_Form_2_Annex2G_Activity)
-            } else {
-                LabSyncWorker.schedule(this@Laboratory_Form_2_Annex2G_Activity)
-            }
-
-            startActivity(Intent(this@Laboratory_Form_2_Annex2G_Activity, Success_Activity::class.java))
-            finish()
         }
     }
 
@@ -268,7 +334,7 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
             val imageParts = data.imagePaths.map { path ->
                 val file = File(path)
                 val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-                MultipartBody.Part.createFormData("labResultImages[]", file.name, requestFile)
+                MultipartBody.Part.createFormData("labResultImage", file.name, requestFile)
             }
 
             val response = ApiClient.getClient(this).submitLabReport(
@@ -314,5 +380,14 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
 
     companion object {
         private const val CAMERA_PERMISSION_REQUEST = 100
+    }
+    private fun prefillLabForm2(data: LabReportData) {
+        binding.etLabName.setText(data.lab_name ?: "")
+        binding.etDateLabReceived.setText(data.date_lab_received ?: "")
+        binding.spinnerSpecimenCon.setText(data.specimen_condition ?: "", false)
+        binding.etTestTypesPerformed.setText(data.test_types_performed ?: "")
+        binding.etFinalLAbResult.setText(data.final_lab_result ?: "")
+        binding.etDateLabSentDistrict.setText(data.date_lab_sent_district ?: "")
+        binding.etDateDistrictReceivedLabResult.setText(data.date_district_received_lab_result ?: "")
     }
 }

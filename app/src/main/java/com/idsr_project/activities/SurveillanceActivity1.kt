@@ -17,17 +17,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.idsr_project.Model.ApiResponse
+import com.idsr_project.Model.FormData
 import com.idsr_project.Model.HealthDistricts
 import com.idsr_project.Model.HealthFacilities
 import com.idsr_project.Model.HealthRegions
 import com.idsr_project.Model.surveillanceData
 import com.idsr_project.R
 import com.idsr_project.api.ApiClient
+import com.idsr_project.data.local.AppDatabase
 import com.idsr_project.databinding.ActivitySurveillance1Binding
+import com.idsr_project.utils.EditModeExtras
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Response
 import java.text.SimpleDateFormat
@@ -61,6 +68,10 @@ class SurveillanceActivity1 : BaseActivity() {
         }
     }
 
+    private var isEditMode    = false
+    private var editReportId  = -1
+    private var editFormData: FormData? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -73,6 +84,16 @@ class SurveillanceActivity1 : BaseActivity() {
         setupClickListeners()
         loadRegions()
         setupValidationListeners()
+
+        isEditMode   = intent.getBooleanExtra(EditModeExtras.EXTRA_EDIT_MODE, false)
+        editFormData = intent.getParcelableExtra(EditModeExtras.EXTRA_EDIT_DATA)
+        editReportId = editFormData?.id ?: -1
+
+        if (isEditMode && editFormData != null) {
+            supportActionBar?.title = "Edit Surveillance Report"
+            binding.btnNextSur1.text = "Next (Editing)"
+            prefillSurveillance1(editFormData!!)
+        }
 
         FirebaseCrashlytics.getInstance().setCustomKey("screen", "SurveillanceActivity1")
     }
@@ -97,119 +118,129 @@ class SurveillanceActivity1 : BaseActivity() {
         binding.etDateTo.setOnClickListener { showDatePickerDialog(binding.etDateTo) }
     }
 
+    private fun prefillSurveillance1(form: FormData) {
+        binding.etEpiweek.setText(form.epiweek ?: "")
+        binding.etDateFrom.setText(formatDateOnly(form.date_from))
+        binding.etDateTo.setText(formatDateOnly(form.date_to))
+        binding.facilityGeo.setText(form.facility_geo ?: "")
+    }
+    private fun formatDateOnly(isoDate: String?): String {
+        if (isoDate.isNullOrEmpty()) return ""
+        return try {
+            if (isoDate.contains("T")) isoDate.substring(0, 10) else isoDate
+        } catch (e: Exception) { isoDate }
+    }
+
 
     private fun loadRegions() {
-        val api = ApiClient.getClient(context = this)
-        api.getRegions().enqueue(object : retrofit2.Callback<ApiResponse<List<HealthRegions>>> {
-            override fun onResponse(
-                call: Call<ApiResponse<List<HealthRegions>>?>,
-                response: Response<ApiResponse<List<HealthRegions>>?>
-            ) {
-                if (response.isSuccessful && response.body()?.data != null) {
-                    regionsList = response.body()!!.data!!
-                    val regionNames = regionsList.map { it.region_name }
-                    val adapter = ArrayAdapter(
-                        this@SurveillanceActivity1,
-                        android.R.layout.simple_list_item_1,
-                        regionNames
-                    )
-                    binding.spinnerRegion.setAdapter(adapter)
-                    binding.spinnerRegion.setOnClickListener { binding.spinnerRegion.showDropDown() }
-                    binding.spinnerRegion.setOnItemClickListener { _, _, position, _ ->
-                        selectedRegionId = regionsList[position].region_id
+        lifecycleScope.launch {
+            val regions = withContext(Dispatchers.IO) {
+                AppDatabase.getInstance(this@SurveillanceActivity1)
+                    .referenceDataDao()
+                    .getAllRegions()
+            }
 
+            if (regions.isEmpty()) {
+                Toast.makeText(this@SurveillanceActivity1, "No regions available. Check your connection.", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
 
-                        binding.spinnerDistrict.setText("", false)
-                        binding.spinnerFacility.setText("", false)
-                        selectedDistrictId = null
-                        selectedFacilityId = null
-                        districtsList = emptyList()
-                        facilitiesList = emptyList()
+            regionsList = regions.map { HealthRegions(it.id, it.name, "") }
+            val regionNames = regionsList.map { it.region_name }
+            val adapter = ArrayAdapter(this@SurveillanceActivity1, android.R.layout.simple_list_item_1, regionNames)
+            binding.spinnerRegion.setAdapter(adapter)
+            binding.spinnerRegion.setOnClickListener { binding.spinnerRegion.showDropDown() }
+            binding.spinnerRegion.setOnItemClickListener { _, _, position, _ ->
+                selectedRegionId = regionsList[position].region_id
+                binding.spinnerDistrict.setText("", false)
+                binding.spinnerFacility.setText("", false)
+                selectedDistrictId = null
+                selectedFacilityId = null
+                districtsList = emptyList()
+                facilitiesList = emptyList()
+                loadDistricts(selectedRegionId!!)
+            }
 
-                        loadDistricts(selectedRegionId!!)
-                    }
-                } else {
-                    Toast.makeText(this@SurveillanceActivity1, "Failed to load regions", Toast.LENGTH_SHORT).show()
+            if (isEditMode && editFormData != null) {
+                val idx = regionsList.indexOfFirst { it.region_name == editFormData!!.region_name }
+                if (idx >= 0) {
+                    binding.spinnerRegion.setText(regionsList[idx].region_name, false)
+                    selectedRegionId = regionsList[idx].region_id
+                    loadDistricts(selectedRegionId!!)
                 }
             }
-
-            override fun onFailure(call: Call<ApiResponse<List<HealthRegions>>?>, t: Throwable) {
-                Toast.makeText(this@SurveillanceActivity1, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+        }
     }
 
 
     private fun loadDistricts(regionId: Int) {
-        val api = ApiClient.getClient(context = this)
-        api.getDistrictsByRegion(regionId)
-            .enqueue(object : retrofit2.Callback<ApiResponse<List<HealthDistricts>>> {
-                override fun onResponse(
-                    call: Call<ApiResponse<List<HealthDistricts>>?>,
-                    response: Response<ApiResponse<List<HealthDistricts>>?>
-                ) {
-                    if (response.isSuccessful && response.body()?.data != null) {
-                        districtsList = response.body()!!.data!!
-                        val districtNames = districtsList.map { it.district_name }
-                        val adapter = ArrayAdapter(
-                            this@SurveillanceActivity1,
-                            android.R.layout.simple_list_item_1,
-                            districtNames
-                        )
-                        binding.spinnerDistrict.setAdapter(adapter)
-                        binding.spinnerDistrict.setOnClickListener { binding.spinnerDistrict.showDropDown() }
-                        binding.spinnerDistrict.setOnItemClickListener { _, _, position, _ ->
-                            selectedDistrictId = districtsList[position].district_id
+        lifecycleScope.launch {
+            val districts = withContext(Dispatchers.IO) {
+                AppDatabase.getInstance(this@SurveillanceActivity1)
+                    .referenceDataDao()
+                    .getDistrictsByRegion(regionId)
+            }
 
+            if (districts.isEmpty()) {
+                Toast.makeText(this@SurveillanceActivity1, "No districts found for selected region.", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
 
-                            binding.spinnerFacility.setText("", false)
-                            selectedFacilityId = null
-                            facilitiesList = emptyList()
+            districtsList = districts.map { HealthDistricts(it.id, it.name, it.regionId) }
+            val districtNames = districtsList.map { it.district_name }
+            val adapter = ArrayAdapter(this@SurveillanceActivity1, android.R.layout.simple_list_item_1, districtNames)
+            binding.spinnerDistrict.setAdapter(adapter)
+            binding.spinnerDistrict.setOnClickListener { binding.spinnerDistrict.showDropDown() }
+            binding.spinnerDistrict.setOnItemClickListener { _, _, position, _ ->
+                selectedDistrictId = districtsList[position].district_id
+                binding.spinnerFacility.setText("", false)
+                selectedFacilityId = null
+                facilitiesList = emptyList()
+                loadFacilities(selectedDistrictId!!)
+            }
 
-                            loadFacilities(selectedDistrictId!!)
-                        }
-                    } else {
-                        Toast.makeText(this@SurveillanceActivity1, "Failed to load districts", Toast.LENGTH_SHORT).show()
-                    }
+            if (isEditMode && editFormData != null) {
+                val idx = districtsList.indexOfFirst { it.district_name == editFormData!!.district_name }
+                if (idx >= 0) {
+                    binding.spinnerDistrict.setText(districtsList[idx].district_name, false)
+                    selectedDistrictId = districtsList[idx].district_id
+                    loadFacilities(selectedDistrictId!!)
                 }
-
-                override fun onFailure(call: Call<ApiResponse<List<HealthDistricts>>?>, t: Throwable) {
-                    Toast.makeText(this@SurveillanceActivity1, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
+            }
+        }
     }
 
 
     private fun loadFacilities(districtId: Int) {
-        val api = ApiClient.getClient(context = this)
-        api.getFacilities(districtId)
-            .enqueue(object : retrofit2.Callback<ApiResponse<List<HealthFacilities>>> {
-                override fun onResponse(
-                    call: Call<ApiResponse<List<HealthFacilities>>?>,
-                    response: Response<ApiResponse<List<HealthFacilities>>?>
-                ) {
-                    if (response.isSuccessful && response.body()?.data != null) {
-                        facilitiesList = response.body()!!.data!!
-                        val facilityNames = facilitiesList.map { it.facility_name }
-                        val adapter = ArrayAdapter(
-                            this@SurveillanceActivity1,
-                            android.R.layout.simple_list_item_1,
-                            facilityNames
-                        )
-                        binding.spinnerFacility.setAdapter(adapter)
-                        binding.spinnerFacility.setOnClickListener { binding.spinnerFacility.showDropDown() }
-                        binding.spinnerFacility.setOnItemClickListener { _, _, position, _ ->
-                            selectedFacilityId = facilitiesList[position].facility_id
-                        }
-                    } else {
-                        Toast.makeText(this@SurveillanceActivity1, "Failed to load facilities", Toast.LENGTH_SHORT).show()
-                    }
-                }
+        lifecycleScope.launch {
+            val facilities = withContext(Dispatchers.IO) {
+                AppDatabase.getInstance(this@SurveillanceActivity1)
+                    .referenceDataDao()
+                    .getFacilitiesByDistrict(districtId)
+            }
 
-                override fun onFailure(call: Call<ApiResponse<List<HealthFacilities>>?>, t: Throwable) {
-                    Toast.makeText(this@SurveillanceActivity1, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            if (facilities.isEmpty()) {
+                Toast.makeText(this@SurveillanceActivity1, "No facilities found for selected district.", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+
+            facilitiesList = facilities.map { HealthFacilities(it.id, it.name, it.districtId) }
+            val facilityNames = facilitiesList.map { it.facility_name }
+            val adapter = ArrayAdapter(this@SurveillanceActivity1, android.R.layout.simple_list_item_1, facilityNames)
+            binding.spinnerFacility.setAdapter(adapter)
+            binding.spinnerFacility.setOnClickListener { binding.spinnerFacility.showDropDown() }
+            binding.spinnerFacility.setOnItemClickListener { _, _, position, _ ->
+                selectedFacilityId = facilitiesList[position].facility_id
+            }
+
+            if (isEditMode && editFormData != null) {
+                val idx = facilitiesList.indexOfFirst { it.facility_name == editFormData!!.facility_name }
+                if (idx >= 0) {
+                    binding.spinnerFacility.setText(facilitiesList[idx].facility_name, false)
+                    selectedFacilityId = facilitiesList[idx].facility_id
                 }
-            })
+            }
+        }
     }
 
     private fun showDatePickerDialog(editText: EditText) {
@@ -482,6 +513,9 @@ class SurveillanceActivity1 : BaseActivity() {
 
         val intent = Intent(this, SurveillanceActivity2::class.java).apply {
             putExtra("SurveillanceData", surveillance1Details)
+            putExtra(EditModeExtras.EXTRA_EDIT_MODE, isEditMode)
+            putExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, editReportId)
+            putExtra(EditModeExtras.EXTRA_EDIT_DATA, editFormData)
         }
         startActivity(intent)
 

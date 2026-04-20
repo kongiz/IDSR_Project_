@@ -8,8 +8,10 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.idsr_project.Model.Annex2FData
 import com.idsr_project.Model.immediateReportForm
 import com.idsr_project.databinding.ActivityAnnex2Fimmediate2Binding
+import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.SessionManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -18,6 +20,10 @@ import java.util.Locale
 class Annex2F_Immediate_2_Activity : BaseActivity() {
     private lateinit var binding: ActivityAnnex2Fimmediate2Binding
     private val calendar = Calendar.getInstance()
+
+    private var isEditMode   = false
+    private var editReportId = -1
+    private var editData: Annex2FData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +72,27 @@ class Annex2F_Immediate_2_Activity : BaseActivity() {
                 passDataToNextScreen()
             }
         }
+
+        isEditMode   = intent.getBooleanExtra(EditModeExtras.EXTRA_EDIT_MODE, false)
+        editReportId = intent.getIntExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, -1)
+        editData     = intent.getParcelableExtra(EditModeExtras.EXTRA_EDIT_DATA)
+
+        if (isEditMode && editData != null) {
+            prefillAnnex2F2(editData!!)
+            binding.btnNextAnnex2.text = "Next (Editing)"
+        }
+    }
+    private fun prefillAnnex2F2(data: Annex2FData) {
+        binding.etPatientName.setText(data.patientName ?: "")
+        binding.etDateSeen.setText(data.dateSeen ?: "")
+        binding.etDateOfBirth.setText(data.dateOfBirth ?: "")
+        binding.tvAge.setText(data.age ?: "")
+        binding.spinnerGender.setText(data.gender ?: "", false)
+        binding.etAddress.setText(data.address ?: "")
+        binding.etDistrictAnnex2.setText(data.district_name ?: "")
+        binding.spinnerResidence.setText(data.urbanRural ?: "", false)
+        binding.etPhoneNumber.setText(data.phoneNumber ?: "")
+        binding.etOccupation.setText(data.occupation ?: "")
     }
 
     private fun setupGenderSpinner() {
@@ -231,6 +258,7 @@ class Annex2F_Immediate_2_Activity : BaseActivity() {
             site = receivedAnnex2FReport?.site ?: "",
             disease = receivedAnnex2FReport?.disease ?: "",
             inpatientOutpatient = receivedAnnex2FReport?.inpatientOutpatient ?: "",
+            caseGeo = receivedAnnex2FReport?.caseGeo ?: "",
             dateSeen = dateSeen,
             patientName = patientName,
             dateOfBirth = dateOfBirth,
@@ -258,8 +286,10 @@ class Annex2F_Immediate_2_Activity : BaseActivity() {
 
         val intent = Intent(this, Annex2F_Immediate_3_Activity::class.java).apply {
             putExtra("Annex2FReport", annex2FReports)
+            putExtra(EditModeExtras.EXTRA_EDIT_MODE, isEditMode)
+            putExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, editReportId)
+            putExtra(EditModeExtras.EXTRA_EDIT_DATA, editData)
         }
         startActivity(intent)
-        finish()
     }
 }

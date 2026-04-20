@@ -10,6 +10,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class AuthInterceptor(private val context: Context) : Interceptor {
 
@@ -19,22 +21,25 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         private const val TAG = "AuthInterceptor"
 
         private val AUTH_PATHS = listOf(
-            "/api/v1/login",                   // POST login
-            "/api/v1/signup",                  // POST register
-            "/api/v1/adminRegister",           // POST admin register
-            "/api/v1/logout",                  // POST logout — 401 here means already logged out, not session expired
-            "/api/auth/v1/refresh_token",      // POST token refresh (used internally)
-            "/api/auth/v1/resend-otp",         // POST resend OTP
-            "/api/auth/v1/verify-email",       // POST verify email
-            "/api/auth/v1/forgot-password",    // POST forgot password
-            "/api/auth/v1/verify-reset-otp",   // POST verify reset OTP
-            "/api/auth/v1/reset-password",     // POST reset password
+            "/api/v1/login",
+            "/api/v1/signup",
+            "/api/v1/adminRegister",
+            "/api/v1/logout",
+            "/api/v1/auth/refresh_token",
+            "/api/v1/auth/resend-otp",
+            "/api/v1/auth/verify-email",
+            "/api/v1/auth/forgot-password",
+            "/api/v1/auth/verify-reset-otp",
+            "/api/v1/auth/reset-password",
         )
 
-        private const val MAX_RETRY_COUNT  = 2
-        private const val RETRY_COUNT_KEY  = "Retry-Count"
-
+        private const val MAX_RETRY_COUNT          = 2
+        private const val RETRY_COUNT_KEY           = "Retry-Count"
         private const val DEFAULT_RETRY_AFTER_SECONDS = 60L
+
+
+        private val refreshLock  = ReentrantLock()
+        private var isRefreshing = false
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -52,10 +57,8 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         val response = chain.proceed(request)
 
         return when {
-
             response.code == 401 -> {
                 if (isAuthPath) {
-                    // Login/register/etc: bad credentials — let the screen handle it.
                     Log.d(TAG, "401 on auth path — passing through to caller")
                     response
                 } else {
@@ -63,9 +66,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
                 }
             }
 
-            response.code == 429 -> {
-                handle429(chain, request, response)
-            }
+            response.code == 429 -> handle429(chain, request, response)
 
             response.code == 403 -> {
                 if (!isAuthPath) {
@@ -101,25 +102,42 @@ class AuthInterceptor(private val context: Context) : Interceptor {
             return buildErrorResponse(request, 401, "Session expired")
         }
 
-        Log.d(TAG, "401 received — attempting token refresh")
-        val tokens = refreshAccessToken(refreshToken)
 
-        return if (tokens != null) {
-            val (newAccessToken, newRefreshToken) = tokens
-            SessionManager.saveTokens(context, newAccessToken, newRefreshToken)
-            Log.d(TAG, "Token refreshed — retrying original request")
+        refreshLock.withLock {
+            val tokenUsedInRequest = request.header("Authorization")
+                ?.removePrefix("Bearer ")?.trim()
+            val currentAccessToken = SessionManager.getAccessToken(context)
 
-            val retryRequest = request.newBuilder()
-                .header("Authorization", "Bearer $newAccessToken")
-                .build()
-            chain.proceed(retryRequest)
-        } else {
-            Log.e(TAG, "Token refresh failed — session expired")
-            handleSessionExpired()
-            buildErrorResponse(request, 401, "Session expired")
+            if (!currentAccessToken.isNullOrEmpty() &&
+                currentAccessToken != tokenUsedInRequest
+            ) {
+                Log.d(TAG, "Token already refreshed by another thread — retrying with new token")
+                val retryRequest = request.newBuilder()
+                    .header("Authorization", "Bearer $currentAccessToken")
+                    .build()
+                return chain.proceed(retryRequest)
+            }
+
+
+            Log.d(TAG, "401 received — attempting token refresh")
+            val tokens = refreshAccessToken(refreshToken)
+
+            return if (tokens != null) {
+                val (newAccessToken, newRefreshToken) = tokens
+                SessionManager.saveTokens(context, newAccessToken, newRefreshToken)
+                Log.d(TAG, "Token refreshed — retrying original request")
+
+                val retryRequest = request.newBuilder()
+                    .header("Authorization", "Bearer $newAccessToken")
+                    .build()
+                chain.proceed(retryRequest)
+            } else {
+                Log.e(TAG, "Token refresh failed — session expired")
+                handleSessionExpired()
+                buildErrorResponse(request, 401, "Session expired")
+            }
         }
     }
-
 
     private fun handle429(
         chain: Interceptor.Chain,
@@ -132,7 +150,6 @@ class AuthInterceptor(private val context: Context) : Interceptor {
             Log.w(TAG, "429: max retries ($MAX_RETRY_COUNT) reached for ${request.url}")
             return response
         }
-
 
         val retryAfterSeconds = response.header("Retry-After")?.toLongOrNull()
             ?: DEFAULT_RETRY_AFTER_SECONDS
@@ -161,7 +178,6 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         }
     }
 
-
     private fun refreshAccessToken(refreshToken: String): Pair<String, String>? {
         return try {
             val url  = "${ApiClient.BASE_HOST}/api/v1/auth/refresh_token"
@@ -179,8 +195,8 @@ class AuthInterceptor(private val context: Context) : Interceptor {
                     return null
                 }
 
-                val responseBody  = response.body.string() ?: return null
-                val jsonResponse  = JSONObject(responseBody)
+                val responseBody = response.body.string() ?: return null
+                val jsonResponse = JSONObject(responseBody)
 
                 if (!jsonResponse.optBoolean("success", false)) {
                     Log.e(TAG, "Refresh rejected: ${jsonResponse.optString("message")}")

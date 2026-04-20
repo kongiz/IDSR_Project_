@@ -8,13 +8,19 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [PendingReportEntity::class],
-    version = 2,
+    entities = [
+        PendingReportEntity::class,
+        RegionEntity::class,
+        DistrictEntity::class,
+        FacilityEntity::class],
+
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun pendingReportDao(): PendingReportDao
+    abstract fun referenceDataDao(): ReferenceDataDao
 
     companion object {
         @Volatile
@@ -27,6 +33,31 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS regions (
+                        id INTEGER PRIMARY KEY NOT NULL,
+                        name TEXT NOT NULL
+                    )
+                """)
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS districts (
+                        id INTEGER PRIMARY KEY NOT NULL,
+                        name TEXT NOT NULL,
+                        regionId INTEGER NOT NULL
+                    )
+                """)
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS facilities (
+                        id INTEGER PRIMARY KEY NOT NULL,
+                        name TEXT NOT NULL,
+                        districtId INTEGER NOT NULL
+                    )
+                """)
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 Room.databaseBuilder(
@@ -34,7 +65,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "idsr_database"
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                     .also { INSTANCE = it }
             }

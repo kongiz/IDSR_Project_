@@ -14,19 +14,24 @@ class LabSyncWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-        val dao = AppDatabase.getInstance(context).pendingReportDao()
-        val gson = Gson()
+        val dao     = AppDatabase.getInstance(context).pendingReportDao()
+        val gson    = Gson()
 
-        val pending = dao.getPendingReports().filter { it.formType == "LAB" && it.status != "SYNCED" }
+
+        val pending = dao.getPendingReports()
+            .filter { it.formType == "LAB" && it.status != "SYNCED" }
 
         if (pending.isEmpty()) return Result.success()
 
-        val uploader = LabUploader(context)
+        pending.filter { it.status == "FAILED" }
+            .forEach { dao.updateStatus(it.id, "PENDING") }
+
+        val uploader   = LabUploader(context)
         var hadFailure = false
 
         for (report in pending) {
             try {
-                val data = gson.fromJson(report.reportJson, LabFormOfflineData::class.java)
+                val data   = gson.fromJson(report.reportJson, LabFormOfflineData::class.java)
                 val synced = uploader.tryUpload(data)
 
                 if (synced) {
@@ -35,13 +40,14 @@ class LabSyncWorker(
                 } else {
                     dao.updateStatus(report.id, "FAILED")
                     hadFailure = true
+                    Log.w("LAB_SYNC", "Report ${report.id} failed — will retry")
                 }
             } catch (e: Exception) {
-                Log.e("LAB_SYNC", "Error parsing/uploading report ${report.id}", e)
+                Log.e("LAB_SYNC", "Error syncing report ${report.id}", e)
+                dao.updateStatus(report.id, "FAILED")
                 hadFailure = true
             }
         }
-
 
         return if (hadFailure) Result.retry() else Result.success()
     }
@@ -59,7 +65,7 @@ class LabSyncWorker(
 
             WorkManager.getInstance(context).enqueueUniqueWork(
                 "idsr_lab_sync",
-                ExistingWorkPolicy.KEEP,
+                ExistingWorkPolicy.REPLACE,
                 request
             )
         }

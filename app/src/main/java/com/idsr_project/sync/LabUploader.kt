@@ -29,14 +29,14 @@ class LabUploader(private val context: Context) {
                 }
 
                 MultipartBody.Part.createFormData(
-                    "labResultImages[]",
+                    "labResultImage",
                     file.name,
                     file.asRequestBody(mimeType.toMediaTypeOrNull())
                 )
             }
 
             if (imageParts.isEmpty()) {
-                Log.e("LAB_UPLOAD", "No valid images found to upload for lab: ${data.labName}")
+                Log.e("LAB_UPLOAD", "No valid images — marking as unrecoverable")
                 return false
             }
 

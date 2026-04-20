@@ -203,6 +203,11 @@ class MainActivity : BaseActivity() {
         binding.btnWeeklySurveillance.postDelayed({ binding.btnWeeklySurveillance.startAnimation(scaleAnim) }, 200)
         binding.btnViewReports.postDelayed({ binding.btnViewReports.startAnimation(scaleAnim) }, 300)
         binding.cardSyncStatus.postDelayed({ binding.cardSyncStatus.startAnimation(scaleAnim) }, 400)
+        binding.btnManageUsers.postDelayed({
+            if (binding.btnManageUsers.visibility == View.VISIBLE) {
+                binding.btnManageUsers.startAnimation(scaleAnim)
+            }
+        }, 400)
     }
 
     private fun setupClicks() {
@@ -215,14 +220,18 @@ class MainActivity : BaseActivity() {
         binding.btnViewReports.setOnClickListener {
             startActivity(Intent(this, History_Activity::class.java))
         }
-        binding.btnThemeToggle.setOnClickListener { toggleTheme() }
-
+        binding.btnMap.setOnClickListener {
+            startActivity(Intent(this, DiseaseMapActivity::class.java))
+        }
 
         binding.cardSyncStatus.setOnClickListener {
             startActivity(Intent(this, SyncStatusActivity::class.java))
         }
         binding.btnNotifications.setOnClickListener {
             startActivity(Intent(this, Notifications_Activity::class.java))
+        }
+        binding.btnManageUsers.setOnClickListener {
+            startActivity(Intent(this, UserManagementActivity::class.java))
         }
     }
 
@@ -260,16 +269,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun toggleTheme() {
-        val currentMode = resources.configuration.uiMode and
-                android.content.res.Configuration.UI_MODE_NIGHT_MASK
-        when (currentMode) {
-            android.content.res.Configuration.UI_MODE_NIGHT_YES ->
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            else ->
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        }
-    }
+
 
     private fun setupBottomNav() {
         val role = SessionManager.getUserRole(this) ?: "Health Officer"
@@ -372,16 +372,24 @@ class MainActivity : BaseActivity() {
         val role = SessionManager.getUserRole(this) ?: "Health Officer"
 
         when (role) {
-            "District Officer", "Regional Officer", "Admin" -> {
+            "District Officer", "Regional Officer" -> {
                 binding.btnSubmitReport.visibility       = View.GONE
                 binding.btnWeeklySurveillance.visibility = View.GONE
-                // make remaining cards full width
+                binding.btnManageUsers.visibility        = View.GONE
                 setFullWidth(binding.btnAlerts)
                 setFullWidth(binding.btnViewReports)
             }
+            "Admin" -> {
+                binding.btnSubmitReport.visibility       = View.GONE
+                binding.btnWeeklySurveillance.visibility = View.GONE
+                binding.btnManageUsers.visibility        = View.VISIBLE
+                setFullWidth(binding.btnAlerts)
+                setFullWidth(binding.btnViewReports)
+                setFullWidth(binding.btnManageUsers)
+            }
             "Lab Technician" -> {
                 binding.btnWeeklySurveillance.visibility = View.GONE
-                // make remaining cards full width
+                binding.btnManageUsers.visibility        = View.GONE
                 setFullWidth(binding.btnAlerts)
                 setFullWidth(binding.btnSubmitReport)
                 setFullWidth(binding.btnViewReports)
@@ -390,6 +398,7 @@ class MainActivity : BaseActivity() {
                 binding.btnSubmitReport.visibility       = View.VISIBLE
                 binding.btnWeeklySurveillance.visibility = View.VISIBLE
                 binding.btnViewReports.visibility        = View.VISIBLE
+                binding.btnManageUsers.visibility        = View.GONE
             }
         }
     }

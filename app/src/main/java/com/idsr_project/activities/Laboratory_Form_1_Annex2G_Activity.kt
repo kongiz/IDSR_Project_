@@ -13,11 +13,15 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
+import com.idsr_project.Model.Annex2GData
+import com.idsr_project.Model.ResponseApi
 import com.idsr_project.R
 import com.idsr_project.Model.reportFormToLabWithSpecimen
+import com.idsr_project.api.ApiClient
 import com.idsr_project.data.repository.OfflineRepository
 import com.idsr_project.data.repository.SubmitResult
 import com.idsr_project.databinding.ActivityLaboratoryForm1Annex2GactivityBinding
+import com.idsr_project.utils.EditModeExtras
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -28,6 +32,10 @@ class Laboratory_Form_1_Annex2G_Activity : BaseActivity() {
     private val calendar = Calendar.getInstance()
     private val repository by lazy { OfflineRepository(this) }
     private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    private var isEditMode   = false
+    private var editReportId = -1
+    private var editData: Annex2GData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +49,16 @@ class Laboratory_Form_1_Annex2G_Activity : BaseActivity() {
         handleBackPress()
 
         generateSpecimenID()
+
+        isEditMode   = intent.getBooleanExtra(EditModeExtras.EXTRA_EDIT_MODE, false)
+        editReportId = intent.getIntExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, -1)
+        editData     = intent.getParcelableExtra(EditModeExtras.EXTRA_EDIT_DATA)
+
+        if (isEditMode && editData != null) {
+            prefillForm(editData!!)
+            binding.btnLabHW1.text = "Update Report"
+            title = "Edit Specimen Report"
+        }
 
         FirebaseCrashlytics.getInstance().setCustomKey("screen", "Laboratory_Form_1_Annex2G_Activity")
 
@@ -198,41 +216,61 @@ class Laboratory_Form_1_Annex2G_Activity : BaseActivity() {
             emailClinician       = binding.etEmailClinician.text.toString().trim()
         )
 
-        lifecycleScope.launch {
-            val json = Gson().toJson(reportForm)
-
-            when (val result = repository.submitReport("SPECIMEN", json)) {
-
-                is SubmitResult.SyncedOnline -> {
-                    Toast.makeText(
-                        this@Laboratory_Form_1_Annex2G_Activity,
-                        result.message,
-                        Toast.LENGTH_LONG
-                    ).show()
+        if (isEditMode && editReportId != -1) {
+            // Edit mode — call PUT
+            ApiClient.getClient(this)
+                .editSpecimenReport(editReportId, reportForm)
+                .enqueue(object : retrofit2.Callback<ResponseApi> {
+                    override fun onResponse(call: retrofit2.Call<ResponseApi>, response: retrofit2.Response<ResponseApi>) {
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            Toast.makeText(this@Laboratory_Form_1_Annex2G_Activity,
+                                "Report updated successfully", Toast.LENGTH_LONG).show()
+                            startActivity(Intent(this@Laboratory_Form_1_Annex2G_Activity, Success_Activity::class.java))
+                            finish()
+                        } else {
+                            Toast.makeText(this@Laboratory_Form_1_Annex2G_Activity,
+                                "Update failed. Try again.", Toast.LENGTH_SHORT).show()
+                            binding.btnLabHW1.isEnabled = true
+                            binding.btnLabHW1.text = "Update Report"
+                        }
+                    }
+                    override fun onFailure(call: retrofit2.Call<ResponseApi>, t: Throwable) {
+                        Toast.makeText(this@Laboratory_Form_1_Annex2G_Activity,
+                            "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
+                        binding.btnLabHW1.isEnabled = true
+                        binding.btnLabHW1.text = "Update Report"
+                    }
+                })
+        } else {
+            // Original submit flow
+            lifecycleScope.launch {
+                val json = Gson().toJson(reportForm)
+                when (val result = repository.submitReport("SPECIMEN", json)) {
+                    is SubmitResult.SyncedOnline -> Toast.makeText(this@Laboratory_Form_1_Annex2G_Activity, result.message, Toast.LENGTH_LONG).show()
+                    is SubmitResult.SavedOffline -> Toast.makeText(this@Laboratory_Form_1_Annex2G_Activity, "Saved offline. Will sync when online.", Toast.LENGTH_LONG).show()
+                    is SubmitResult.Error -> {
+                        Toast.makeText(this@Laboratory_Form_1_Annex2G_Activity, "Error: ${result.message}", Toast.LENGTH_LONG).show()
+                        binding.btnLabHW1.isEnabled = true
+                        binding.btnLabHW1.text = "Submit Form"
+                        return@launch
+                    }
                 }
-
-                is SubmitResult.SavedOffline -> {
-                    Toast.makeText(
-                        this@Laboratory_Form_1_Annex2G_Activity,
-                        "Report saved. Will sync automatically when online.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                is SubmitResult.Error -> {
-                    Toast.makeText(
-                        this@Laboratory_Form_1_Annex2G_Activity,
-                        "Error: ${result.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    binding.btnLabHW1.isEnabled = true
-                    binding.btnLabHW1.text = "Submit Form"
-                    return@launch
-                }
+                startActivity(Intent(this@Laboratory_Form_1_Annex2G_Activity, Success_Activity::class.java))
+                finish()
             }
-
-            startActivity(Intent(this@Laboratory_Form_1_Annex2G_Activity, Success_Activity::class.java))
-            finish()
         }
+    }
+
+    private fun prefillForm(data: Annex2GData) {
+        binding.etDateSpecimenCollection.setText(data.dateSpecimenCollect ?: "")
+        binding.etSuspectedDisease.setText(data.suspectedDisease ?: "")
+        binding.spinnerSpecimen.setText(data.specimenType ?: "", false)
+        binding.etSpecienUniqueID.setText(data.specimenUniqueID ?: "")
+        binding.etPatientNameLab.setText(data.patientNameLab ?: "")
+        binding.spinnerSex.setText(data.sex ?: "", false)
+        binding.etAge.setText(data.age ?: "")
+        binding.etDateSpecimenSentLab.setText(data.dateSpecimenSentLab ?: "")
+        binding.etPhoneNumber.setText(data.phoneNumber ?: "")
+        binding.etEmailClinician.setText(data.emailClinician ?: "")
     }
 }

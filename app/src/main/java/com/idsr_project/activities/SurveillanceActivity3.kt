@@ -13,11 +13,14 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.idsr_project.Model.Diseases
+import com.idsr_project.Model.FormData
 import com.idsr_project.Model.surveillanceData
 import com.idsr_project.R
+import com.idsr_project.api.ApiClient
 import com.idsr_project.data.repository.OfflineRepository
 import com.idsr_project.data.repository.SubmitResult
 import com.idsr_project.databinding.ActivitySurveillance3Binding
+import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.SessionManager
 import kotlinx.coroutines.launch
 
@@ -29,6 +32,10 @@ class SurveillanceActivity3 : BaseActivity() {
 
     private val repository by lazy { OfflineRepository(this) }
 
+    private var isEditMode   = false
+    private var editReportId = -1
+    private var editFormData: FormData? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -38,6 +45,8 @@ class SurveillanceActivity3 : BaseActivity() {
         retrieveActivityData()
         autoFillOfficerDetails()
         setupListeners()
+
+
 
         FirebaseCrashlytics.getInstance().setCustomKey("screen", "SurveillanceActivity3")
     }
@@ -62,6 +71,22 @@ class SurveillanceActivity3 : BaseActivity() {
 
         Log.d("Surveillance3", "Received Data: $receivedData")
         Log.d("Surveillance3", "Received Diseases: ${diseasesList.size} items")
+
+        isEditMode   = intent.getBooleanExtra(EditModeExtras.EXTRA_EDIT_MODE, false)
+        editReportId = intent.getIntExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, -1)
+        editFormData = intent.getParcelableExtra(EditModeExtras.EXTRA_EDIT_DATA)
+
+        if (isEditMode && editFormData != null) {
+            binding.etOfficerName.setText(editFormData!!.officer_name ?: "")
+            binding.etDesignation.setText(editFormData!!.designation ?: "")
+            binding.etComments.setText(editFormData!!.officer_comment ?: "")
+            binding.etU5Male.setText(editFormData!!.tot_con_u5_male?.toString() ?: "0")
+            binding.etU5Female.setText(editFormData!!.tot_con_u5_female?.toString() ?: "0")
+            binding.etA5Male.setText(editFormData!!.tot_con_a5_male?.toString() ?: "0")
+            binding.etA5Female.setText(editFormData!!.tot_con_a5_female?.toString() ?: "0")
+            calculateGrandTotal()
+            binding.btnSubmit.text = "Update Report"
+        }
     }
 
     private fun setupListeners() {
@@ -147,57 +172,66 @@ class SurveillanceActivity3 : BaseActivity() {
 
 
     private fun submitSurveillanceReport() {
-
         binding.btnSubmit.isEnabled = false
-        binding.btnSubmit.alpha = 0.5f
-        binding.btnSubmit.text = "Processing..."
+        binding.btnSubmit.alpha     = 0.5f
+        binding.btnSubmit.text      = if (isEditMode) "Updating..." else "Processing..."
 
         val finalReport = prepareFinalData() ?: run {
             Toast.makeText(this, "Submission failed: Missing data.", Toast.LENGTH_SHORT).show()
+            resetSubmitButton()
             return
         }
 
         lifecycleScope.launch {
             try {
-                val json = Gson().toJson(finalReport)
-
-                when (val result = repository.submitReport("SURVEILLANCE", json)) {
-
-                    is SubmitResult.SyncedOnline -> {
-                        Toast.makeText(
-                            this@SurveillanceActivity3,
-                            result.message,
-                            Toast.LENGTH_LONG
-                        ).show()
+                if (isEditMode && editReportId != -1) {
+                    val response = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                        ApiClient.getClient(this@SurveillanceActivity3)
+                            .editSurveillanceReport(editReportId, finalReport)
+                            .execute()
                     }
-
-                    is SubmitResult.SavedOffline -> {
+                    if (response.isSuccessful && response.body()?.success == true) {
                         Toast.makeText(
                             this@SurveillanceActivity3,
-                            "Report saved. Will sync automatically when online.",
+                            "Report updated successfully",
                             Toast.LENGTH_LONG
                         ).show()
+                        startActivity(Intent(this@SurveillanceActivity3, Success_Activity::class.java))
+                        finish()
+                    } else {
+                        val errorMsg = when (response.code()) {
+                            403  -> "Edit window has expired or you don't have permission"
+                            404  -> "Report not found"
+                            else -> "Update failed. Please try again."
+                        }
+                        Toast.makeText(this@SurveillanceActivity3, errorMsg, Toast.LENGTH_LONG).show()
+                        resetSubmitButton()
                     }
-
-                    is SubmitResult.Error -> {
-                        Toast.makeText(
-                            this@SurveillanceActivity3,
-                            "Error: ${result.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        binding.btnSubmit.isEnabled = true
-                        binding.btnSubmit.text = "Submit"
-                        return@launch
+                } else {
+                    val json = Gson().toJson(finalReport)
+                    when (val result = repository.submitReport("SURVEILLANCE", json)) {
+                        is SubmitResult.SyncedOnline -> {
+                            Toast.makeText(this@SurveillanceActivity3, result.message, Toast.LENGTH_LONG).show()
+                            startActivity(Intent(this@SurveillanceActivity3, Success_Activity::class.java))
+                            finish()
+                        }
+                        is SubmitResult.SavedOffline -> {
+                            Toast.makeText(this@SurveillanceActivity3,
+                                "Report saved. Will sync automatically when online.", Toast.LENGTH_LONG).show()
+                            startActivity(Intent(this@SurveillanceActivity3, Success_Activity::class.java))
+                            finish()
+                        }
+                        is SubmitResult.Error -> {
+                            Toast.makeText(this@SurveillanceActivity3,
+                                "Error: ${result.message}", Toast.LENGTH_LONG).show()
+                            resetSubmitButton()
+                        }
                     }
                 }
-
-                startActivity(Intent(this@SurveillanceActivity3, Success_Activity::class.java))
-                finish()
             } catch (e: Exception) {
                 FirebaseCrashlytics.getInstance().recordException(e)
                 resetSubmitButton()
                 Toast.makeText(this@SurveillanceActivity3, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-
             }
         }
     }

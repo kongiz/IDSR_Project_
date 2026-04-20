@@ -31,6 +31,12 @@
         android:theme="@style/Theme.IDSR"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.UserManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.DiseaseMapActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.BaseActivity"
             android:exported="false" />
         <activity
@@ -163,6 +169,16 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
     </application>
 
 </manifest>

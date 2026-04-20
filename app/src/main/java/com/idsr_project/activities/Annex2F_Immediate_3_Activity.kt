@@ -11,8 +11,10 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.idsr_project.Model.Annex2FData
 import com.idsr_project.Model.immediateReportForm
 import com.idsr_project.databinding.ActivityAnnex2Fimmediate3Binding
+import com.idsr_project.utils.EditModeExtras
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -20,6 +22,10 @@ import java.util.Locale
 class Annex2F_Immediate_3_Activity : BaseActivity() {
     private lateinit var binding: ActivityAnnex2Fimmediate3Binding
     private val calendar = Calendar.getInstance()
+
+    private var isEditMode   = false
+    private var editReportId = -1
+    private var editData: Annex2FData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +35,21 @@ class Annex2F_Immediate_3_Activity : BaseActivity() {
 
 
         setupTravelHistorySpinner()
+
+        binding.etVaccineDoses.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val num = s.toString().toIntOrNull() ?: 0
+                if (num > 0) {
+                    binding.tilDateLastVaccine.visibility = View.VISIBLE
+                } else {
+                    binding.tilDateLastVaccine.visibility = View.GONE
+                    binding.etDateLastVaccine.text?.clear()
+                    binding.tilDateLastVaccine.error = null
+                }
+            }
+        })
 
 
         binding.btnBackAnnex3.setOnClickListener {
@@ -66,6 +87,14 @@ class Annex2F_Immediate_3_Activity : BaseActivity() {
                 passDataToNextScreen()
             }
         }
+        isEditMode   = intent.getBooleanExtra(EditModeExtras.EXTRA_EDIT_MODE, false)
+        editReportId = intent.getIntExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, -1)
+        editData     = intent.getParcelableExtra(EditModeExtras.EXTRA_EDIT_DATA)
+
+        if (isEditMode && editData != null) {
+            prefillAnnex2F3(editData!!)
+            binding.btnNextAnnex3.text = "Next (Editing)"
+        }
 
         FirebaseCrashlytics.getInstance().setCustomKey("screen", "Annex2F_Immediate_3_Activity")
     }
@@ -80,14 +109,12 @@ class Annex2F_Immediate_3_Activity : BaseActivity() {
 
             when (selectedTravel) {
                 "Yes" -> {
-                    // Show destination field when "Yes" is selected
                     binding.tilDestination.visibility = View.VISIBLE
                     binding.etDestination.requestFocus()
                     val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.showSoftInput(binding.etDestination, InputMethodManager.SHOW_IMPLICIT)
                 }
                 "No" -> {
-                    // Hide and clear destination field when "No" is selected
                     binding.tilDestination.visibility = View.GONE
                     binding.etDestination.text?.clear()
                     binding.tilDestination.error = null
@@ -123,7 +150,7 @@ class Annex2F_Immediate_3_Activity : BaseActivity() {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
         val onsetStr = binding.etDateOfOnset.text.toString().trim()
-        val travelHistory = binding.spinnerTravelHistory.text.toString().trim()
+        val travelHistory = binding.spinnerTravelHistory.text?.toString()?.trim() ?: ""
         val destination = binding.etDestination.text.toString().trim()
         val dosesStr = binding.etVaccineDoses.text.toString().trim()
         val lastVaccineStr = binding.etDateLastVaccine.text.toString().trim()
@@ -168,13 +195,15 @@ class Annex2F_Immediate_3_Activity : BaseActivity() {
         if (dosesStr.isNotEmpty()) {
             val num = dosesStr.toIntOrNull()
             if (num == null || num < 0) {
-                binding.tilVaccineDoses.error = "Invalid number of doses"
+                binding.tilVaccineDoses.error = "Enter a valid number (0 or more)"
                 isValid = false
             } else {
                 binding.tilVaccineDoses.error = null
                 if (num > 0 && lastVaccineStr.isEmpty()) {
-                    binding.tilDateLastVaccine.error = "Date of last vaccination is required"
+                    binding.tilDateLastVaccine.error = "Required when doses > 0"
                     isValid = false
+
+                    binding.tilDateLastVaccine.requestFocus()
                 } else {
                     binding.tilDateLastVaccine.error = null
                 }
@@ -205,7 +234,6 @@ class Annex2F_Immediate_3_Activity : BaseActivity() {
                 }
             } catch (e: Exception) { /* Handled by initial empty checks */ }
         }
-
         return isValid
     }
 
@@ -229,6 +257,7 @@ class Annex2F_Immediate_3_Activity : BaseActivity() {
             site = receivedAnnex2FReport?.site ?: "",
             disease = receivedAnnex2FReport?.disease ?: "",
             inpatientOutpatient = receivedAnnex2FReport?.inpatientOutpatient ?: "",
+            caseGeo = receivedAnnex2FReport?.caseGeo ?: "",
             dateSeen = receivedAnnex2FReport?.dateSeen ?: "",
             patientName = receivedAnnex2FReport?.patientName ?: "",
             dateOfBirth = receivedAnnex2FReport?.dateOfBirth ?: "",
@@ -256,8 +285,35 @@ class Annex2F_Immediate_3_Activity : BaseActivity() {
 
         val intent = Intent(this, Annex2F_Immediate_4_Activity::class.java).apply {
             putExtra("Annex2FReport", annex2FReports)
+            putExtra(EditModeExtras.EXTRA_EDIT_MODE, isEditMode)
+            putExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, editReportId)
+            putExtra(EditModeExtras.EXTRA_EDIT_DATA, editData)
         }
         startActivity(intent)
-        finish()
+    }
+
+    private fun prefillAnnex2F3(data: Annex2FData) {
+        binding.etDateOfOnset.setText(data.dateOfOnset ?: "")
+        binding.spinnerTravelHistory.setText(data.travelHistory ?: "", false)
+
+        if (data.travelHistory == "Yes") {
+            binding.tilDestination.visibility = View.VISIBLE
+            binding.etDestination.setText(data.destination ?: "")
+        }
+
+        binding.etVaccineDoses.setText(data.vaccineDoses ?: "")
+
+
+        val doses = data.vaccineDoses?.toIntOrNull() ?: 0
+        if (doses > 0) {
+            binding.tilDateLastVaccine.visibility = View.VISIBLE
+            binding.etDateLastVaccine.setText(data.dateLastVaccine ?: "")
+        } else {
+            binding.tilDateLastVaccine.visibility = View.GONE
+        }
+
+        binding.etDateSpecimen.setText(data.dateSpecimen ?: "")
+        binding.etDateLab.setText(data.dateLab ?: "")
+        binding.etLabResults.setText(data.labResults ?: "")
     }
 }

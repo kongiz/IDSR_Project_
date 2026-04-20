@@ -93,7 +93,7 @@
             android:id="@+id/etSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Search reports..."
+            android:hint=""
             android:inputType="text"
             android:imeOptions="actionSearch"
             android:maxLines="1"/>

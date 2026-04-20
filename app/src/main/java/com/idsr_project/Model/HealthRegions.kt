@@ -8,11 +8,13 @@ data class HealthRegions(
 
 data class HealthDistricts(
     val district_id: Int,
-    val district_name: String
+    val district_name: String,
+    val region_id: Int
 )
 data class HealthFacilities(
     val facility_id: Int,
-    val facility_name: String
+    val facility_name: String,
+    val district_id: Int
 )
 data class ApiResponse<T>(
     val success: Boolean,

@@ -29,7 +29,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "SERVER_IP", "\"${localProperties.getProperty("SERVER_IP", "192.168.1.22")}\"")
+        buildConfigField("String", "SERVER_IP", "\"${localProperties.getProperty("SERVER_IP", "192.168.1.15")}\"")
         buildConfigField("String", "SERVER_PORT", "\"${localProperties.getProperty("SERVER_PORT", "5000")}\"")
     }
 
@@ -41,11 +41,15 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            isMinifyEnabled = false
         }
     }
     compileOptions {

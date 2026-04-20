@@ -23,7 +23,7 @@ class FirebasePerformanceInterceptor : Interceptor {
             response = chain.proceed(request)
             trace.setHttpResponseCode(response.code)
             trace.setResponseContentType(response.header("Content-Type"))
-            val contentLength = response.body?.contentLength() ?: -1
+            val contentLength = response.body.contentLength() ?: -1
             if (contentLength > 0) trace.setResponsePayloadSize(contentLength)
         } finally {
             trace.stop()

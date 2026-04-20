@@ -34,7 +34,6 @@ class Error_Activity : AppCompatActivity() {
                     putExtra(EXTRA_ERROR_CODE,    403)
                     putExtra(EXTRA_ERROR_TITLE,   "Access Denied")
                     putExtra(EXTRA_ERROR_MESSAGE, "You don't have permission to perform this action.")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
             )
         }
@@ -45,7 +44,6 @@ class Error_Activity : AppCompatActivity() {
                     putExtra(EXTRA_ERROR_CODE,    404)
                     putExtra(EXTRA_ERROR_TITLE,   "Not Found")
                     putExtra(EXTRA_ERROR_MESSAGE, "The resource you're looking for doesn't exist.")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
             )
         }
@@ -56,7 +54,7 @@ class Error_Activity : AppCompatActivity() {
                     putExtra(EXTRA_ERROR_CODE,    500)
                     putExtra(EXTRA_ERROR_TITLE,   "Server Error")
                     putExtra(EXTRA_ERROR_MESSAGE, "Something went wrong on our end. Please try again later.")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                 }
             )
         }
@@ -67,7 +65,6 @@ class Error_Activity : AppCompatActivity() {
                     putExtra(EXTRA_ERROR_CODE,    0)
                     putExtra(EXTRA_ERROR_TITLE,   "No Internet")
                     putExtra(EXTRA_ERROR_MESSAGE, "Please check your connection and try again.")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
             )
         }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.idsr_project.Model.ResponseApi
 import com.idsr_project.api.ApiClient
@@ -93,8 +94,19 @@ class Profile_Activity : BaseActivity() {
         binding.btnEditProfile.setOnClickListener {
             editProfileLauncher.launch(Intent(this, EditProfile_Activity::class.java))
         }
+        binding.btnThemeToggle.setOnClickListener { toggleTheme() }
     }
 
+    private fun toggleTheme() {
+        val currentMode = resources.configuration.uiMode and
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        when (currentMode) {
+            android.content.res.Configuration.UI_MODE_NIGHT_YES ->
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            else ->
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
+    }
     private fun navigateToAddUser() {
         startActivity(
             Intent(this, SignUp1Activity::class.java).apply {
