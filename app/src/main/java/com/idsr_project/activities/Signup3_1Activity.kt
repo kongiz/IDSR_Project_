@@ -16,7 +16,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Signup3_1Activity : AppCompatActivity() {
+class Signup3_1Activity : BaseActivity() {
+    override val excludeFromTimeout: Boolean = true
 
     private lateinit var binding: ActivitySignup31Binding
 

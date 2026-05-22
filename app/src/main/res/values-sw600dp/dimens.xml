@@ -1,0 +1,6 @@
+<resources>
+    <dimen name="banner_height">240dp</dimen>
+    <dimen name="card_min_height">160dp</dimen>
+
+    <dimen name="profile_logo_height">160dp</dimen>
+</resources>

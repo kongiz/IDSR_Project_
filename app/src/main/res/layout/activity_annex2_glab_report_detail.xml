@@ -1,449 +1,333 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/android:colorBackground"
-    android:fillViewport="true">
+    android:background="?attr/android:colorBackground">
 
-    <LinearLayout
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:fitsSystemWindows="true"
+        android:background="?attr/android:colorBackground"
+        app:elevation="0dp">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnBackAnne2GDetail"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/back_btn"
+                android:padding="10dp"
+                android:contentDescription="Back"
+                app:tint="?attr/colorOnSurface"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/splash11"
+                android:contentDescription="IDSR App Logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp">
 
-            <ImageButton
-                android:id="@+id/btnBackAnne2GDetail"
-                android:layout_width="40dp"
-                android:layout_height="60dp"
-                android:layout_gravity="start"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/back_btn"
-                android:contentDescription="Back"
-                app:tint="?attr/colorOnSurface" />
 
-            <ImageView
-                android:id="@+id/imgLogo"
-                android:layout_width="150dp"
-                android:layout_height="100dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="24dp"
-                android:src="@drawable/splash11"
-                android:scaleType="centerInside"
-                android:contentDescription="IDSR App Logo" />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorSurfaceVariant">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Patient Information"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Patient Name" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtPatientNameLab" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp"
+                        tools:text="John Doe"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Sex" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtSex" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp"
+                        tools:text="Male"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Age" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtAge" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface"
+                        tools:text="35"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorSurfaceVariant">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Specimen Information"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Specimen Type" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtSpecimenType" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp"
+                        tools:text="Blood"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Specimen ID" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtSpecimenID" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp"
+                        tools:text="SPEC-2024-001"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Suspected Disease" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtSuspectedDisease" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface"
+                        tools:text="Measles"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorSurfaceVariant">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lab Information"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Date Specimen Collected" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtDateSpecimenCollect" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp"
+                        tools:text="2024-01-15"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Date Specimen Sent to Lab" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtDateSpecimenSentLab" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface"
+                        tools:text="2024-01-16"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorSurfaceVariant">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Administrative Information"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Clinician Email" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtClinicianEmail" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp"
+                        tools:text="doctor@hospital.com"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Phone Number" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtPhoneNumber" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp"
+                        tools:text="+220 123 4567"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Region" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtRegion" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp"
+                        tools:text="Western Region"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="District" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtDistrict" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp"
+                        tools:text="Brikama"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Created At" android:textStyle="bold" android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface" android:alpha="0.7"/>
+                    <TextView android:id="@+id/txtCreatedAt" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface"
+                        tools:text="2024-01-15 10:30 AM"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditReport"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Edit Report"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:paddingVertical="14dp"
+                android:layout_marginBottom="8dp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/baseline_edit_24"
+                app:iconGravity="start"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Export Report"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:paddingVertical="14dp"
+                android:visibility="gone"
+                android:layout_marginBottom="8dp"
+                app:backgroundTint="?attr/colorSecondary"
+                app:cornerRadius="12dp"
+                app:icon="@android:drawable/ic_menu_share"
+                app:iconGravity="start"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBackAnnex2GReport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Go Back"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:paddingVertical="14dp"
+                android:layout_marginBottom="16dp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/baseline_arrow_back_24"
+                app:iconGravity="start"/>
+
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Patient Information"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textColor="?attr/colorPrimary"
-                    android:fontFamily="@font/font1"
-                    android:layout_marginBottom="16dp" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Patient Name"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtPatientNameLab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"
-                    tools:text="John Doe" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sex"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtSex"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"
-                    tools:text="Male" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Age"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtAge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    tools:text="35 years" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Specimen Information"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textColor="?attr/colorPrimary"
-                    android:fontFamily="@font/font1"
-                    android:layout_marginBottom="16dp" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Specimen Type"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtSpecimenType"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"
-                    tools:text="Blood" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Specimen ID"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtSpecimenID"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"
-                    tools:text="SPEC-2024-001" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Suspected Disease"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtSuspectedDisease"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    tools:text="Measles" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lab Information"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorPrimary"
-                    android:fontFamily="@font/font1"
-                    android:layout_marginBottom="16dp" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Date Specimen Collected"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtDateSpecimenCollect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"
-                    tools:text="2024-01-15" />
-
-                <!-- Date Specimen Sent to Lab -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Date Specimen Sent to Lab"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtDateSpecimenSentLab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    tools:text="2024-01-16" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Administrative Information"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textColor="?attr/colorPrimary"
-                    android:fontFamily="@font/font1"
-                    android:layout_marginBottom="16dp" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Clinician Email"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtClinicianEmail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"
-                    tools:text="doctor@hospital.com" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Phone Number"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtPhoneNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"
-                    tools:text="+233 24 123 4567" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Region"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtRegion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"
-                    tools:text="Greater Accra Region" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="District"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtDistrict"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"
-                    tools:text="Accra Metro" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Created At"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7" />
-
-                <TextView
-                    android:id="@+id/txtCreatedAt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    tools:text="2024-01-15 10:30 AM" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEditReport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Edit Report"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:paddingVertical="14dp"
-            app:cornerRadius="12dp"
-            app:icon="@drawable/baseline_edit_24"
-            app:iconGravity="start"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_marginBottom="8dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnExport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Export Report"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textColor="@color/idsr_on_primary"
-            android:paddingVertical="14dp"
-            android:visibility="gone"
-            app:backgroundTint="@color/idsr_secondary"
-            app:cornerRadius="12dp"
-            app:icon="@android:drawable/ic_menu_share"
-            app:iconTint="@color/idsr_on_primary"
-            app:iconGravity="start"
-            android:layout_marginBottom="8dp"/>
-
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnBackAnnex2GReport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Go Back"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:paddingVertical="14dp"
-            app:cornerRadius="12dp"
-            app:icon="@drawable/baseline_arrow_back_24"
-            app:iconGravity="start"
-            android:layout_marginBottom="16dp" />
-
-    </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

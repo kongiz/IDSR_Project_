@@ -15,7 +15,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
+    override val excludeFromTimeout: Boolean = true
 
     private lateinit var binding: ActivitySplashBinding
 

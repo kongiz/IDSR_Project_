@@ -19,13 +19,13 @@ import com.idsr_project.R
 import com.idsr_project.databinding.ActivityMapPickerBinding
 import java.util.Locale
 
-class MapPickerActivity : AppCompatActivity() {
+class MapPickerActivity : BaseActivity() {
     private lateinit var binding: ActivityMapPickerBinding
     private var mMap: GoogleMap? = null
     private var marker: Marker? = null
     private var selectedLatLng: LatLng? = null
 
-    // Gambia coordinates
+
     private val gambiaCenter = LatLng(13.454, -15.674)
     private val gambiaBounds = LatLngBounds(
         LatLng(13.0, -17.0),

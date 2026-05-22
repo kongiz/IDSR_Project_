@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.firebase.perf.FirebasePerformance
 import com.google.gson.GsonBuilder
 import com.idsr_project.BuildConfig
+import okhttp3.CertificatePinner
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -15,9 +16,9 @@ object ApiClient {
     private const val SERVER_IP   = BuildConfig.SERVER_IP
     private const val SERVER_PORT = BuildConfig.SERVER_PORT
 
-    const val BASE_HOST = "http://$SERVER_IP:$SERVER_PORT"
-    private const val BASE_URL = "$BASE_HOST/api/v1/"
+    private const val PINNED_HOST = BuildConfig.PINNED_HOST
 
+    internal val BASE_URL = "https://$PINNED_HOST/api/v1/"
 
     @Volatile
     var instance: ApiServices? = null
@@ -45,6 +46,10 @@ object ApiClient {
             .addInterceptor(AuthInterceptor(context))
             .addInterceptor(logging)
             .addInterceptor(FirebasePerformanceInterceptor())
+            .apply {
+                // Only pin in production — skip during local development
+                certificatePinner(buildCertificatePinner())
+            }
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
@@ -56,5 +61,12 @@ object ApiClient {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(ApiServices::class.java)
+    }
+
+    private fun buildCertificatePinner(): CertificatePinner {
+        return CertificatePinner.Builder()
+            .add(PINNED_HOST, "sha256/${BuildConfig.SSL_PIN_PRIMARY}")
+            .add(PINNED_HOST, "sha256/${BuildConfig.SSL_PIN_BACKUP}")
+            .build()
     }
 }

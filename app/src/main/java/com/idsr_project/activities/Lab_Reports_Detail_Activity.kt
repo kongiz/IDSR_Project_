@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
@@ -18,8 +20,9 @@ import com.idsr_project.utils.DateUtils
 import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.ExportManager
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 
-class Lab_Reports_Detail_Activity : AppCompatActivity() {
+class Lab_Reports_Detail_Activity : BaseActivity() {
     private lateinit var binding: ActivityLabReportsDetailBinding
     private var labReport: LabReportData? = null
 
@@ -28,10 +31,15 @@ class Lab_Reports_Detail_Activity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityLabReportsDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(
+            topView    = binding.appBarLayout,
+            bottomView = binding.btnBackLabReportReport
+        )
 
         setupClickListeners()
         loadLabReportData()
     }
+
 
     private fun setupClickListeners() {
         binding.btnBackLabReportDetail.setOnClickListener { finish() }

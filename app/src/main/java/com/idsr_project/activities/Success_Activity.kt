@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class Success_Activity : AppCompatActivity() {
+class Success_Activity : BaseActivity() {
 
     private lateinit var binding: ActivitySuccessBinding
 

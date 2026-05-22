@@ -1,377 +1,432 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:fillViewport="true"
-    android:background="@color/idsr_background">
+    android:background="?attr/android:colorBackground">
 
-    <LinearLayout
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:fitsSystemWindows="true"
+        android:background="?attr/android:colorBackground"
+        app:elevation="0dp">
 
-
-        <ImageButton
-            android:id="@+id/btnBackAnne2FDetail"
-            android:layout_width="40dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="16dp"
-            android:layout_gravity="start"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/back_btn"
-            app:tint="@color/idsr_on_surface"
-            android:contentDescription="Back" />
-
-
-        <ImageView
-            android:id="@+id/imgLogo"
-            android:layout_width="150dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="16dp"
-            android:src="@drawable/splash11"
-            android:scaleType="fitCenter" />
-
-
-        <com.google.android.material.card.MaterialCardView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/idsr_surface">
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-            <LinearLayout
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnBackAnne2FDetail"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/back_btn"
+                android:padding="10dp"
+                android:contentDescription="Back"
+                app:tint="?attr/colorOnSurface"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/splash11"
+                android:contentDescription="App logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp">
+
+
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/patient_information"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/idsr_primary"
-                    android:layout_marginBottom="12dp"/>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Patient Name" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtPatientName" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/patient_information"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="12dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Age" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtAge" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Patient Name" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtPatientName" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Gender" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtGender" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Age" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtAge" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Phone Number" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtPhone" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Gender" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtGender" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Address" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtAddress" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Phone Number" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtPhone" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Occupation" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtOccupation" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Address" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtAddress" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Occupation" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtOccupation" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/idsr_surface">
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/case_information"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/idsr_primary"
-                    android:layout_marginBottom="12dp"/>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Disease" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDisease" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/case_information"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="12dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Inpatient / Outpatient" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtInpatientOutpatient" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Disease" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDisease" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Date Seen" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDateSeen" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Inpatient / Outpatient" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtInpatientOutpatient" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Date of Onset" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDateOnset" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Date Seen" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDateSeen" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Travel History" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtTravelHistory" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Date of Onset" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDateOnset" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Destination" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDestination" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Travel History" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtTravelHistory" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Reporting Site" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtSite" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Destination" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDestination" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Reporting Site" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtSite" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/idsr_surface">
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Vaccination Information"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/idsr_primary"
-                    android:layout_marginBottom="12dp"/>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Vaccine Doses" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtVaccineDoses" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vaccination Information"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="12dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Last Vaccination Date" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDateLastVaccine" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Vaccine Doses" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtVaccineDoses" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Last Vaccination Date" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDateLastVaccine" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/idsr_surface">
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/specimen_and_lab_information"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/idsr_primary"
-                    android:layout_marginBottom="12dp"/>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Specimen Date" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDateSpecimen" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/specimen_and_lab_information"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="12dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Date Lab Received" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDateLab" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Specimen Date" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDateSpecimen" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Lab Results" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtLabResults" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Date Lab Received" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDateLab" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Lab Results" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtLabResults" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/idsr_surface">
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Notification Information"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/idsr_primary"
-                    android:layout_marginBottom="12dp"/>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Facility Notified On" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDateFacilityNotified" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Notification Information"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="12dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Date Sent to District" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDateSentDistrict" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Facility Notified On" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDateFacilityNotified" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Reporter Name" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtReporterName" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Date Sent to District" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDateSentDistrict" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Reporter Name" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtReporterName" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/idsr_surface">
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Administrative Information"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/idsr_primary"
-                    android:layout_marginBottom="12dp"/>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Region" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtRegion" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Administrative Information"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="12dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="District" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtDistrict" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"
-                    android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Region" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtRegion" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Created At" android:textStyle="bold" android:textColor="@color/idsr_gray"/>
-                <TextView android:id="@+id/txtCreatedAt" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:textColor="@color/idsr_on_surface"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="District" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtDistrict" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="10dp"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEditReport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Edit Report"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:paddingVertical="14dp"
-            app:cornerRadius="12dp"
-            app:icon="@drawable/baseline_edit_24"
-            app:iconGravity="start"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_marginBottom="8dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnExport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Export Report"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textColor="@color/idsr_on_primary"
-            android:paddingVertical="14dp"
-            android:visibility="gone"
-            app:backgroundTint="@color/idsr_secondary"
-            app:cornerRadius="12dp"
-            app:icon="@android:drawable/ic_menu_share"
-            app:iconTint="@color/idsr_on_primary"
-            app:iconGravity="start"
-            android:layout_marginBottom="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Created At" android:textStyle="bold"
+                        android:textColor="@color/idsr_gray"/>
+                    <TextView android:id="@+id/txtCreatedAt" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="?attr/colorOnSurface"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnBackAnnex2FReport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Go Back"
-            android:textAllCaps="false"
-            android:textColor="@color/idsr_on_primary"
-            app:backgroundTint="@color/idsr_primary"
-            app:cornerRadius="12dp"
-            android:paddingVertical="14dp"
-            android:layout_marginBottom="16dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditReport"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Edit Report"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:paddingVertical="14dp"
+                android:layout_marginBottom="8dp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/baseline_edit_24"
+                app:iconGravity="start"/>
 
-    </LinearLayout>
-</ScrollView>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Export Report"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:paddingVertical="14dp"
+                android:visibility="gone"
+                android:layout_marginBottom="8dp"
+                app:backgroundTint="?attr/colorSecondary"
+                app:cornerRadius="12dp"
+                app:icon="@android:drawable/ic_menu_share"
+                app:iconGravity="start"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBackAnnex2FReport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Go Back"
+                android:textAllCaps="false"
+                android:paddingVertical="14dp"
+                android:layout_marginBottom="16dp"
+                app:cornerRadius="12dp"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

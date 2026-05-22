@@ -7,7 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.idsr_project.databinding.ActivitySignUp1Binding
 import com.idsr_project.utils.ThemeManager
 
-class SignUp1Activity : AppCompatActivity() {
+class SignUp1Activity : BaseActivity() {
+    override val excludeFromTimeout: Boolean = true
 
     private lateinit var binding: ActivitySignUp1Binding
 

@@ -6,6 +6,9 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.idsr_project.Adapter.DiseaseAdapter
@@ -14,6 +17,8 @@ import com.idsr_project.Model.FormData
 import com.idsr_project.Model.surveillanceData
 import com.idsr_project.databinding.ActivitySurveillance2Binding
 import com.idsr_project.utils.EditModeExtras
+import com.idsr_project.utils.applyWindowInsets
+import com.idsr_project.utils.dpToPx
 
 class SurveillanceActivity2 : BaseActivity() {
 
@@ -40,6 +45,11 @@ class SurveillanceActivity2 : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivitySurveillance2Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        applyWindowInsets(
+            topView    = binding.appBarLayout,
+            bottomView = binding.saveProceedBtn
+        )
 
 
         val receivedData = intent.getParcelableExtra<surveillanceData>("SurveillanceData")

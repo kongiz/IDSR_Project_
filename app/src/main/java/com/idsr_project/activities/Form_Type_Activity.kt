@@ -9,7 +9,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.idsr_project.databinding.ActivityFormTypeBinding
 import com.idsr_project.utils.SessionManager
 
-class Form_Type_Activity : AppCompatActivity() {
+class Form_Type_Activity : BaseActivity() {
     private lateinit var binding: ActivityFormTypeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

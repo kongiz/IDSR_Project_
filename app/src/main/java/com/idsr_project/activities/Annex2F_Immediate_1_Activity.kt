@@ -24,6 +24,7 @@ import com.idsr_project.api.ApiClient
 import com.idsr_project.data.local.AppDatabase
 import com.idsr_project.databinding.ActivityAnnex2Fimmediate1Binding
 import com.idsr_project.utils.EditModeExtras
+import com.idsr_project.utils.applyWindowInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,6 +69,10 @@ class Annex2F_Immediate_1_Activity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivityAnnex2Fimmediate1Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(
+            topView    = binding.appBarLayout,
+            bottomView = binding.btnNextAnnex1
+        )
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 

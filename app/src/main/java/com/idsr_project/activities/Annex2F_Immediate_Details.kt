@@ -4,15 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.idsr_project.Model.Annex2FData
 import com.idsr_project.databinding.ActivityAnnex2FimmediateDetailsBinding
 import com.idsr_project.utils.DateUtils
 import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.ExportManager
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
-class Annex2F_Immediate_Details : AppCompatActivity() {
+class Annex2F_Immediate_Details : BaseActivity() {
+
     private lateinit var binding: ActivityAnnex2FimmediateDetailsBinding
     private var data: Annex2FData? = null
 
@@ -21,9 +28,10 @@ class Annex2F_Immediate_Details : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityAnnex2FimmediateDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        binding.btnBackAnnex2FReport.setOnClickListener { finish() }
-        binding.btnBackAnne2FDetail.setOnClickListener { finish() }
+        applyWindowInsets(
+            topView = binding.appBarLayout,
+            bottomView = binding.btnBackAnnex2FReport
+        )
 
         data = intent.getParcelableExtra<Annex2FData>("data")
         if (data == null) { finish(); return }
@@ -31,7 +39,12 @@ class Annex2F_Immediate_Details : AppCompatActivity() {
         displayData()
         setupEditButton()
         setupExportButton()
+
+        binding.btnBackAnne2FDetail.setOnClickListener { finish() }
+        binding.btnBackAnnex2FReport.setOnClickListener { finish() }
     }
+
+
 
     private fun displayData() {
         val d = data!!
@@ -61,6 +74,7 @@ class Annex2F_Immediate_Details : AppCompatActivity() {
         binding.txtCreatedAt.text            = DateUtils.formatIsoDateTime(d.created_at)
     }
 
+
     private fun setupEditButton() {
         val d             = data!!
         val currentUserId = SessionManager.getUserId(this)
@@ -68,16 +82,23 @@ class Annex2F_Immediate_Details : AppCompatActivity() {
         val isOwner       = d.user_id == currentUserId
         val isAdmin       = role == "Admin"
 
-        if (!isOwner && !isAdmin) { binding.btnEditReport.visibility = View.GONE; return }
-        if (!isWithin48Hours(d.created_at) && !isAdmin) { binding.btnEditReport.visibility = View.GONE; return }
+        if (!isOwner && !isAdmin) {
+            binding.btnEditReport.visibility = View.GONE
+            return
+        }
+
+        if (!isAdmin && !isWithin48Hours(d.created_at)) {
+            binding.btnEditReport.visibility = View.GONE
+            return
+        }
 
         binding.btnEditReport.visibility = View.VISIBLE
         binding.btnEditReport.setOnClickListener {
             startActivity(
                 Intent(this, Annex2F_Immediate_1_Activity::class.java).apply {
-                    putExtra(EditModeExtras.EXTRA_EDIT_MODE, true)
+                    putExtra(EditModeExtras.EXTRA_EDIT_MODE,      true)
                     putExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, d.id)
-                    putExtra(EditModeExtras.EXTRA_EDIT_DATA, d)
+                    putExtra(EditModeExtras.EXTRA_EDIT_DATA,      d)
                 }
             )
         }
@@ -86,15 +107,17 @@ class Annex2F_Immediate_Details : AppCompatActivity() {
     private fun isWithin48Hours(createdAt: String?): Boolean {
         if (createdAt == null) return false
         return try {
-            val sdf      = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault())
-            sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
-            val created  = sdf.parse(createdAt) ?: return false
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+            val created   = sdf.parse(createdAt) ?: return false
             val diffHours = (System.currentTimeMillis() - created.time) / (1000 * 60 * 60)
             diffHours <= 48
         } catch (e: Exception) {
             false
         }
     }
+
 
     private fun setupExportButton() {
         val role = SessionManager.getUserRole(this) ?: ""
@@ -107,7 +130,7 @@ class Annex2F_Immediate_Details : AppCompatActivity() {
 
         binding.btnExport.visibility = View.VISIBLE
         binding.btnExport.setOnClickListener {
-            android.app.AlertDialog.Builder(this)
+            MaterialAlertDialogBuilder(this)
                 .setTitle("Export Annex2F Report")
                 .setItems(arrayOf("Export as PDF", "Export as CSV")) { _, which ->
                     when (which) {

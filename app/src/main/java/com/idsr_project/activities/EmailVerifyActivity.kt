@@ -17,8 +17,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EmailVerifyActivity : AppCompatActivity() {
+class EmailVerifyActivity : BaseActivity() {
 
+    override val excludeFromTimeout: Boolean = true
     private lateinit var binding: ActivityEmailVerifyBinding
     private var email: String = ""
     private var mode: String = "VERIFY_EMAIL"

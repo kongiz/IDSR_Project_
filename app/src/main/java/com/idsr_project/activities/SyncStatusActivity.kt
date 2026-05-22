@@ -5,7 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,9 +18,10 @@ import com.idsr_project.databinding.ActivitySyncStatusBinding
 import com.idsr_project.sync.LabSyncWorker
 import com.idsr_project.sync.SyncWorker
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext  // ← ADD THIS
+import kotlinx.coroutines.withContext
 
 class SyncStatusActivity : BaseActivity() {
 
@@ -27,7 +29,6 @@ class SyncStatusActivity : BaseActivity() {
     private lateinit var adapter: ReportStatusAdapter
     private var allReports: List<PendingReportEntity> = emptyList()
     private var currentTab = 0
-
 
     private val dao by lazy { AppDatabase.getInstance(this).pendingReportDao() }
 
@@ -37,9 +38,13 @@ class SyncStatusActivity : BaseActivity() {
         binding = ActivitySyncStatusBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        applyWindowInsets(
+            topView    = binding.appBarLayout,
+            bottomView = binding.btnRetryFailed
+        )
+
+
+        binding.btnBack.setOnClickListener { finish() }
 
         setupRecyclerView()
         setupTabs()
@@ -114,17 +119,20 @@ class SyncStatusActivity : BaseActivity() {
 
     private fun loadReports() {
         lifecycleScope.launch {
-            val role     = SessionManager.getUserRole(this@SyncStatusActivity)?.uppercase() ?: ""
+            val role     = SessionManager.getUserRole(this@SyncStatusActivity)
+                ?.trim()
+                ?.lowercase() ?: ""
             val username = SessionManager.getFullName(this@SyncStatusActivity)
             val region   = SessionManager.getUserRegion(this@SyncStatusActivity) ?: ""
             val district = SessionManager.getUserDistrict(this@SyncStatusActivity) ?: ""
 
             allReports = withContext(Dispatchers.IO) {
                 when (role) {
-                    "ADMIN"            -> dao.getAllReports()
-                    "REGIONAL_OFFICER" -> dao.getReportsByRegion(region)
-                    "DISTRICT_OFFICER" -> dao.getReportsByDistrict(district)
+                    "admin"            -> dao.getAllReports()
+                    "regional officer" -> dao.getReportsByRegion(region)
+                    "district officer" -> dao.getReportsByDistrict(district)
                     else               -> dao.getReportsByUser(username)
+
                 }
             }
 

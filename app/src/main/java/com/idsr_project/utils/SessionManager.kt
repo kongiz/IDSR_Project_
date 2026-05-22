@@ -3,21 +3,22 @@ package com.idsr_project.utils
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 
 object SessionManager {
 
-    private const val PREF_NAME    = "UserSession"
-
-    private const val KEY_USER_ID  = "user_Id"
-    private const val KEY_USERNAME = "firstname"
-    private const val KEY_LASTNAME = "lastname"
-    private const val KEY_EMAIL    = "email"
-    private const val KEY_PHONE    = "phone"
-    private const val KEY_ROLE     = "role"
-    private const val KEY_REGION   = "region"
-    private const val KEY_DISTRICT = "district"
-    private const val KEY_ACCESS   = "access_token"
-    private const val KEY_REFRESH  = "refresh_token"
+    private const val PREF_NAME     = "UserSession"
+    private const val KEY_USER_ID   = "user_Id"
+    private const val KEY_USERNAME  = "firstname"
+    private const val KEY_LASTNAME  = "lastname"
+    private const val KEY_EMAIL     = "email"
+    private const val KEY_PHONE     = "phone"
+    private const val KEY_ROLE      = "role"
+    private const val KEY_REGION    = "region"
+    private const val KEY_DISTRICT  = "district"
+    private const val KEY_ACCESS    = "access_token"
+    private const val KEY_REFRESH   = "refresh_token"
     private const val KEY_FCM_TOKEN = "fcm_token"
 
     @Volatile
@@ -25,9 +26,24 @@ object SessionManager {
 
     private fun getPrefs(context: Context): SharedPreferences {
         return prefs ?: synchronized(this) {
-            prefs ?: context.applicationContext
-                .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                .also { prefs = it }
+            prefs ?: createEncryptedPrefs(context).also { prefs = it }
+        }
+    }
+
+    private fun createEncryptedPrefs(context: Context): SharedPreferences {
+        return try {
+            val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+
+            EncryptedSharedPreferences.create(
+                PREF_NAME,
+                masterKeyAlias,
+                context.applicationContext,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("SessionManager", "EncryptedSharedPreferences failed, falling back", e)
+            context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         }
     }
 
@@ -45,30 +61,29 @@ object SessionManager {
         refreshToken: String?
     ) {
         getPrefs(context).edit(commit = false) {
-            putInt(KEY_USER_ID, userId)
-            putString(KEY_USERNAME, firstname)
-            putString(KEY_LASTNAME, lastname)
-            putString(KEY_EMAIL, email)
-            putString(KEY_PHONE, phone)
-            putString(KEY_ROLE, role)
-            putString(KEY_REGION, region)
-            putString(KEY_DISTRICT, district)
-            putString(KEY_ACCESS, accessToken)
-            putString(KEY_REFRESH, refreshToken)
+            putInt(KEY_USER_ID,  userId)
+            putString(KEY_USERNAME,  firstname)
+            putString(KEY_LASTNAME,  lastname)
+            putString(KEY_EMAIL,     email)
+            putString(KEY_PHONE,     phone)
+            putString(KEY_ROLE,      role)
+            putString(KEY_REGION,    region)
+            putString(KEY_DISTRICT,  district)
+            putString(KEY_ACCESS,    accessToken)
+            putString(KEY_REFRESH,   refreshToken)
         }
     }
 
     fun saveTokens(context: Context, accessToken: String?, refreshToken: String?) {
         getPrefs(context).edit(commit = true) {
-            putString(KEY_ACCESS, accessToken)
-            putString(KEY_REFRESH, refreshToken)
+            putString(KEY_ACCESS,   accessToken)
+            putString(KEY_REFRESH,  refreshToken)
         }
     }
 
     fun clearSession(context: Context) {
-        getPrefs(context).edit(commit = true) {
-            clear()
-        }
+        getPrefs(context).edit(commit = true) { clear() }
+        synchronized(this) { prefs = null }
     }
 
     fun getUserId(context: Context): Int =
@@ -104,13 +119,11 @@ object SessionManager {
     fun getFcmToken(context: Context): String? =
         getPrefs(context).getString(KEY_FCM_TOKEN, null)
 
-
     fun saveFcmToken(context: Context, token: String) {
         getPrefs(context).edit(commit = false) {
             putString(KEY_FCM_TOKEN, token)
         }
     }
-
 
     fun updateNameAndPhone(context: Context, firstname: String, lastname: String, phone: String?) {
         getPrefs(context).edit(commit = false) {
@@ -119,7 +132,6 @@ object SessionManager {
             if (phone != null) putString(KEY_PHONE, phone)
         }
     }
-
 
     fun isLoggedIn(context: Context): Boolean =
         !getAccessToken(context).isNullOrEmpty()
@@ -134,7 +146,7 @@ object SessionManager {
         val lastName  = getUserLastName(context) ?: ""
         return listOfNotNull(
             firstName.takeIf { it.isNotBlank() },
-            lastName.takeIf { it.isNotBlank() }
+            lastName.takeIf  { it.isNotBlank() }
         ).joinToString(" ")
     }
 }

@@ -21,6 +21,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -35,6 +37,7 @@ import com.idsr_project.databinding.ActivityLaboratoryForm2Annex2GactivityBindin
 import com.idsr_project.sync.LabSyncWorker
 import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -90,6 +93,10 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivityLaboratoryForm2Annex2GactivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(
+            topView    = binding.appBarLayout,
+            bottomView = binding.btnLabTech
+        )
 
         setupDropdowns()
         setupFieldListeners()
@@ -110,12 +117,14 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
 
         if (isEditMode && editData != null) {
             prefillLabForm2(editData!!)
-            binding.btnLabTech.text = "Update Report"
-            // Image not required in edit mode if keeping existing
+            binding.btnLabTech.text = if (isEditMode) "Update Form" else "Submit Form"
+
         }
 
         FirebaseCrashlytics.getInstance().setCustomKey("screen", "Laboratory_Form_2_Annex2G_Activity")
     }
+
+
 
     private fun updateImagePreview() {
         if (photoUris.isNotEmpty()) {
@@ -345,7 +354,7 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
                 finalLabResult = data.finalLabResult.toRequestBody("text/plain".toMediaTypeOrNull()),
                 dateLabSentDistrict = data.dateLabSentDistrict.toRequestBody("text/plain".toMediaTypeOrNull()),
                 dateDistrictReceivedLabResult = data.dateDistrictReceivedLabResult.toRequestBody("text/plain".toMediaTypeOrNull()),
-                labResultImages = imageParts // API must be updated to accept a List/Array
+                labResultImages = imageParts
             ).execute()
 
             response.isSuccessful
@@ -368,14 +377,17 @@ class Laboratory_Form_2_Annex2G_Activity : BaseActivity() {
     }
 
     private fun setupFieldListeners() {
-        val layouts = listOf(binding.tilLabName, binding.tilDateLabReceived, binding.tilSpecimenCon,
-            binding.tilTestTypesPerformed, binding.tilFinalLabResult,
-            binding.tilDateLabSentDistrict, binding.tilDateDistrictReceivedLabResult)
-
-        binding.etLabName.addTextChangedListener { binding.tilLabName.error = null }
-        binding.etDateLabReceived.addTextChangedListener { binding.tilDateLabReceived.error = null }
+        listOf(
+            binding.etLabName               to binding.tilLabName,
+            binding.etDateLabReceived       to binding.tilDateLabReceived,
+            binding.etTestTypesPerformed    to binding.tilTestTypesPerformed,
+            binding.etFinalLAbResult        to binding.tilFinalLabResult,
+            binding.etDateLabSentDistrict   to binding.tilDateLabSentDistrict,
+            binding.etDateDistrictReceivedLabResult to binding.tilDateDistrictReceivedLabResult
+        ).forEach { (et, til) ->
+            et.addTextChangedListener { til.error = null }
+        }
         binding.spinnerSpecimenCon.addTextChangedListener { binding.tilSpecimenCon.error = null }
-
     }
 
     companion object {

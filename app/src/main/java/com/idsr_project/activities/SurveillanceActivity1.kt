@@ -16,6 +16,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -32,6 +34,7 @@ import com.idsr_project.api.ApiClient
 import com.idsr_project.data.local.AppDatabase
 import com.idsr_project.databinding.ActivitySurveillance1Binding
 import com.idsr_project.utils.EditModeExtras
+import com.idsr_project.utils.applyWindowInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -77,6 +80,10 @@ class SurveillanceActivity1 : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivitySurveillance1Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(
+            topView    = binding.appBarLayout,
+            bottomView = binding.btnNextSur1
+        )
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -97,6 +104,7 @@ class SurveillanceActivity1 : BaseActivity() {
 
         FirebaseCrashlytics.getInstance().setCustomKey("screen", "SurveillanceActivity1")
     }
+
 
     private fun setupClickListeners() {
         binding.btnBackSur1.setOnClickListener { finish() }

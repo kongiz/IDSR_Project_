@@ -28,6 +28,7 @@ import retrofit2.Response
 
 class Login_Activity : BaseActivity() {
 
+    override val excludeFromTimeout: Boolean = true
     private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

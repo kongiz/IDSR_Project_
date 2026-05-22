@@ -180,7 +180,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
 
     private fun refreshAccessToken(refreshToken: String): Pair<String, String>? {
         return try {
-            val url  = "${ApiClient.BASE_HOST}/api/v1/auth/refresh_token"
+            val url  = "${ApiClient.BASE_URL}auth/refresh_token"
             val json = JSONObject().apply { put("refresh_token", refreshToken) }
             val body = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
 

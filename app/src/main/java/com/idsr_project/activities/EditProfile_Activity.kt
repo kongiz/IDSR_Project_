@@ -17,7 +17,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EditProfile_Activity : AppCompatActivity() {
+class EditProfile_Activity : BaseActivity() {
 
     private lateinit var binding: ActivityEditProfileBinding
 

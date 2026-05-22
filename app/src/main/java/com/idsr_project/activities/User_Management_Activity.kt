@@ -1,9 +1,11 @@
 package com.idsr_project.activities
 
+
 import android.app.AlertDialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
@@ -26,9 +28,21 @@ class UserManagementActivity : BaseActivity() {
 
     private lateinit var binding: ActivityUserManagementBinding
     private lateinit var adapter: UserAdapter
-
+    private val hintHandler = Handler(Looper.getMainLooper())
+    private var hintRunnable: Runnable? = null
+    private var currentHintIndex = 0
     private var allUsers: MutableList<AdminUser> = mutableListOf()
     private var searchJob: Job? = null
+
+
+    private val searchHints = listOf(
+        "Search by first name...",
+        "Search by last name...",
+        "Search by email...",
+        "Search by role...",
+        "Search by region...",
+        "Search by district..."
+    )
 
     private val roles = listOf(
         "Admin",
@@ -64,19 +78,34 @@ class UserManagementActivity : BaseActivity() {
     }
 
     private fun setupChipFilters() {
-        binding.chipGroupFilter.setOnCheckedStateChangeListener { group, checkedIds ->
-            applyFilters()
+        binding.chipGroupFilter.setOnCheckedStateChangeListener { _, _ ->
+            applyFilters(binding.etSearch.text.toString().trim())
         }
     }
 
     private fun setupSearch() {
-        binding.etSearch.doAfterTextChanged {
+        binding.etSearch.doAfterTextChanged { editable ->
+            val query = editable?.toString()?.trim() ?: ""
+
+            if (query.isNotEmpty()) stopHintAnimation()
+            else if (!binding.etSearch.hasFocus()) startHintAnimation()
+
             searchJob?.cancel()
             searchJob = lifecycleScope.launch {
                 delay(400)
-                applyFilters()
+                applyFilters(query)
             }
         }
+
+        binding.etSearch.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus && binding.etSearch.text.isNullOrEmpty()) {
+                startHintAnimation()
+            } else {
+                stopHintAnimation()
+            }
+        }
+
+        startHintAnimation()
     }
 
     private fun loadUsers(isActive: Boolean? = null, role: String? = null) {
@@ -93,7 +122,7 @@ class UserManagementActivity : BaseActivity() {
                 showLoading(false)
                 if (response.isSuccessful && response.body()?.success == true) {
                     allUsers = response.body()!!.data!!.toMutableList()
-                    applyFilters()
+                    applyFilters(binding.etSearch.text.toString().trim())
                 } else {
                     showEmpty(true)
                     Toast.makeText(this@UserManagementActivity, "Failed to load users", Toast.LENGTH_SHORT).show()
@@ -111,8 +140,8 @@ class UserManagementActivity : BaseActivity() {
         })
     }
 
-    private fun applyFilters() {
-        val query     = binding.etSearch.text.toString().trim().lowercase()
+    private fun applyFilters(searchText: String) {
+        val query = searchText.lowercase()
         val checkedId = binding.chipGroupFilter.checkedChipId
 
         android.util.Log.d("CHIP_DEBUG", "checkedId=$checkedId " +
@@ -186,7 +215,7 @@ class UserManagementActivity : BaseActivity() {
                     val updated = user.copy(is_active = newStatus)
                     val idx = allUsers.indexOfFirst { it.id == user.id }
                     if (idx >= 0) allUsers[idx] = updated
-                    applyFilters()
+                    applyFilters(binding.etSearch.text.toString().trim())
                     Toast.makeText(
                         this@UserManagementActivity,
                         "${user.firstname} ${if (newStatus) "activated" else "deactivated"}",
@@ -253,7 +282,7 @@ class UserManagementActivity : BaseActivity() {
                     val updated = user.copy(user_role = newRole)
                     val idx = allUsers.indexOfFirst { it.id == user.id }
                     if (idx >= 0) allUsers[idx] = updated
-                    applyFilters()
+                    applyFilters(binding.etSearch.text.toString().trim())
                     Toast.makeText(
                         this@UserManagementActivity,
                         "${user.firstname}'s role updated to $newRole",
@@ -279,5 +308,41 @@ class UserManagementActivity : BaseActivity() {
     private fun showEmpty(show: Boolean) {
         binding.layoutEmpty.visibility = if (show) View.VISIBLE else View.GONE
         binding.rvUsers.visibility     = if (show) View.GONE else View.VISIBLE
+    }
+
+
+    private fun startHintAnimation() {
+        hintRunnable = object : Runnable {
+            override fun run() {
+                if (binding.etSearch.text.isNullOrEmpty() && !binding.etSearch.hasFocus()) {
+                    val nextHint = searchHints[currentHintIndex % searchHints.size]
+
+                    binding.etSearch.animate().alpha(0.3f)
+                        .setDuration(300)
+                        .withEndAction {
+                            binding.etSearch.hint = nextHint
+                            binding.etSearch.animate()
+                                .alpha(1f)
+                                .setDuration(300)
+                                .start()
+                        }
+                        .start()
+
+                    currentHintIndex++
+                }
+                hintHandler.postDelayed(this, 2500)
+            }
+        }
+        hintHandler.postDelayed(hintRunnable!!, 2500)
+    }
+
+    private fun stopHintAnimation() {
+        hintRunnable?.let { hintHandler.removeCallbacks(it) }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopHintAnimation()
+        searchJob?.cancel()
     }
 }

@@ -28,7 +28,7 @@ import okhttp3.Request
 import java.io.OutputStream
 import kotlin.math.abs
 
-class Img_Preview_Activity : AppCompatActivity() {
+class Img_Preview_Activity : BaseActivity() {
     private lateinit var binding: ActivityImgPreviewBinding
 
     private val client = OkHttpClient.Builder().build()

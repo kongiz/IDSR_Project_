@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.idsr_project.Adapter.DiseaseListAdapter
 import com.idsr_project.Model.FormData
@@ -19,8 +21,9 @@ import retrofit2.Response
 import com.idsr_project.Model.ResponseApi
 import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.ExportManager
+import com.idsr_project.utils.applyWindowInsets
 
-class HistoryDetail_Activity : AppCompatActivity() {
+class HistoryDetail_Activity : BaseActivity() {
     private lateinit var binding: ActivityHistoryDetailBinding
     private lateinit var diseaseAdapter: DiseaseListAdapter
     private var form: FormData? = null
@@ -30,6 +33,10 @@ class HistoryDetail_Activity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityHistoryDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(
+            topView    = binding.appBarLayout,
+            bottomView = binding.btnBack
+        )
 
         binding.btnBackDetail.setOnClickListener { finish() }
         binding.btnBack.setOnClickListener { finish() }

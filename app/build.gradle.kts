@@ -29,8 +29,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "SERVER_IP", "\"${localProperties.getProperty("SERVER_IP", "192.168.1.15")}\"")
+        buildConfigField("String", "SERVER_IP", "\"${localProperties.getProperty("SERVER_IP", "192.168.1.3")}\"")
         buildConfigField("String", "SERVER_PORT", "\"${localProperties.getProperty("SERVER_PORT", "5000")}\"")
+        buildConfigField("String", "PINNED_HOST",     "\"${localProperties.getProperty("PINNED_HOST",     "")}\"")
+        buildConfigField("String", "SSL_PIN_PRIMARY", "\"${localProperties.getProperty("SSL_PIN_PRIMARY", "")}\"")
+        buildConfigField("String", "SSL_PIN_BACKUP",  "\"${localProperties.getProperty("SSL_PIN_BACKUP",  "")}\"")
     }
 
     buildFeatures {
@@ -125,4 +128,11 @@ dependencies {
     // In-App Updates
     implementation(libs.app.update)
     implementation(libs.app.update.ktx)
+
+    // Encryption for session management
+    implementation(libs.androidx.security.crypto)
+
+    // Root Detection
+    implementation(libs.rootbeer)
+
 }

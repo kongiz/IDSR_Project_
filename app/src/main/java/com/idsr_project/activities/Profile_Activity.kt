@@ -14,6 +14,9 @@ import com.idsr_project.utils.SessionManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.idsr_project.R
 
 class Profile_Activity : BaseActivity() {
 
@@ -33,6 +36,8 @@ class Profile_Activity : BaseActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        applyWindowInsets()
+
         try {
             val versionName = packageManager.getPackageInfo(packageName, 0).versionName
             binding.tvAppVersion.text = "IDSR v$versionName"
@@ -43,6 +48,15 @@ class Profile_Activity : BaseActivity() {
         loadUserProfile()
         setupClickListeners()
         setupRoleBasedAccess()
+        updateThemeIcon()
+    }
+
+    private fun applyWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.appBarLayout) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(0, systemBars.top, 0, 0)
+            insets
+        }
     }
 
     private fun loadUserProfile() {
@@ -106,6 +120,16 @@ class Profile_Activity : BaseActivity() {
             else ->
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
+        updateThemeIcon()
+    }
+
+    private fun updateThemeIcon() {
+        val isNight = resources.configuration.uiMode and
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+        binding.btnThemeToggle.setImageResource(
+            if (isNight) R.drawable.dark_mode_24px else R.drawable.dark_mode_24px
+        )
     }
     private fun navigateToAddUser() {
         startActivity(

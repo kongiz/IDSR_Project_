@@ -14,8 +14,9 @@ import com.idsr_project.databinding.ActivityForgotPasswordBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+class ForgotPasswordActivity : BaseActivity() {
 
-class ForgotPasswordActivity : AppCompatActivity() {
+    override val excludeFromTimeout: Boolean = true
 
     private lateinit var binding: ActivityForgotPasswordBinding
 
@@ -24,6 +25,8 @@ class ForgotPasswordActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityForgotPasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
 
         binding.btnBack.setOnClickListener { finish() }
 

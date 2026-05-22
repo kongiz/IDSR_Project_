@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
@@ -22,6 +24,7 @@ import com.idsr_project.data.repository.SubmitResult
 import com.idsr_project.databinding.ActivitySurveillance3Binding
 import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 import kotlinx.coroutines.launch
 
 class SurveillanceActivity3 : BaseActivity() {
@@ -41,6 +44,10 @@ class SurveillanceActivity3 : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivitySurveillance3Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(
+            topView    = binding.appBarLayout,
+            bottomView = binding.btnSubmit
+        )
 
         retrieveActivityData()
         autoFillOfficerDetails()

@@ -8,7 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.idsr_project.databinding.ActivitySignUp2Binding
 import com.idsr_project.utils.ThemeManager
 
-class SignUp2Activity : AppCompatActivity() {
+class SignUp2Activity : BaseActivity() {
+    override val excludeFromTimeout: Boolean = true
 
     private lateinit var binding: ActivitySignUp2Binding
 
@@ -39,7 +40,7 @@ class SignUp2Activity : AppCompatActivity() {
             finish()
         }
 
-        // Clear errors on interaction
+
         binding.etPhone.setOnFocusChangeListener { _, _ ->
             binding.tilPhone.error = null
         }
@@ -48,7 +49,7 @@ class SignUp2Activity : AppCompatActivity() {
             binding.tilEmail.error = null
         }
 
-        // Next
+
         binding.btnNext2.setOnClickListener {
             validateAndProceed(firstname, lastname, registerMode, currentUserRole)
         }
@@ -80,8 +81,8 @@ class SignUp2Activity : AppCompatActivity() {
                 binding.etPhone.requestFocus()
                 return
             }
-            phone.length != 10 -> {
-                binding.tilPhone.error = "Phone number must be exactly 10 digits"
+            phone.length != 7 -> {
+                binding.tilPhone.error = "Phone number must be exactly 7 digits"
                 binding.etPhone.requestFocus()
                 return
             }

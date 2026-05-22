@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -22,6 +24,7 @@ import com.idsr_project.data.repository.OfflineRepository
 import com.idsr_project.data.repository.SubmitResult
 import com.idsr_project.databinding.ActivityLaboratoryForm1Annex2GactivityBinding
 import com.idsr_project.utils.EditModeExtras
+import com.idsr_project.utils.applyWindowInsets
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -43,12 +46,17 @@ class Laboratory_Form_1_Annex2G_Activity : BaseActivity() {
         binding = ActivityLaboratoryForm1Annex2GactivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        applyWindowInsets(
+            topView    = binding.appBarLayout,
+            bottomView = binding.btnLabHW1
+        )
+
         setupDropdowns()
         setUpFieldListeners()
         setupDatePickers()
         handleBackPress()
 
-        generateSpecimenID()
+
 
         isEditMode   = intent.getBooleanExtra(EditModeExtras.EXTRA_EDIT_MODE, false)
         editReportId = intent.getIntExtra(EditModeExtras.EXTRA_EDIT_REPORT_ID, -1)
@@ -56,8 +64,10 @@ class Laboratory_Form_1_Annex2G_Activity : BaseActivity() {
 
         if (isEditMode && editData != null) {
             prefillForm(editData!!)
-            binding.btnLabHW1.text = "Update Report"
+            binding.btnLabHW1.text = if (isEditMode) "Update Report" else "Submit Form"
             title = "Edit Specimen Report"
+        } else {
+            generateSpecimenID()
         }
 
         FirebaseCrashlytics.getInstance().setCustomKey("screen", "Laboratory_Form_1_Annex2G_Activity")
@@ -251,7 +261,7 @@ class Laboratory_Form_1_Annex2G_Activity : BaseActivity() {
                     is SubmitResult.Error -> {
                         Toast.makeText(this@Laboratory_Form_1_Annex2G_Activity, "Error: ${result.message}", Toast.LENGTH_LONG).show()
                         binding.btnLabHW1.isEnabled = true
-                        binding.btnLabHW1.text = "Submit Form"
+                        binding.btnLabHW1.text = if (isEditMode) "Update Form" else "Submit Form"
                         return@launch
                     }
                 }

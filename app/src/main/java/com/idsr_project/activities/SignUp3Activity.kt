@@ -9,7 +9,8 @@ import com.idsr_project.R
 import com.idsr_project.databinding.ActivitySignUp3Binding
 import com.idsr_project.utils.ThemeManager
 
-class SignUp3Activity : AppCompatActivity() {
+class SignUp3Activity : BaseActivity() {
+    override val excludeFromTimeout: Boolean = true
 
     private lateinit var binding: ActivitySignUp3Binding
 

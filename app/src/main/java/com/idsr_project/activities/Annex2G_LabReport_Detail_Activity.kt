@@ -5,14 +5,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.idsr_project.Model.Annex2GData
 import com.idsr_project.databinding.ActivityAnnex2GlabReportDetailBinding
 import com.idsr_project.utils.DateUtils
 import com.idsr_project.utils.EditModeExtras
 import com.idsr_project.utils.ExportManager
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 
-class Annex2G_LabReport_Detail_Activity : AppCompatActivity() {
+class Annex2G_LabReport_Detail_Activity : BaseActivity() {
     private lateinit var binding: ActivityAnnex2GlabReportDetailBinding
     private var data: Annex2GData? = null
 
@@ -21,6 +24,10 @@ class Annex2G_LabReport_Detail_Activity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityAnnex2GlabReportDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(
+            topView = binding.appBarLayout,
+            bottomView = binding.btnBackAnnex2GReport
+        )
 
         binding.btnBackAnne2GDetail.setOnClickListener { finish() }
         binding.btnBackAnnex2GReport.setOnClickListener { finish() }
@@ -32,6 +39,7 @@ class Annex2G_LabReport_Detail_Activity : AppCompatActivity() {
         setupEditButton()
         setupExportButton()
     }
+
 
     private fun displayData() {
         val d = data!!
