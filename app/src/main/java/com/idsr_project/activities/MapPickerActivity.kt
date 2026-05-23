@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -17,6 +19,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.idsr_project.R
 import com.idsr_project.databinding.ActivityMapPickerBinding
+import com.idsr_project.utils.dpToPx
 import java.util.Locale
 
 class MapPickerActivity : BaseActivity() {
@@ -37,6 +40,12 @@ class MapPickerActivity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivityMapPickerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.topOverlay) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(16.dpToPx(this), systemBars.top + 16.dpToPx(this), 16.dpToPx(this), 16.dpToPx(this))
+            insets
+        }
 
         setupMap()
         setupClickListeners()

@@ -4,222 +4,284 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@color/idsr_background">
+    android:background="?attr/android:colorBackground">
+
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/idsr_surface"
-        app:elevation="4dp">
+        android:fitsSystemWindows="true"
+        android:background="?attr/colorSurface"
+        app:elevation="0dp">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/idsr_surface"
-            app:navigationIcon="@drawable/back_btn"
-            app:navigationIconTint="@color/idsr_on_surface">
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="Edit Profile"
-                android:layout_marginEnd="10dp"
-                android:textColor="@color/idsr_on_surface"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"
+                android:src="@drawable/back_btn"
+                android:padding="10dp"
+                app:tint="?attr/colorOnSurface"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
-        </com.google.android.material.appbar.MaterialToolbar>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/splash11"
+                android:contentDescription="App logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="?attr/colorOnSurface"
+            android:paddingBottom="8dp"/>
+
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/idsr_surface"
-            app:tabIndicatorColor="@color/idsr_primary"
-            app:tabSelectedTextColor="@color/idsr_primary"
-            app:tabTextColor="@color/idsr_gray"
+            android:background="?attr/colorSurface"
+            app:tabIndicatorColor="?attr/colorPrimary"
+            app:tabSelectedTextColor="?attr/colorPrimary"
+            app:tabTextColor="?attr/colorOnSurfaceVariant"
             app:tabMode="fixed"
             app:tabGravity="fill"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Single direct child wrapping both tabs -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-            <!-- Profile Tab -->
+
             <LinearLayout
-                android:id="@+id/layoutProfile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:maxWidth="600dp"
+                android:layout_gravity="center_horizontal">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilFirstName"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+                <LinearLayout
+                    android:id="@+id/layoutProfile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="First Name"
-                    android:layout_marginBottom="16dp">
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etFirstName"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilFirstName"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
-                        android:capitalize="words"/>
+                        android:hint="First Name"
+                        android:layout_marginBottom="16dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etFirstName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName|textCapWords"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilLastName"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Last Name"
-                    android:layout_marginBottom="16dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etLastName"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilLastName"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
-                        android:capitalize="words"/>
+                        android:hint="Last Name"
+                        android:layout_marginBottom="16dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLastName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName|textCapWords"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilPhone"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Phone Number"
-                    android:layout_marginBottom="32dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etPhone"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPhone"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="phone"/>
+                        android:hint="Phone Number"
+                        android:layout_marginBottom="32dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="phone"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                <ProgressBar
-                    android:id="@+id/progressProfile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="16dp"
-                    android:visibility="gone"/>
+                    <ProgressBar
+                        android:id="@+id/progressProfile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone"/>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSaveProfile"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSaveProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Save Changes"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        android:paddingVertical="14dp"
+                        app:cornerRadius="12dp"/>
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:id="@+id/layoutPassword"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="Save Changes"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/idsr_on_primary"
-                    app:backgroundTint="@color/idsr_primary"
-                    app:cornerRadius="12dp"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilCurrentPassword"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Current Password"
+                        android:layout_marginBottom="16dp"
+                        app:endIconMode="password_toggle"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCurrentPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilNewPassword"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="New Password"
+                        android:layout_marginBottom="16dp"
+                        app:endIconMode="password_toggle"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etNewPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilConfirmNewPassword"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Confirm New Password"
+                        android:layout_marginBottom="32dp"
+                        app:endIconMode="password_toggle"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etConfirmNewPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ProgressBar
+                        android:id="@+id/progressPassword"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnChangePassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Change Password"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        android:paddingVertical="14dp"
+                        app:cornerRadius="12dp"/>
+
+                </LinearLayout>
 
             </LinearLayout>
-
-            <!-- Password Tab -->
-            <LinearLayout
-                android:id="@+id/layoutPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilCurrentPassword"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Current Password"
-                    android:layout_marginBottom="16dp"
-                    app:passwordToggleEnabled="true">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etCurrentPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"/>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilNewPassword"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="New Password"
-                    android:layout_marginBottom="16dp"
-                    app:passwordToggleEnabled="true">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etNewPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"/>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilConfirmNewPassword"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Confirm New Password"
-                    android:layout_marginBottom="32dp"
-                    app:passwordToggleEnabled="true">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etConfirmNewPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"/>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <ProgressBar
-                    android:id="@+id/progressPassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="16dp"
-                    android:visibility="gone"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnChangePassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="Change Password"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/idsr_on_primary"
-                    app:backgroundTint="@color/idsr_primary"
-                    app:cornerRadius="12dp"/>
-
-            </LinearLayout>
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

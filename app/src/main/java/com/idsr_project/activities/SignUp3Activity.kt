@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.idsr_project.R
 import com.idsr_project.databinding.ActivitySignUp3Binding
 import com.idsr_project.utils.ThemeManager
+import com.idsr_project.utils.applyWindowInsets
 
 class SignUp3Activity : BaseActivity() {
     override val excludeFromTimeout: Boolean = true
@@ -20,6 +21,7 @@ class SignUp3Activity : BaseActivity() {
 
         binding = ActivitySignUp3Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
         val firstname = intent.getStringExtra("FIRSTNAME")
         val lastname = intent.getStringExtra("LASTNAME")

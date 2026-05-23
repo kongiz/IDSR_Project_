@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -36,6 +38,12 @@ class DiseaseMapActivity : BaseActivity(), OnMapReadyCallback {
         enableEdgeToEdge()
         binding = ActivityDiseaseMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.headerBar) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(0, systemBars.top, 0, 0)
+            insets
+        }
 
         binding.btnBackMap.setOnClickListener { finish() }
 

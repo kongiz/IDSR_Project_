@@ -1,40 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:fillViewport="true"
     android:background="?attr/android:colorBackground">
 
-    <LinearLayout
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:fitsSystemWindows="true"
+        android:background="?attr/colorSurface"
+        app:elevation="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnBackDashboard"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back"
+                android:src="@drawable/back_btn"
+                android:padding="10dp"
+                app:tint="?attr/colorOnSurface"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/splash11"
+                android:contentDescription="App logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/btnBackDashboard"
-            android:layout_width="40dp"
-            android:layout_height="60dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/back_btn"
-            app:tint="?attr/colorOnSurface"
-            android:contentDescription="@string/back"/>
-
-
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/txtAnalyticsTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Analytics Dashboard"
-            android:textSize="24sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:layout_gravity="center"
+            android:gravity="center"
             android:textColor="?attr/colorOnSurface"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="20dp"/>
+            android:paddingBottom="8dp"/>
+
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/analyticsProgress"
@@ -42,366 +69,373 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:visibility="gone"
-            app:trackThickness="3dp"
-            android:layout_marginBottom="8dp"/>
+            app:trackThickness="3dp"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
 
-        <HorizontalScrollView
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none">
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="180dp"
-                    android:layout_height="120dp"
-                    android:layout_marginEnd="12dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="?attr/colorSurface"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorPrimary">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-
-                        <TextView
-                            android:id="@+id/txtSurveillanceCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorPrimary"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Surveillance Reports"
-                            android:textSize="13sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:gravity="center"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="180dp"
-                    android:layout_height="120dp"
-                    android:layout_marginEnd="12dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="?attr/colorSurface"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorSurfaceVariant">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-
-                        <TextView
-                            android:id="@+id/txtImmediateCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Immediate Cases"
-                            android:textSize="13sp"
-                            android:textColor="@color/idsr_gray"
-                            android:gravity="center"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="180dp"
-                    android:layout_height="120dp"
-                    android:layout_marginEnd="12dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="?attr/colorSurface"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorSurfaceVariant">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-
-                        <TextView
-                            android:id="@+id/txtLabResultsCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Lab Reports"
-                            android:textSize="13sp"
-                            android:textColor="@color/idsr_gray"
-                            android:gravity="center"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="180dp"
-                    android:layout_height="120dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="?attr/colorSurface"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorSurfaceVariant">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-
-                        <TextView
-                            android:id="@+id/txtSpecimenCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Specimen Reports"
-                            android:textSize="13sp"
-                            android:textColor="@color/idsr_gray"
-                            android:gravity="center"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
-        </HorizontalScrollView>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Weekly Trend"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp"/>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
-
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/weeklyChart"
-                android:layout_width="match_parent"
-                android:layout_height="260dp"
-                android:padding="8dp"/>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Top 5 Diseases"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp"/>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/diseaseChart"
-                    android:layout_width="600dp"
-                    android:layout_height="260dp"
-                    android:padding="8dp"/>
-            </HorizontalScrollView>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Gender Distribution"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp"/>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
-
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/genderChart"
-                android:layout_width="match_parent"
-                android:layout_height="260dp"
-                android:padding="8dp"/>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Age Group Distribution"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp"/>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/ageChart"
-                    android:layout_width="500dp"
-                    android:layout_height="260dp"
-                    android:padding="8dp"/>
-            </HorizontalScrollView>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Top Reporting Facilities"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp"/>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/facilityChart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="260dp"
-                    android:padding="8dp"/>
-            </HorizontalScrollView>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:strokeWidth="2dp"
-            app:strokeColor="?attr/colorSecondary">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="16dp"
+                android:maxWidth="600dp"
+                android:layout_gravity="center_horizontal">
+
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="180dp"
+                            android:layout_height="120dp"
+                            android:layout_marginEnd="12dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="2dp"
+                            app:cardBackgroundColor="?attr/colorSurface"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="?attr/colorPrimary">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+                                <TextView
+                                    android:id="@+id/txtSurveillanceCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="32sp"
+                                    android:textStyle="bold"
+                                    android:textColor="?attr/colorPrimary"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Surveillance Reports"
+                                    android:textSize="13sp"
+                                    android:textColor="?attr/colorOnSurface"
+                                    android:gravity="center"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="180dp"
+                            android:layout_height="120dp"
+                            android:layout_marginEnd="12dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="2dp"
+                            app:cardBackgroundColor="?attr/colorSurface"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="?attr/colorSurfaceVariant">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+                                <TextView
+                                    android:id="@+id/txtImmediateCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="32sp"
+                                    android:textStyle="bold"
+                                    android:textColor="?attr/colorOnSurface"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Immediate Cases"
+                                    android:textSize="13sp"
+                                    android:textColor="?attr/colorOnSurfaceVariant"
+                                    android:gravity="center"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="180dp"
+                            android:layout_height="120dp"
+                            android:layout_marginEnd="12dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="2dp"
+                            app:cardBackgroundColor="?attr/colorSurface"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="?attr/colorSurfaceVariant">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+                                <TextView
+                                    android:id="@+id/txtLabResultsCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="32sp"
+                                    android:textStyle="bold"
+                                    android:textColor="?attr/colorOnSurface"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Lab Reports"
+                                    android:textSize="13sp"
+                                    android:textColor="?attr/colorOnSurfaceVariant"
+                                    android:gravity="center"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="180dp"
+                            android:layout_height="120dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="2dp"
+                            app:cardBackgroundColor="?attr/colorSurface"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="?attr/colorSurfaceVariant">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+                                <TextView
+                                    android:id="@+id/txtSpecimenCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="32sp"
+                                    android:textStyle="bold"
+                                    android:textColor="?attr/colorOnSurface"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Specimen Reports"
+                                    android:textSize="13sp"
+                                    android:textColor="?attr/colorOnSurfaceVariant"
+                                    android:gravity="center"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Avg Lab Turnaround Time"
-                    android:textSize="14sp"
+                    android:text="Weekly Trend"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/idsr_gray"
-                    android:gravity="center"/>
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="?attr/colorSurfaceVariant">
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/weeklyChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="260dp"
+                        android:padding="8dp"/>
+                </com.google.android.material.card.MaterialCardView>
+
+
 
                 <TextView
-                    android:id="@+id/txtLabTurnaround"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="0 days"
-                    android:textSize="36sp"
+                    android:text="Top 5 Diseases"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="?attr/colorSecondary"/>
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="?attr/colorSurfaceVariant">
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none">
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/diseaseChart"
+                            android:layout_width="600dp"
+                            android:layout_height="260dp"
+                            android:padding="8dp"/>
+                    </HorizontalScrollView>
+                </com.google.android.material.card.MaterialCardView>
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gender Distribution"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="?attr/colorSurfaceVariant">
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/genderChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="260dp"
+                        android:padding="8dp"/>
+                </com.google.android.material.card.MaterialCardView>
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Age Group Distribution"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="?attr/colorSurfaceVariant">
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none">
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/ageChart"
+                            android:layout_width="500dp"
+                            android:layout_height="260dp"
+                            android:padding="8dp"/>
+                    </HorizontalScrollView>
+                </com.google.android.material.card.MaterialCardView>
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Top Reporting Facilities"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="?attr/colorSurfaceVariant">
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none">
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/facilityChart"
+                            android:layout_width="wrap_content"
+                            android:layout_height="260dp"
+                            android:padding="8dp"/>
+                    </HorizontalScrollView>
+                </com.google.android.material.card.MaterialCardView>
+
+
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeWidth="2dp"
+                    app:strokeColor="?attr/colorSecondary">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Avg Lab Turnaround Time"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:gravity="center"/>
+                        <TextView
+                            android:id="@+id/txtLabTurnaround"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="0 days"
+                            android:textSize="36sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorSecondary"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-    </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -13,6 +13,7 @@ import com.idsr_project.Model.UpdateProfileRequest
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityEditProfileBinding
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,6 +26,7 @@ class EditProfile_Activity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
         prefillProfileFields()
         setupTabs()
@@ -60,7 +62,7 @@ class EditProfile_Activity : BaseActivity() {
     }
 
     private fun setupClickListeners() {
-        binding.toolbar.setOnClickListener { finish() }
+        binding.btnBack.setOnClickListener { finish() }
 
         binding.btnSaveProfile.setOnClickListener {
             if (validateProfileFields()) saveProfile()

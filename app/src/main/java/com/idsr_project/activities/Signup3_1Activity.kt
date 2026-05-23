@@ -12,6 +12,7 @@ import com.idsr_project.Model.HealthRegions
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivitySignup31Binding
 import com.idsr_project.utils.ThemeManager
+import com.idsr_project.utils.applyWindowInsets
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,6 +36,8 @@ class Signup3_1Activity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySignup31Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        applyWindowInsets(topView = binding.appBarLayout)
 
         roleToCreate = intent.getStringExtra("ROLE") ?: ""
         registerMode = intent.getStringExtra("REGISTER_MODE") ?: "SELF"

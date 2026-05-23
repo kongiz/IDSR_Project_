@@ -18,6 +18,7 @@ import com.idsr_project.Model.loginResponse
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityLoginBinding
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 import com.idsr_project.workers.ReferenceDataSyncWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,6 +38,7 @@ class Login_Activity : BaseActivity() {
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
         setupListeners()
     }

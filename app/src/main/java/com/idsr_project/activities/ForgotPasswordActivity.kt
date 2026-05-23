@@ -11,6 +11,7 @@ import com.idsr_project.Model.ForgotPasswordRequest
 import com.idsr_project.Model.OtpResponse
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityForgotPasswordBinding
+import com.idsr_project.utils.applyWindowInsets
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,6 +26,7 @@ class ForgotPasswordActivity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivityForgotPasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
 
 

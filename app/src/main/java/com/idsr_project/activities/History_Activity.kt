@@ -20,6 +20,7 @@ import com.idsr_project.Model.*
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityHistoryBinding
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -74,10 +75,12 @@ class History_Activity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
+        binding.btnBack.setOnClickListener { finish() }
 
         FirebaseCrashlytics.getInstance().setCustomKey("screen", "History_Activity")
 
-        setupToolbar()
+
         setupRecyclerViews()
         setupTabs()
         setupSwipeRefresh()
@@ -150,9 +153,7 @@ class History_Activity : BaseActivity() {
         })
     }
 
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener { finish() }
-    }
+
 
     private fun setupRecyclerViews() {
         surveillanceAdapter = FormAdapter(

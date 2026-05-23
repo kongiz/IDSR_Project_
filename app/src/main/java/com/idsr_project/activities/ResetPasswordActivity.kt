@@ -10,6 +10,7 @@ import com.idsr_project.Model.OtpResponse
 import com.idsr_project.Model.ResetPasswordRequest
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityResetPasswordBinding
+import com.idsr_project.utils.applyWindowInsets
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,6 +26,7 @@ class ResetPasswordActivity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivityResetPasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
         email = intent.getStringExtra("email") ?: ""
         otp   = intent.getStringExtra("otp")   ?: ""

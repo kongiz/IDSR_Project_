@@ -13,6 +13,7 @@ import com.idsr_project.Model.ResendOtpRequest
 import com.idsr_project.Model.VerifyEmailRequest
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityEmailVerifyBinding
+import com.idsr_project.utils.applyWindowInsets
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +31,7 @@ class EmailVerifyActivity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivityEmailVerifyBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
         email = intent.getStringExtra("email") ?: ""
         mode  = intent.getStringExtra("mode")  ?: "VERIFY_EMAIL"

@@ -15,6 +15,7 @@ import com.idsr_project.Model.ResponseApi
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityNotificationsBinding
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,7 +32,9 @@ class Notifications_Activity : BaseActivity() {
         binding = ActivityNotificationsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupToolbar()
+        applyWindowInsets(topView = binding.appBarLayout)
+        binding.btnBack.setOnClickListener { finish() }
+
         setupRecyclerView()
         setupSwipeRefresh()
         fetchNotifications()
@@ -39,10 +42,6 @@ class Notifications_Activity : BaseActivity() {
         binding.btnMarkAllRead.setOnClickListener {
             markAllAsRead()
         }
-    }
-
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener { finish() }
     }
 
     private fun setupRecyclerView() {

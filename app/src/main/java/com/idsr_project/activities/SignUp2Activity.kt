@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.idsr_project.databinding.ActivitySignUp2Binding
 import com.idsr_project.utils.ThemeManager
+import com.idsr_project.utils.applyWindowInsets
 
 class SignUp2Activity : BaseActivity() {
     override val excludeFromTimeout: Boolean = true
@@ -19,6 +20,8 @@ class SignUp2Activity : BaseActivity() {
 
         binding = ActivitySignUp2Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        applyWindowInsets(topView = binding.appBarLayout)
 
         val firstname = intent.getStringExtra("FIRSTNAME")
         val lastname = intent.getStringExtra("LASTNAME")

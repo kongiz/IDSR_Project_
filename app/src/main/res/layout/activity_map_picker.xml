@@ -1,29 +1,33 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
 
 
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
+
 
 
     <LinearLayout
+        android:id="@+id/topOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="20dp"
         android:layout_gravity="top"
         android:padding="16dp">
 
-        <LinearLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
+            android:layout_marginBottom="10dp">
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btnClose"
@@ -33,34 +37,23 @@
                 android:src="@drawable/ic_close"
                 android:contentDescription="Close map"
                 android:padding="12dp"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?attr/colorOnSurface"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
-
-            <com.google.android.material.card.MaterialCardView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="?attr/colorSurface">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etSearchLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:hint="Search location"
-                    android:background="@android:color/transparent"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textColorHint="@color/idsr_gray"
-                    android:singleLine="true"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text" />
-            </com.google.android.material.card.MaterialCardView>
-
+                android:text="Pick Location on Map"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintStart_toEndOf="@id/btnClose"
+                app:layout_constraintEnd_toStartOf="@id/btnMyLocation"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btnMyLocation"
@@ -70,9 +63,38 @@
                 android:src="@android:drawable/ic_menu_mylocation"
                 android:contentDescription="My location"
                 android:padding="12dp"
-                app:tint="?attr/colorPrimary" />
-        </LinearLayout>
+                app:tint="?attr/colorPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="?attr/colorSurface">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearchLocation"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Search location"
+                android:background="@android:color/transparent"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="?attr/colorOnSurface"
+                android:textColorHint="?attr/colorOnSurfaceVariant"
+                android:singleLine="true"
+                android:imeOptions="actionSearch"
+                android:inputType="text"/>
+        </com.google.android.material.card.MaterialCardView>
+
     </LinearLayout>
+
 
 
     <LinearLayout
@@ -81,7 +103,6 @@
         android:orientation="vertical"
         android:layout_gravity="bottom"
         android:padding="16dp">
-
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/locationInfoCard"
@@ -125,11 +146,10 @@
                     android:layout_marginTop="4dp"
                     android:text=""
                     android:textSize="12sp"
-                    android:textColor="@color/idsr_gray"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:visibility="gone"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveLocation"
@@ -140,7 +160,8 @@
             android:paddingVertical="14dp"
             app:cornerRadius="12dp"
             app:icon="@android:drawable/ic_menu_save"
-            app:iconGravity="textStart" />
+            app:iconGravity="textStart"/>
+
     </LinearLayout>
 
 </FrameLayout>

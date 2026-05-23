@@ -6,6 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.idsr_project.databinding.ActivitySignUp1Binding
 import com.idsr_project.utils.ThemeManager
+import com.idsr_project.utils.applyWindowInsets
 
 class SignUp1Activity : BaseActivity() {
     override val excludeFromTimeout: Boolean = true
@@ -13,12 +14,11 @@ class SignUp1Activity : BaseActivity() {
     private lateinit var binding: ActivitySignUp1Binding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         binding = ActivitySignUp1Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
         val registerMode = intent.getStringExtra("REGISTER_MODE") ?: "SELF"
         val currentUserRole = intent.getStringExtra("CURRENT_USER_ROLE") ?: ""

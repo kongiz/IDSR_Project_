@@ -15,6 +15,7 @@ import com.idsr_project.Model.userSignup
 import com.idsr_project.R
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivitySignUp4Binding
+import com.idsr_project.utils.applyWindowInsets
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +30,7 @@ class SignUp4Activity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivitySignUp4Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(binding.appBarLayout)
 
         setupPasswordWatchers()
         setupClickListeners()

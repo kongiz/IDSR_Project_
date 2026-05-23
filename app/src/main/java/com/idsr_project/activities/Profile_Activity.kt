@@ -17,6 +17,7 @@ import retrofit2.Response
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.idsr_project.R
+import com.idsr_project.utils.applyWindowInsets
 
 class Profile_Activity : BaseActivity() {
 
@@ -36,7 +37,9 @@ class Profile_Activity : BaseActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        applyWindowInsets()
+        applyWindowInsets(
+            topView = binding.appBarLayout
+        )
 
         try {
             val versionName = packageManager.getPackageInfo(packageName, 0).versionName
@@ -51,13 +54,6 @@ class Profile_Activity : BaseActivity() {
         updateThemeIcon()
     }
 
-    private fun applyWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.appBarLayout) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(0, systemBars.top, 0, 0)
-            insets
-        }
-    }
 
     private fun loadUserProfile() {
         val firstName = SessionManager.getUserName(this)     ?: "Unknown"

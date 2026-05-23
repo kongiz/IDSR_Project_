@@ -17,6 +17,7 @@ import com.idsr_project.Model.UpdateStatusRequest
 import com.idsr_project.Model.UpdateUserResponse
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityUserManagementBinding
+import com.idsr_project.utils.applyWindowInsets
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -58,6 +59,10 @@ class UserManagementActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityUserManagementBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        applyWindowInsets(
+            topView = binding.appBarLayout
+        )
 
         setupRecyclerView()
         setupChipFilters()

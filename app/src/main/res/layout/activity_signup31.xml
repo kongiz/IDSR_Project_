@@ -1,155 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="?attr/android:colorBackground"
     tools:context=".activities.Signup3_1Activity">
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.22">
-
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/btnBackSignup31"
-            android:layout_width="40dp"
-            android:layout_height="60dp"
-            android:layout_margin="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/back_btn"
-            android:contentDescription="Back"
-            app:tint="?attr/colorOnSurface"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/logoImage"
-            android:layout_width="150dp"
-            android:layout_height="120dp"
-            android:src="@drawable/splash11"
-            android:scaleType="centerCrop"
-            android:contentDescription="IDSR App Logo"
-            app:layout_constraintTop_toBottomOf="@id/btnBackSignup31"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <com.google.android.material.card.MaterialCardView
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="5dp"
-        android:layout_marginTop="-10dp"
-        android:layout_marginBottom="80dp"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="6dp"
-        app:cardUseCompatPadding="true"
-        app:cardBackgroundColor="?attr/colorSurface"
-        app:strokeWidth="1dp"
-        app:strokeColor="?attr/colorSurfaceVariant">
+        android:fitsSystemWindows="true"
+        android:background="?attr/android:colorBackground"
+        app:elevation="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnBackSignup31"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"
+                android:src="@drawable/back_btn"
+                android:padding="10dp"
+                app:tint="?attr/colorOnSurface"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/logoImage"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/splash11"
+                android:contentDescription="App logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp">
 
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvSelectRegionDistrict"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select Region and District"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:gravity="center"
-                android:fontFamily="@font/font1" />
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="2dp"
+                app:cardUseCompatPadding="true"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorSurfaceVariant">
 
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Step 4 of 5"
-                android:textSize="13sp"
-                android:textColor="@color/idsr_gray"
-                android:gravity="center" />
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilRegion"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:hint="        Health Region"
-                app:startIconDrawable="@drawable/baseline_location_on_2"
-                app:startIconTint="?attr/colorPrimary"
-                app:endIconMode="dropdown_menu"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp">
-
-                <AutoCompleteTextView
-                    android:id="@+id/actRegion"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:focusable="false"
-                    android:textColor="?attr/colorOnSurface" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvSelectRegionDistrict"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Select Region and District"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface"
+                        android:gravity="center"
+                        android:fontFamily="@font/font1"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilDistrict"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="        Health District"
-                app:startIconDrawable="@drawable/baseline_place_24"
-                app:startIconTint="?attr/colorPrimary"
-                app:endIconMode="dropdown_menu"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp">
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Step 4 of 5"
+                        android:textSize="13sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:gravity="center"/>
 
-                <AutoCompleteTextView
-                    android:id="@+id/actDistrict"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:focusable="false"
-                    android:textColor="?attr/colorOnSurface" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilRegion"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="28dp"
+                        android:hint="        Health Region"
+                        app:startIconDrawable="@drawable/baseline_location_on_2"
+                        app:startIconTint="?attr/colorPrimary"
+                        app:endIconMode="dropdown_menu"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp">
 
+                        <AutoCompleteTextView
+                            android:id="@+id/actRegion"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:focusable="false"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnNext31"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Next"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:paddingVertical="14dp"
-                app:cornerRadius="12dp"
-                app:icon="@drawable/baseline_arrow_forward_24"
-                app:iconGravity="end" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilDistrict"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="        Health District"
+                        app:startIconDrawable="@drawable/baseline_place_24"
+                        app:startIconTint="?attr/colorPrimary"
+                        app:endIconMode="dropdown_menu"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/actDistrict"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:focusable="false"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnNext31"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="Next"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        android:paddingVertical="14dp"
+                        app:cornerRadius="12dp"
+                        app:icon="@drawable/baseline_arrow_forward_24"
+                        app:iconGravity="end"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.core.widget.NestedScrollView>
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

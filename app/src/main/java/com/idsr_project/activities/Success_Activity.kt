@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.idsr_project.R
 import com.idsr_project.databinding.ActivitySuccessBinding
+import com.idsr_project.utils.applyWindowInsets
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
 import nl.dionsegijn.konfetti.core.emitter.Emitter
@@ -27,6 +28,7 @@ class Success_Activity : BaseActivity() {
 
         binding = ActivitySuccessBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
         val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
         val currentTime = dateFormat.format(Date())

@@ -19,6 +19,7 @@ import com.idsr_project.R
 import com.idsr_project.api.ApiClient
 import com.idsr_project.databinding.ActivityDashboardBinding
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 import retrofit2.Call
 import retrofit2.Response
 
@@ -45,6 +46,7 @@ class DashboardActivity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
         initializeThemeColors()
         binding.btnBackDashboard.setOnClickListener { finish() }

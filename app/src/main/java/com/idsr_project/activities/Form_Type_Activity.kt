@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.idsr_project.databinding.ActivityFormTypeBinding
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 
 class Form_Type_Activity : BaseActivity() {
     private lateinit var binding: ActivityFormTypeBinding
@@ -17,6 +18,7 @@ class Form_Type_Activity : BaseActivity() {
         enableEdgeToEdge()
         binding = ActivityFormTypeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyWindowInsets(topView = binding.appBarLayout)
 
         binding.btnBackFormType.setOnClickListener { finish() }
         setupRoleBasedForms()
