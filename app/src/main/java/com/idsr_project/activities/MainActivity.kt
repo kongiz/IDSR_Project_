@@ -12,6 +12,7 @@ import android.os.Looper
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -36,12 +37,12 @@ import com.idsr_project.data.local.AppDatabase
 import com.idsr_project.databinding.ActivityMainBinding
 import com.idsr_project.sync.CleanupWorker
 import com.idsr_project.utils.SessionManager
+import com.idsr_project.utils.applyWindowInsets
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import kotlin.math.abs
-import android.widget.LinearLayout
 
 class MainActivity : BaseActivity() {
 
@@ -75,7 +76,8 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        applyWindowInsets()
+        applyWindowInsets(topView = binding.appBarLayout)
+        applyBottomNavInsets()
 
         inAppUpdateManager = InAppUpdateManager(this)
         lifecycleScope.launch { inAppUpdateManager.checkForUpdate(updatedLauncher) }
@@ -119,17 +121,7 @@ class MainActivity : BaseActivity() {
         super.onDestroy()
     }
 
-    private fun applyWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.appBarLayout) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(
-                view.paddingLeft,
-                systemBars.top,
-                view.paddingRight,
-                view.paddingBottom
-            )
-            insets
-        }
+    private fun applyBottomNavInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigation) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(
@@ -138,7 +130,6 @@ class MainActivity : BaseActivity() {
                 view.paddingRight,
                 systemBars.bottom
             )
-
             binding.scrollView.setPadding(
                 binding.scrollView.paddingLeft,
                 binding.scrollView.paddingTop,
@@ -148,6 +139,7 @@ class MainActivity : BaseActivity() {
             insets
         }
     }
+
     private fun setupRoleBasedUI() {
         val role = SessionManager.getUserRole(this) ?: "Health Officer"
 
@@ -161,18 +153,15 @@ class MainActivity : BaseActivity() {
                 binding.cardRowA.visibility = View.GONE
                 setFullWidth(binding.btnViewReports)
             }
-
             "Admin" -> {
                 binding.cardRowA.visibility       = View.GONE
                 binding.btnManageUsers.visibility = View.VISIBLE
             }
-
             "Lab Technician" -> {
                 binding.btnWeeklySurveillance.visibility = View.GONE
                 setFullWidth(binding.btnSubmitReport)
                 setFullWidth(binding.btnViewReports)
             }
-
             else -> {
                 setFullWidth(binding.btnViewReports)
             }
@@ -181,8 +170,8 @@ class MainActivity : BaseActivity() {
 
     private fun setFullWidth(view: View) {
         view.layoutParams = (view.layoutParams as LinearLayout.LayoutParams).apply {
-            width  = 0
-            weight = 1f
+            width       = 0
+            weight      = 1f
             marginStart = 0
             marginEnd   = 0
         }
@@ -207,14 +196,13 @@ class MainActivity : BaseActivity() {
         sliderHandler.postDelayed(sliderRunnable, 3000)
     }
 
-
     private fun setupAnimations() {
         val scaleAnim: Animation = AnimationUtils.loadAnimation(this, R.anim.card_scale)
         val animTargets = listOf(
-            binding.btnAlerts       to 0L,
-            binding.cardRowA        to 100L,
-            binding.cardRowB        to 200L,
-            binding.cardSyncStatus  to 300L
+            binding.btnAlerts      to 0L,
+            binding.cardRowA       to 100L,
+            binding.cardRowB       to 200L,
+            binding.cardSyncStatus to 300L
         )
         animTargets.forEach { (view, delay) ->
             if (view.visibility == View.VISIBLE) {
@@ -247,7 +235,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-
     private fun setupBottomNav() {
         val role = SessionManager.getUserRole(this) ?: "Health Officer"
         binding.bottomNavigation.selectedItemId = R.id.nav_home
@@ -271,18 +258,23 @@ class MainActivity : BaseActivity() {
         return true
     }
 
+    @SuppressLint("SetTextI18n")
     private fun displayUserName() {
-        val fullName = SessionManager.getFullName(this)
+        val fullName = SessionManager.getUserName(this)?.toString() ?: ""
         val role     = SessionManager.getUserRole(this) ?: "Health Officer"
-
         val greeting = getGreeting()
 
+
+        binding.tvGreetingLabel.text = greeting
+
+
         binding.tvWelcomeUser.apply {
-            text = if (fullName.isNotBlank()) "$greeting, $fullName 👋" else "$greeting 👋"
+            text = if (fullName.isNotBlank()) "$fullName 👋" else "👋"
             alpha = 0f
             translationY = 20f
             animate().alpha(1f).translationY(0f).setDuration(600).setStartDelay(150).start()
         }
+
 
         binding.tvUserRole.visibility = View.VISIBLE
         binding.tvUserRole.text = role
@@ -396,7 +388,6 @@ class MainActivity : BaseActivity() {
             })
     }
 
-
     private fun handleUpdateState(state: AppUpdateState) {
         when (state) {
             is AppUpdateState.ReadyToInstall -> showUpdateSnackbar()
@@ -410,7 +401,6 @@ class MainActivity : BaseActivity() {
             .setAction("RESTART") { inAppUpdateManager.completeUpdate() }
             .show()
     }
-
 
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -427,9 +417,9 @@ class MainActivity : BaseActivity() {
 
     private fun setupCrashlyticsContext() {
         val userId     = SessionManager.getUserId(this) ?: return
-        val role       = SessionManager.getUserRole(this)    ?: "Health Officer"
-        val regionId   = SessionManager.getUserRegion(this)  ?: "none"
-        val districtId = SessionManager.getUserDistrict(this)?: "none"
+        val role       = SessionManager.getUserRole(this)     ?: "Health Officer"
+        val regionId   = SessionManager.getUserRegion(this)   ?: "none"
+        val districtId = SessionManager.getUserDistrict(this) ?: "none"
 
         FirebaseCrashlytics.getInstance().apply {
             setUserId(userId.toString())

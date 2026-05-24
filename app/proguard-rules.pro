@@ -56,6 +56,13 @@
 }
 -dontwarn com.bumptech.glide.**
 
+-keep class com.bumptech.glide.load.model.GlideUrl { *; }
+-keep class com.bumptech.glide.load.model.LazyHeaders { *; }
+-keep class com.bumptech.glide.load.model.LazyHeaders$Builder { *; }
+-keep class com.bumptech.glide.integration.okhttp3.** { *; }
+-keep class okio.** { *; }
+-keep interface okio.** { *; }
+
 # ── Lottie ────────────────────────────────────────────────────────
 -dontwarn com.airbnb.lottie.**
 -keep class com.airbnb.lottie.** { *; }

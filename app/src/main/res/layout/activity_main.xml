@@ -23,7 +23,6 @@
             android:paddingTop="12dp"
             android:paddingBottom="12dp">
 
-
             <LinearLayout
                 android:id="@+id/greetingBlock"
                 android:layout_width="0dp"
@@ -35,14 +34,16 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0">
 
+
                 <TextView
                     android:id="@+id/tvGreetingLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Welcome back,"
+                    android:text="Good Morning"
                     android:textSize="13sp"
                     android:letterSpacing="0.02"
-                    android:textColor="@color/idsr_gray"/>
+                    android:textColor="?attr/colorOnSurfaceVariant"/>
+
 
                 <TextView
                     android:id="@+id/tvWelcomeUser"
@@ -53,6 +54,7 @@
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurface"/>
 
+
                 <TextView
                     android:id="@+id/tvUserRole"
                     android:layout_width="wrap_content"
@@ -62,7 +64,7 @@
                     android:paddingVertical="3dp"
                     android:text="Health Officer"
                     android:textSize="11sp"
-                    android:textColor="@color/idsr_on_primary"
+                    android:textColor="?attr/colorOnPrimary"
                     android:background="@drawable/bg_role_badge"
                     android:visibility="gone"/>
             </LinearLayout>
@@ -100,7 +102,7 @@
                         android:layout_marginEnd="4dp"
                         android:background="@drawable/bg_badge"
                         android:gravity="center"
-                        android:textColor="@color/idsr_on_primary"
+                        android:textColor="?attr/colorOnPrimary"
                         android:textSize="9sp"
                         android:textStyle="bold"
                         android:visibility="gone"/>
@@ -134,7 +136,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/bannerCard"
@@ -181,8 +182,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnAlerts"
                 android:layout_width="match_parent"
@@ -225,7 +224,7 @@
                             android:layout_height="wrap_content"
                             android:text="Reported Forms"
                             android:textSize="13sp"
-                            android:textColor="@color/idsr_gray"/>
+                            android:textColor="?attr/colorOnSurfaceVariant"/>
                     </LinearLayout>
 
                     <ImageView
@@ -246,7 +245,6 @@
                 android:orientation="horizontal"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="12dp">
-
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnSubmitReport"
@@ -291,11 +289,10 @@
                             android:layout_height="wrap_content"
                             android:text="New case entry"
                             android:textSize="12sp"
-                            android:textColor="@color/idsr_gray"/>
+                            android:textColor="?attr/colorOnSurfaceVariant"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Weekly Surveillance -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnWeeklySurveillance"
                     android:layout_width="0dp"
@@ -339,13 +336,11 @@
                             android:layout_height="wrap_content"
                             android:text="Routine monitoring"
                             android:textSize="12sp"
-                            android:textColor="@color/idsr_gray"/>
+                            android:textColor="?attr/colorOnSurfaceVariant"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-
-
 
             <LinearLayout
                 android:id="@+id/cardRowB"
@@ -355,7 +350,6 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="12dp">
 
-                <!-- View Reports -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnViewReports"
                     android:layout_width="0dp"
@@ -399,10 +393,9 @@
                             android:layout_height="wrap_content"
                             android:text="History"
                             android:textSize="12sp"
-                            android:textColor="@color/idsr_gray"/>
+                            android:textColor="?attr/colorOnSurfaceVariant"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
-
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnManageUsers"
@@ -448,12 +441,11 @@
                             android:layout_height="wrap_content"
                             android:text="Accounts &amp; roles"
                             android:textSize="12sp"
-                            android:textColor="@color/idsr_gray"/>
+                            android:textColor="?attr/colorOnSurfaceVariant"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardSyncStatus"
@@ -506,7 +498,7 @@
                             android:layout_height="wrap_content"
                             android:text="Checking..."
                             android:textSize="12sp"
-                            android:textColor="@color/idsr_gray"/>
+                            android:textColor="?attr/colorOnSurfaceVariant"/>
                     </LinearLayout>
 
                     <TextView
@@ -517,7 +509,7 @@
                         android:paddingVertical="4dp"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        android:textColor="@color/idsr_on_primary"
+                        android:textColor="?attr/colorOnPrimary"
                         android:background="@drawable/badge_bg"
                         android:visibility="gone"/>
                 </LinearLayout>
