@@ -84,8 +84,8 @@ class SignUp2Activity : BaseActivity() {
                 binding.etPhone.requestFocus()
                 return
             }
-            phone.length != 7 -> {
-                binding.tilPhone.error = "Phone number must be exactly 7 digits"
+            phone.length != 9 -> {
+                binding.tilPhone.error = "Phone number must be exactly 9 digits"
                 binding.etPhone.requestFocus()
                 return
             }

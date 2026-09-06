@@ -58,7 +58,7 @@ class SignUp3Activity : BaseActivity() {
 
         binding.actGender.setAdapter(adapter)
 
-        // Clear error when user selects
+
         binding.actGender.setOnItemClickListener { _, _, _, _ ->
             binding.tilGender.error = null
         }
